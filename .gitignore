@@ -4,3 +4,4 @@
 *.idea
 *dist
 .history
+frontend/package-lock.json
