@@ -36,7 +36,7 @@ export async function apiCall(
     // Parse and return JSON response
     return await response.json();
   } catch (error) {
-    console.error("API call failed:", error.message);
+    console.error("API call failed:", error);
     throw error; // Rethrow error for further handling in React components
   }
 }

@@ -4,16 +4,36 @@ import PrestoLogo from "../assets/Presto.png";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
 import { login } from "../../utils/API/Login_Register/login_register";
 import { useNavigate } from "react-router-dom";
+import { errorPopUp } from "../../utils/errorPopUp";
 
 function LoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const navigate = useNavigate();
+
   const onFinish = (values) => {
     console.log("Success:", values);
   };
+
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
+  };
+
+  const handleEnterKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      const response = await login(email, password);
+      localStorage.setItem("token", response.token);
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error);
+      errorPopUp("There was an error logging in", "invalid email or password");
+    }
   };
 
   return (
@@ -72,6 +92,7 @@ function LoginPage() {
                 onChange={(text) => {
                   setEmail(text.target.value);
                 }}
+                onKeyDown={handleEnterKeyPress}
               />
             </Form.Item>
 
@@ -90,22 +111,14 @@ function LoginPage() {
                 onChange={(text) => {
                   setPassword(text.target.value);
                 }}
+                onKeyDown={handleEnterKeyPress}
               />
             </Form.Item>
           </Form>
 
           <div className="flex flex-col gap-1">
-            <CustomizedBtn
-              id="loginBtn"
-              content="Login"
-              action={async () => {
-                const response = await login(email, password);
-                console.log(response);
-                navigate("/dashboard");
-              }}
-            />
+            <CustomizedBtn id="loginBtn" content="Login" action={handleLogin} />
             <a
-              href="#"
               className="text-blue-500 text-center"
               onClick={() => {
                 navigate("/register");

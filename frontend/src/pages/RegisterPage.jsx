@@ -4,6 +4,7 @@ import { Button, Checkbox, Form, Input } from "antd";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
 import { register } from "../../utils/API/Login_Register/login_register";
 import { useNavigate } from "react-router-dom";
+import { errorPopUp } from "../../utils/errorPopUp";
 
 function RegisterPage() {
   const [email, setEmail] = React.useState("");
@@ -125,7 +126,7 @@ function RegisterPage() {
               rules={[
                 {
                   required: true,
-                  message: "Please input your password!",
+                  message: "Please confimed your password!",
                 },
               ]}
             >
@@ -133,6 +134,10 @@ function RegisterPage() {
                 value={confirmPassword}
                 onChange={(text) => {
                   setConfirmPassword(text.target.value);
+                  if (password !== confirmPassword) {
+                    // TODO: not sure is error pop up or not
+                    errorPopUp("Error", "Passwords do not match");
+                  }
                 }}
               />
             </Form.Item>
@@ -144,16 +149,41 @@ function RegisterPage() {
                 id="registerBtn"
                 content="Register"
                 action={async () => {
-                  const response = await register(email, password, name);
-                  // save in the localStorage
-                  // setlocalStorage("token", response.token);
-                  navigate("/dashboard");
+                  // check email is valid or not
+                  // I assume that the email should have the format of
+                  // 1. At least one character before the @
+                  // 2. At least one character before the .
+                  // 3. At least one character after the .
+                  const emailRegex = /\S+@\S+\.\S+/;
+                  if (!emailRegex.test(email)) {
+                    errorPopUp("Error", "Invalid email");
+                    return;
+                  }
+                  // check password is valid or not
+                  // I assume that the name should only contain letters
+                  // and the length should be between 1 and 20
+                  const nameRegex = /^[a-zA-Z ]{1,20}$/;
+                  if (!nameRegex.test(name)) {
+                    errorPopUp("Error", "Invalid name");
+                    return;
+                  }
+                  try {
+                    const response = await register(email, password, name);
+                    // save in the localStorage
+                    localStorage.setItem("token", response.token);
+                    navigate("/dashboard");
+                  } catch (error) {
+                    console.error(
+                      "There was an error registering",
+                      error.message
+                    );
+                  }
                 }}
               />
               <a
                 className="text-blue-500 text-center"
                 onClick={() => {
-                  navigate("/register");
+                  navigate("/login");
                 }}
               >
                 Already have an account? Login here
