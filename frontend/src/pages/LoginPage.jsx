@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Checkbox, Form, Input } from "antd";
 import PrestoLogo from "../assets/Presto.png";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
+import { login } from "../../utils/API/Login_Register/login_register";
 
 function LoginPage() {
   const [email, setEmail] = React.useState("");
@@ -88,6 +89,116 @@ function LoginPage() {
               />
             </Form.Item>
           </Form>
+
+          <div className="flex flex-col gap-1">
+            <CustomizedBtn
+              id="loginBtn"
+              content="Login"
+              action={() => console.log("我要开始登录了")}
+            />
+
+            <a
+              href="#"
+              id="linkToRegister"
+              className="text-blue-500 text-center"
+            >
+              Don't have an account? Register here
+            </a>
+          </div>
+        </div>
+
+        <div
+          id="registerForm"
+          className="flex-1 h-full flex flex-col justify-center gap-4 p-3 hidden"
+        >
+          <h1 className="text-3xl font-bold">Registration</h1>
+
+          <div className="flex flex-col gap-2">
+            <div className="input-group mb-3">
+              <span className="input-group-text" id="basic-addon1">
+                Email
+              </span>
+              <input
+                type="text"
+                id="emailInputReg"
+                className="form-control"
+                placeholder="example@email.com"
+                aria-label="emailInput"
+                required
+              />
+              <div id="registerEmailInputError" className="invalid-feedback">
+                The inputed email is invalid.
+              </div>
+            </div>
+
+            <div className="input-group mb-3">
+              <span className="input-group-text" id="basic-addon1">
+                Name
+              </span>
+              <input
+                type="text"
+                id="NameInputReg"
+                className="form-control"
+                placeholder="Please enter your name"
+                aria-label="emailInput"
+                required
+              />
+              <div
+                id="registerNameInputError"
+                className="invalid-feedback hidden"
+              >
+                The inputed name is invalid.
+              </div>
+            </div>
+
+            <div className="input-group mb-3">
+              <span className="input-group-text" id="basic-addon1">
+                Password
+              </span>
+              <input
+                type="password"
+                id="passwordInputReg"
+                className="form-control"
+                placeholder="Please enter your password"
+                aria-label="passwordInput"
+                required
+              />
+              <div id="registerPsInputError" className="invalid-feedback">
+                The inputed password is invalid.
+              </div>
+            </div>
+
+            <div className="input-group mb-3">
+              <span className="input-group-text" id="basic-addon1">
+                Confirm Password
+              </span>
+              <input
+                type="password"
+                id="confirmPasswordReg"
+                className="form-control"
+                placeholder="Please confirm your password"
+                aria-label="passwordInput"
+                required
+              />
+              <div id="registerPsCheckInputError" className="invalid-feedback">
+                The confimed password is invalid.
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <button
+              id="registerBtn"
+              type="button"
+              className="text-white bg-gradient-to-br from-pink-500 to-orange-400 font-medium rounded-lg text-lg px-5 py-2.5 text-center me-2 mb-2"
+            >
+              Register
+            </button>
+
+            <a href="#" id="linkToLogin" className="text-blue-500 text-center">
+              Already have an account? Login here
+            </a>
+          </div>
         </div>
       </div>
     </div>
