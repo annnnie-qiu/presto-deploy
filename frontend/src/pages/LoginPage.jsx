@@ -3,10 +3,12 @@ import { Button, Checkbox, Form, Input } from "antd";
 import PrestoLogo from "../assets/Presto.png";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
 import { login } from "../../utils/API/Login_Register/login_register";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const navigate = useNavigate();
   const onFinish = (values) => {
     console.log("Success:", values);
   };
@@ -85,7 +87,9 @@ function LoginPage() {
             >
               <Input.Password
                 value={password}
-                onClick={(text) => setPassword(text.target.value)}
+                onChange={(text) => {
+                  setPassword(text.target.value);
+                }}
               />
             </Form.Item>
           </Form>
@@ -94,13 +98,18 @@ function LoginPage() {
             <CustomizedBtn
               id="loginBtn"
               content="Login"
-              action={() => console.log("我要开始登录了")}
+              action={async () => {
+                const response = await login(email, password);
+                console.log(response);
+                navigate("/dashboard");
+              }}
             />
-
             <a
               href="#"
-              id="linkToRegister"
               className="text-blue-500 text-center"
+              onClick={() => {
+                navigate("/register");
+              }}
             >
               Don't have an account? Register here
             </a>
