@@ -1,39 +1,38 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons'
+import React from 'react'
+import { Avatar, Flex, Typography } from 'antd';
+import Search from 'antd/es/transfer/search';
+import { MessageOutlined, NotificationOutlined, UserOutlined} from '@ant-design/icons'
 
-function Header() {
-  const navigate = useNavigate();
+const CustomHeader = () => {
+  const styles = {
+    headerIcon: {
+      backgroundColor: '#d2e3c8',
+      padding: '8px',
+      borderRadius: '4px',
+      fontSize: '15px',
+      color: '#4f6f52',
+      cursor: 'pointer',
+    }
+  }
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
-  };
 
   return (
-    <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
-      {/* Logo - Clicking will navigate back to the dashboard */}
-      <div
-        className="text-2xl font-bold cursor-pointer"
-        onClick={() => navigate('/dashboard')}
-      >
-        Presto
-      </div>
+    <Flex align="center" justify="space-between">
+      <Typography.Title level={3} type="secondary">
+        Welcome back
+      </Typography.Title>
 
-      {/* Profile Image and Logout Button */}
-      <div className="flex items-center space-x-4">
-        <Avatar 
-          size="large" 
-          icon={<UserOutlined />} 
-          className="cursor-pointer"
-        />
-        <Button type="primary" danger onClick={handleLogout}>
-          Logout
-        </Button>
-      </div>
-    </header>
+      <Flex align="center" gap="3rem">
+        <Search placeholder="Search Dashboard" allowClear />
+
+        <Flex align="center" gap="10px">
+          <MessageOutlined style={styles.headerIcon} />
+          <NotificationOutlined style={styles.headerIcon} />
+          <Avatar icon={<UserOutlined />}/>
+        </Flex>
+      </Flex>
+    </Flex>
   )
 }
 
-export default Header
+export default CustomHeader;
