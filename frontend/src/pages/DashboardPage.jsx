@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import Header from '../components/Header';
-import { Layout } from 'antd';
+import { Button, Layout } from 'antd';
+import {MenuUnfoldOutlined, MenuFoldOutlined} from '@ant-design/icons'
 import Sidebar from '../components/Sidebar';
 
 const { Sider, Header, Content } = Layout;
@@ -20,11 +21,21 @@ function DashboardPage() {
       top: 0,
     },
     header: {
-
+      paddingTop: '12px',
+      backgroundColor: '#fff',
     },
     content: {
-
+      margin: '24px 16px',
+      padding: '20px'
     },
+    trigerbtn: {
+      fontSize: '16px',
+      width: '50px',
+      height: '50px',
+      position: 'fixed',
+      bottom: '10px',
+      left: '10px',
+    }
   }
 
   // React.useEffect(() => {
@@ -44,6 +55,13 @@ function DashboardPage() {
         style={styles.sider}
       >
         <Sidebar />
+
+        <Button 
+          type='text' 
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={() => setCollapsed(!collapsed)}
+          style={styles.trigerbtn}
+        />
       </Sider>
       <Layout>
         <Header style={styles.header}></Header>

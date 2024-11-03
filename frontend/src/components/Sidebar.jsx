@@ -1,11 +1,19 @@
 import React from 'react';
 import { Flex, Menu } from 'antd';
 import PrestoLogo from "../assets/Presto.png";
+import {
+  UserOutlined,
+  ProfileOutlined,
+  LogoutOutlined,
+  OrderedListOutlined,
+  SettingOutlined, 
+} from '@ant-design/icons';
 
 const Sidebar = () => {
   const styles = {
     logo: {
       height: '3vw',
+      marginTop: '10px',
     }
   };
 
@@ -18,7 +26,38 @@ const Sidebar = () => {
         </div>
       </Flex>
 
-      <Menu mode="inline" defaultSelectedKeys={['1']} className="menu-bar" />
+      <Menu 
+        mode="inline" 
+        defaultSelectedKeys={['1']} 
+        className="menu-bar" 
+        items={[
+          {
+            key: '1',
+            icon: <UserOutlined />,
+            label: 'Dashboard',
+          },
+          {
+            key: '2',
+            icon: <OrderedListOutlined />,
+            label: 'My presentations',
+          },
+          {
+            key: '3',
+            icon: <ProfileOutlined />,
+            label: 'Profile',
+          },
+          {
+            key: '4',
+            icon: <SettingOutlined />,
+            label: 'Setting',
+          },
+          {
+            key: '5',
+            icon: <LogoutOutlined />,
+            label: 'Logout',
+          },
+        ]}
+      />
     </>
   );
 };
