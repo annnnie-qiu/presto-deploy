@@ -5,10 +5,47 @@ import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/ico
 
 const { Meta } = Card;
 
-const DashboardPresentationList = ({ presentations }) => {
+const DashboardPresentationList = ({ presentations = [] }) => {
+  // Styles moved to the top
+  const styles = {
+    headerFlex: {
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    row: {
+      marginTop: '20px',
+    },
+    col: {
+      display: 'flex',
+      justifyContent: 'center',
+    },
+    card: {
+      width: '100%',
+      aspectRatio: '2 / 1',
+      minWidth: '100px',
+    },
+    cardCoverContainer: (hasThumbnail) => ({
+      backgroundColor: hasThumbnail ? 'transparent' : '#ccc',
+      height: '50%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }),
+    emptyThumbnail: {
+      width: '80%',
+      height: '80%',
+      backgroundColor: 'gray',
+    },
+    cardImage: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+    },
+  };
+
   return (
     <>
-      <Flex align="center" justify="space-between">
+      <Flex style={styles.headerFlex}>
         <Typography.Title level={3} strong>
           Your Presentation List
         </Typography.Title>
@@ -17,7 +54,7 @@ const DashboardPresentationList = ({ presentations }) => {
         </Button>
       </Flex>
 
-      <Row gutter={[16, 16]} style={{ marginTop: '20px' }}>
+      <Row gutter={[16, 16]} style={styles.row}>
         {presentations.map((presentation) => (
           <Col
             key={presentation.id}
@@ -26,28 +63,20 @@ const DashboardPresentationList = ({ presentations }) => {
             md={8}
             lg={6}
             xl={4}
-            style={{ display: 'flex', justifyContent: 'center' }}
+            style={styles.col}
           >
             <Card
-              style={{ width: '100%', aspectRatio: '2 / 1', minWidth: '100px' }}
+              style={styles.card}
               cover={
-                <div
-                  style={{
-                    backgroundColor: presentation.thumbnail ? 'transparent' : '#ccc',
-                    height: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
+                <div style={styles.cardCoverContainer(!!presentation.thumbnail)}>
                   {presentation.thumbnail ? (
                     <img
                       alt={presentation.name}
                       src={presentation.thumbnail}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      style={styles.cardImage}
                     />
                   ) : (
-                    <div style={{ width: '80%', height: '80%', backgroundColor: 'gray' }}></div>
+                    <div style={styles.emptyThumbnail}></div>
                   )}
                 </div>
               }
@@ -72,7 +101,7 @@ const DashboardPresentationList = ({ presentations }) => {
         ))}
       </Row>
     </>
-  )
-}
+  );
+};
 
 export default DashboardPresentationList;
