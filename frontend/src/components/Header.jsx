@@ -23,7 +23,7 @@ const CustomHeader = () => {
       </Typography.Title>
 
       <Flex align="center" gap="3rem">
-        <Search placeholder="Search Dashboard" allowClear />
+        <Search placeholder="Search" allowClear />
 
         <Flex align="center" gap="10px">
           <MessageOutlined style={styles.headerIcon} />

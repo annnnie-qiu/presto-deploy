@@ -1,7 +1,14 @@
 import { Button, Card, Flex, Typography } from 'antd';
 import React from 'react'
 
-const DashboardBanner = () => {
+const DashboardBanner = ( { onCreate }) => {
+  const styles = {
+    creatBtn: {
+      background: 'linear-gradient(to right, #ffafbd, #ffc3a0)',
+      border: 'none',
+    }
+  }
+
   return (
     <Card style={{ height: 260, padding: "20px" }}>
       <Flex vertical gap="30px">
@@ -15,7 +22,7 @@ const DashboardBanner = () => {
         </Flex>
 
         <Flex gap="large">
-          <Button type="primary" size="large">New presentation</Button>
+          <Button type="primary" style={styles.creatBtn} size="large" onClick={onCreate}>New presentation</Button>
         </Flex>
       </Flex>
     </Card>

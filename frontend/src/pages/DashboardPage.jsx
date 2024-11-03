@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import Header from '../components/Header';
-import { Button, Layout } from 'antd';
-import {MenuUnfoldOutlined, MenuFoldOutlined} from '@ant-design/icons'
+import { Button, Flex, Layout, Modal, Input } from 'antd';
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons'
 import Sidebar from '../components/Sidebar';
+import CustomHeader from '../components/Header';
+import DashboardMainContent from '../components/DashboardMainContent';
+// import DashboardSideContent from '../components/DashboardSideContent';
 
 const { Sider, Header, Content } = Layout;
 
@@ -11,6 +13,24 @@ function DashboardPage() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [collapsed, setCollapsed] = useState(false);
+  const [presentations, setPresentations] = useState([
+    {
+      name: 'Presentation 1',
+      thumbnail: '',
+      description: 'This is the description of Presentation 1',
+      numSlides: 5,
+    },
+  ]);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newPresentationName, setNewPresentationName] = useState('');
+
+  // React.useEffect(() => {
+  //   // If no token is found, navigate back to the login page.
+  //   if (!token) {
+  //     navigate('/login')
+  //   }
+  // });
 
   const styles = {
     sider: {
@@ -38,12 +58,29 @@ function DashboardPage() {
     }
   }
 
-  // React.useEffect(() => {
-  //   // If no token is found, navigate back to the login page.
-  //   if (!token) {
-  //     navigate('/login')
-  //   }
-  // });
+  // Function to handle showing the modal
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setNewPresentationName('');
+  };
+
+  const handleCreateNewPresentation = () => {
+    if (newPresentationName.trim() === '') return;
+
+    const newPresentation = {
+      name: newPresentationName,
+      thumbnail: '',
+      description: '',
+      numSlides: 1,
+    };
+    setPresentations([...presentations, newPresentation]);
+    setIsModalVisible(false);
+    setNewPresentationName(''); // Reset input
+  }
 
   return (
     <Layout>
@@ -64,9 +101,34 @@ function DashboardPage() {
         />
       </Sider>
       <Layout>
-        <Header style={styles.header}></Header>
-        <Content style={styles.content}></Content>
+        <Header style={styles.header}>
+          <CustomHeader />
+        </Header>
+        <Content style={styles.content}>
+          <Flex gap="large">
+            <DashboardMainContent
+              presentations={presentations}
+              onCreate={showModal}
+            />
+            {/* <DashboardSideContent /> */}
+          </Flex>
+        </Content>
       </Layout>
+
+      {/* Modal for Creating New Presentation */}
+      <Modal
+        title="Create New Presentation"
+        open={isModalVisible}
+        onOk={handleCreateNewPresentation}
+        onCancel={handleCancel}
+        okText="Create"
+      >
+        <Input
+          placeholder="Enter presentation name"
+          value={newPresentationName}
+          onChange={(e) => setNewPresentationName(e.target.value)}
+        />
+      </Modal>
     </Layout>
   );
 };
