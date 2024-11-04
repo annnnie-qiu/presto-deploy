@@ -3,6 +3,7 @@ import { Button, Flex, Typography, Row, Col, Modal, Input } from "antd";
 import { Avatar, Card } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 
 const { Meta } = Card;
 
@@ -45,6 +46,15 @@ const DashboardPresentationList = ({ presentations = [] }) => {
       currentPresentation.name = presentationUpdates.name;
       currentPresentation.description = presentationUpdates.description;
     }
+    // send the updated presentation to the backend
+    const token = localStorage.getItem("token");
+    sendDetail(
+      token,
+      currentPresentation.id,
+      presentationUpdates.name,
+      presentationUpdates.description,
+      currentPresentation.thumbnail
+    );
     setIsModalVisible(false);
   };
 
@@ -61,20 +71,20 @@ const DashboardPresentationList = ({ presentations = [] }) => {
       justifyContent: "center",
     },
     cardWrapper: {
-      width: '100%',
-      aspectRatio: '2 / 1',
-      minWidth: '200px',
-      position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-      marginBottom: '16px',
+      width: "100%",
+      aspectRatio: "2 / 1",
+      minWidth: "200px",
+      position: "relative",
+      display: "flex",
+      flexDirection: "column",
+      marginBottom: "16px",
     },
     card: {
-      width: '100%',
-      height: '100%',
-      position: 'relative',
-      overflow: 'hidden',
-      flex: '1 1 auto',
+      width: "100%",
+      height: "100%",
+      position: "relative",
+      overflow: "hidden",
+      flex: "1 1 auto",
     },
     thumbnail: {
       width: 45,
@@ -86,20 +96,20 @@ const DashboardPresentationList = ({ presentations = [] }) => {
       backgroundColor: "#ccc",
     },
     description: {
-      maxHeight: '40px',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
+      maxHeight: "40px",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
     },
     numSlides: {
-      maxHeight: '40px',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
+      maxHeight: "40px",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
     },
     editBtn: {
-      marginTop: '-30px',
-    }
+      marginTop: "-30px",
+    },
   };
 
   return (
@@ -144,10 +154,9 @@ const DashboardPresentationList = ({ presentations = [] }) => {
                   title={presentation.name}
                   description={
                     <>
-                      <div
-                        style={styles.description}
-                      >
-                        {presentation.description || "No description available"}</div>
+                      <div style={styles.description}>
+                        {presentation.description || "No description available"}
+                      </div>
                       <div style={styles.numSlides}>
                         Slides: {presentation.numSlides}
                       </div>
