@@ -2,23 +2,14 @@ import { apiCall } from "../apiCall";
 
 export default async function sendDetail(
   token,
-  id,
-  name,
-  description,
-  thumbnail
+  currentPresentationId,
+  presentation
 ) {
   try {
     const response = await apiCall(
       "PUT",
-      "store",
-      {
-        store: {
-          id: id,
-          name: name,
-          description: description,
-          thumbnail: thumbnail,
-        },
-      },
+      `presentations/${currentPresentationId}`,
+      presentation,
       "",
       token
     );
@@ -33,7 +24,7 @@ export default async function sendDetail(
 export async function getDetail(token) {
   try {
     console.log("GET request");
-    const response = await apiCall("GET", "store", {}, "", token);
+    const response = await apiCall("GET", "presentations", {}, "", token);
     console.log("GET response:", response);
     return response;
   } catch (error) {

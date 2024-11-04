@@ -7,8 +7,11 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import { ConfigProvider, Segmented, Tooltip } from "antd";
 import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { useParams } from "react-router-dom";
 
-const Tooltips = (setCurrentSlides) => {
+const Tooltips = (setCurrentSlides, presentationId) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
     if (arrow === "Hide") {
@@ -38,9 +41,22 @@ const Tooltips = (setCurrentSlides) => {
             <Tooltip
               placement="rightTop"
               title={"add a new slide"}
-              onClick={() => {
+              onClick={async () => {
                 console.log("add a new slide");
+                const token = localStorage.getItem("token");
+                const response = await getDetail(token);
+                console.log(response);
+                // check response is matching with presentationId
+                for (let i = 0; i < response.presentations.length; i++) {
+                  if (response.presentations[i].id == presentationId) {
+                    console.log("match");
+                    console.log(response.presentations[i]);
+                    response.presentations[i].numSlides += 1;
+                    await sendDetail(token, presentationId, response.presentations[i]);
+                  }
+                }
                 setCurrentSlides((currentSlides) => {
+                  // sendDetail(token, id, name, description, thumbnail);
                   return [
                     ...currentSlides,
                     {
@@ -77,6 +93,7 @@ const DescList = ({
   setCurrentSlides,
   selectedSlideId,
   setSelectedSlideId,
+  presentationId,
 }) => (
   <div className="flex h-full w-full">
     <div className="grow flex flex-col gap-2 items-center h-full py-2">
@@ -103,7 +120,7 @@ const DescList = ({
         </div>
       ))}
     </div>
-    <div className=" w-8 h-ful">{Tooltips(setCurrentSlides)}</div>
+    <div className=" w-8 h-ful">{Tooltips(setCurrentSlides, presentationId)}</div>
   </div>
 );
 
@@ -130,6 +147,7 @@ const DescSlide = (props) => (
 function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedSlideId, setSelectedSlideId] = useState(1);
+  const { presentationId } = useParams();
 
   // TODO: Implement the DescList component - hard code
   const [currentSlides, setCurrentSlides] = React.useState([
@@ -199,6 +217,7 @@ function PresentationPage() {
                 setCurrentSlides={setCurrentSlides}
                 selectedSlideId={selectedSlideId}
                 setSelectedSlideId={setSelectedSlideId}
+                presentationId={presentationId}
               />
             </Splitter.Panel>
             {/* add a tooltip */}
