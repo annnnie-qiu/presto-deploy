@@ -8,7 +8,8 @@ import {
   ProfileOutlined,
   LogoutOutlined,
   OrderedListOutlined,
-  SettingOutlined, 
+  SettingOutlined,
+  SwapLeftOutlined
 } from '@ant-design/icons';
 
 const StyledMenu = styled(Menu)`
@@ -64,6 +65,8 @@ const Sidebar = () => {
     navigate('/dashboard');
   }
 
+  const isPresentationPage = location.pathname.startsWith('/presentation');
+
   return (
     <>
       <Flex align="center" justify="center">
@@ -80,8 +83,8 @@ const Sidebar = () => {
         items={[
           {
             key: '1',
-            icon: <UserOutlined />,
-            label: 'Dashboard',
+            icon: isPresentationPage ? <SwapLeftOutlined /> : <UserOutlined />,
+            label: isPresentationPage ? 'Back' : 'Dashboard',
             onClick: handleDashboard,
           },
           {
