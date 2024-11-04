@@ -34,8 +34,10 @@ function DashboardPage() {
   // });
 
   const styles = {
+    layout: {
+      minHeight: '100vh',
+    },
     sider: {
-      height: '100vh',
       position: 'sticky !important',
       left: 0,
       bottom: 0,
@@ -85,7 +87,9 @@ function DashboardPage() {
   }
 
   return (
-    <Layout>
+    <Layout
+      style={styles.layout}
+    >
       <Sider 
         theme="light" 
         trigger={null} 
