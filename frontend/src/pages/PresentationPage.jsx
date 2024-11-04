@@ -7,8 +7,6 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import { ConfigProvider, Segmented, Tooltip } from "antd";
 import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
-// hard code  TODO: remove
-const text = <span>prompt text</span>;
 
 const Tooltips = () => {
   const [arrow, setArrow] = useState("Show");
@@ -64,10 +62,22 @@ const Tooltips = () => {
   );
 };
 
+// TODO: Implement the DescList component - hard code
+const currentSlides = [
+  {
+    id: 1,
+    content: "Slide 1",
+  },
+];
+
 const DescList = (props) => (
   <div className="flex h-full w-full">
-    <div className="grow flex flex-col h-full">
-      {/* TODO: need to add */}
+    <div className="grow flex flex-col gap-2 items-center h-full py-2">
+      {currentSlides.map((slide) => (
+        <div key={slide.id} className="bg-red-300 h-24 w-3/4 rounded-lg">
+          {slide.content}
+        </div>
+      ))}
     </div>
     <div className=" w-8 h-ful">{Tooltips()}</div>
   </div>
