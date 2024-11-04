@@ -155,3 +155,41 @@ export const setStore = (email, store) =>
     resolve();
   });
 
+/***************************************************************
+                       Presentation Functions
+***************************************************************/
+
+// Fetch presentations for a given email
+export const getPresentations = (email) => 
+  userLock((resolve, reject) => {
+    resolve(admins[email].presentations || []);
+  });
+
+// Add a new presentation for a given email
+export const addPresentation = (email, presentation) =>
+    userLock((resolve, reject) => {
+      if (!admins[email].presentations) {
+        admins[email].presentations = [];
+      }
+      admins[email].presentations.push(presentation);
+      resolve(admins[email].presentations);
+    });
+
+// Update an existing presentation
+export const updatePresentation = (email, presentationId, updatedData) =>
+  userLock((resolve, reject) => {
+    const presentations = admins[email].presentations || [];
+    const presentationIndex = presentations.findIndex(
+      (p) => p.id === presentationId
+    );
+
+    if (presentationIndex === -1) {
+      return reject(new InputError("Presentation not found"));
+    }
+
+    presentations[presentationIndex] = {
+      ...presentations[presentationIndex],
+      ...updatedData,
+    };
+    resolve(presentations);
+  });

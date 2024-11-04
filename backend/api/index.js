@@ -101,7 +101,49 @@ app.put(
   )
 );
 
+/***************************************************************
+                       Presentation Functions
+***************************************************************/
 
+// Fetch all presentations
+app.get(
+  "/presentations",
+  catchErrors(
+    authed(async (req, res, email) => {
+      const presentations = await getPresentations(email);
+      return res.json({ presentations })
+    })
+  )
+);
+
+// Add a new presentation
+app.post(
+  "/presentations",
+  catchErrors(
+    authed(async (req, res, email) => {
+      const presentation = req.body;
+      const updatePresentations = await addPresentation(email, presentation);
+      return res.json({ presentations: updatePresentations })
+    })
+  )
+);
+
+// Update an existing presentation 
+app.put(
+  "/presentations/:id",
+  catchErrors(
+    authed(async (req, res, email) => {
+      const presentationId = parseInt(req.params.id, 10);
+      const updatedData = req.body;
+      const updatePresentations = await updatePresentation(
+        email,
+        presentationId,
+        updatedData
+      );
+      return res.json({ presentations: updatePresentations });
+    })
+  )
+);
 
 /***************************************************************
                        Running Server
