@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import HeaherPresent from "../components/HeaherPresent";
+import { Button, Flex, Layout, Modal, Input } from 'antd';
+const { Sider, Header, Content } = Layout;
 
 function PresentationPage() {
   return (
-    <div>PresentationPage</div>
-  )
+    <HeaherPresent />
+  );
 }
 
-export default PresentationPage
+export default PresentationPage;

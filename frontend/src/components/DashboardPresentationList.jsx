@@ -92,8 +92,7 @@ const DashboardPresentationList = ({ presentations = [] }) => {
                   key="edit"
                   onClick={() => {
                     console.log("Edit presentation", presentation.id);
-                    navigate(`/edit/${presentation.id}`);
-                    // navigateTO(`/edit/${presentation.id}`);
+                    navigate(`/presentation/${presentation.id}`);
                     console.log("navigate TO NEW PAGE");
                   }}
                 />,
