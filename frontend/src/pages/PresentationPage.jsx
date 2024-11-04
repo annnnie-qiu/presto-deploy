@@ -42,11 +42,8 @@ const Tooltips = () => {
               <Button>
                 <PlusCircleOutlined />
               </Button>
-              <Button>
-                <DeleteOutlined />
-              </Button>
             </Tooltip>
-            {/* <Tooltip
+            <Tooltip
               placement="right"
               title={"delete slide"}
               arrow={mergedArrow}
@@ -54,7 +51,7 @@ const Tooltips = () => {
               <Button>
                 <DeleteOutlined />
               </Button>
-            </Tooltip> */}
+            </Tooltip>
           </Flex>
         </Flex>
       </Flex>
