@@ -1,18 +1,55 @@
 import React from "react";
-import { Button, Flex, Typography, Row, Col } from "antd";
+import { Button, Flex, Typography, Row, Col, Modal, Input } from "antd";
 import { Avatar, Card } from "antd";
 import {
   EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const { Meta } = Card;
 
 const DashboardPresentationList = ({ presentations = [] }) => {
-  // Styles moved to the top
   const navigate = useNavigate();
+
+  // State for modal visibiliy and currently selected presentation
+  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const [currentPresentation, setCurrentPresentation] = React.useState(null);
+  const [presentationUpdates, setPresentationUpdates] = React.useState({
+    name: "",
+    description: "",
+  });
+
+  // Function to naviagte to the specific presentation page
+  const handleCardClick = (id) => {
+    navigate(`/presentation/${id}`)
+  };
+
+  const handleEditClick = (e, presentation) => {
+    // Prevent navigation when the edit icon is clicked
+    e.stopPropagation();
+    setCurrentPresentation(presentation);
+    setPresentationUpdates({
+      name: presentation.name,
+      description: presentation.description,
+    });
+    setIsModalVisible(true);
+  };
+
+  // Function to handle input changes in the modal
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPresentationUpdates((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Function to handle modal save
+  const handleSave = () => {
+    if (currentPresentation) {
+      currentPresentation.name = presentationUpdates.name;
+      currentPresentation.description = presentationUpdates.description;
+    }
+    setIsModalVisible(false);
+  };
+
   const styles = {
     headerFlex: {
       alignItems: "center",
@@ -25,13 +62,22 @@ const DashboardPresentationList = ({ presentations = [] }) => {
       display: "flex",
       justifyContent: "center",
     },
+    cardWrapper: {
+      width: '100%',
+      aspectRatio: '2 / 1',
+      minWidth: '100px',
+      position: 'relative',
+    },
     card: {
-      width: "100%",
-      aspectRatio: "2 / 1",
-      minWidth: "100px",
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
+      top: 0,
+      left: 0,
     },
     cardCoverContainer: (hasThumbnail) => ({
       backgroundColor: hasThumbnail ? "transparent" : "#ccc",
+      marginTop: '0px',
       height: "50%",
       display: "flex",
       alignItems: "center",
@@ -69,54 +115,73 @@ const DashboardPresentationList = ({ presentations = [] }) => {
             xl={4}
             style={styles.col}
           >
-            <Card
-              style={styles.card}
-              cover={
-                <div
-                  style={styles.cardCoverContainer(!!presentation.thumbnail)}
-                >
-                  {presentation.thumbnail ? (
-                    <img
-                      alt={presentation.name}
-                      src={presentation.thumbnail}
-                      style={styles.cardImage}
-                    />
-                  ) : (
-                    <div style={styles.emptyThumbnail}></div>
-                  )}
-                </div>
-              }
-              actions={[
-                <SettingOutlined key="setting" />,
-                <EditOutlined
-                  key="edit"
-                  onClick={() => {
-                    console.log("Edit presentation", presentation.id);
-                    navigate(`/presentation/${presentation.id}`);
-                    console.log("navigate TO NEW PAGE");
-                  }}
-                />,
-                <EllipsisOutlined key="ellipsis" />,
-              ]}
-            >
-              <Meta
-                avatar={
-                  <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
+            <div style={styles.cardWrapper}>
+              <Card
+                onClick={() => handleCardClick(presentation.id)}
+                hoverable
+                style={styles.card}
+                cover={
+                  <div
+                    style={styles.cardCoverContainer(!!presentation.thumbnail)}
+                  >
+                    {presentation.thumbnail ? (
+                      <img
+                        alt={presentation.name}
+                        src={presentation.thumbnail}
+                        style={styles.cardImage}
+                      />
+                    ) : (
+                      <div style={styles.emptyThumbnail}></div>
+                    )}
+                  </div>
                 }
-                title={presentation.name}
-                description={
-                  <>
-                    <div>
-                      {presentation.description || "No description available"}
-                    </div>
-                    <div>Slides: {presentation.numSlides}</div>
-                  </>
-                }
+              >
+                <Meta
+                  avatar={
+                    <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
+                  }
+                  title={presentation.name}
+                  description={
+                    <>
+                      <div>
+                        {presentation.description || "No description available"}
+                      </div>
+                      <div>Slides: {presentation.numSlides}</div>
+                    </>
+                  }
+                />
+              </Card>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(e) => handleEditClick(e, presentation)} // Prevents navigation when icon is clicked
               />
-            </Card>
+            </div>
           </Col>
         ))}
       </Row>
+      {/* Modal for quick editing presentation details */}
+      <Modal
+        title="Modify the name or description?"
+        open={isModalVisible}
+        onOk={handleSave}
+        onCancel={() => setIsModalVisible(false)}
+        okText="Save"
+      >
+        <Input
+          name="name"
+          placeholder="Enter presentation name"
+          value={presentationUpdates.name}
+          onChange={handleInputChange}
+        />
+        <Input.TextArea
+          name="description"
+          placeholder="Enter presentation description"
+          value={presentationUpdates.description}
+          onChange={handleInputChange}
+          rows={4}
+        />
+      </Modal>
     </>
   );
 };

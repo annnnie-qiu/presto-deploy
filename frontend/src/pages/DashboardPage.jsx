@@ -12,13 +12,14 @@ const { Sider, Header, Content } = Layout;
 function DashboardPage() {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const [collapsed, setCollapsed] = useState(false);
-  const [presentations, setPresentations] = useState([
+  const [collapsed, setCollapsed] = React.useState(false);
+  const [presentations, setPresentations] = React.useState([
     {
+      id: 1,
       name: 'Presentation 1',
       thumbnail: '',
-      description: 'This is the description of Presentation 1',
-      numSlides: 5,
+      description: 'This is the description',
+      numSlides: 1,
     },
   ]);
 
@@ -72,6 +73,7 @@ function DashboardPage() {
     if (newPresentationName.trim() === '') return;
 
     const newPresentation = {
+      id: presentations.length + 1,
       name: newPresentationName,
       thumbnail: '',
       description: '',
