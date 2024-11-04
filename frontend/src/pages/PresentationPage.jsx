@@ -8,7 +8,7 @@ import Sidebar from "../components/Sidebar";
 import { ConfigProvider, Segmented, Tooltip } from "antd";
 import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 
-const Tooltips = () => {
+const Tooltips = (setCurrentSlides) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
     if (arrow === "Hide") {
@@ -21,6 +21,7 @@ const Tooltips = () => {
       pointAtCenter: true,
     };
   }, [arrow]);
+
   return (
     <ConfigProvider
       button={{
@@ -37,6 +38,18 @@ const Tooltips = () => {
             <Tooltip
               placement="rightTop"
               title={"add a new slide"}
+              onClick={() => {
+                console.log("add a new slide");
+                setCurrentSlides((currentSlides) => {
+                  return [
+                    ...currentSlides,
+                    {
+                      slideId: currentSlides.length + 1,
+                      content: "",
+                    },
+                  ];
+                });
+              }}
               arrow={mergedArrow}
             >
               <Button>
@@ -59,24 +72,38 @@ const Tooltips = () => {
   );
 };
 
-// TODO: Implement the DescList component - hard code
-const currentSlides = [
-  {
-    id: 1,
-    content: "Slide 1",
-  },
-];
-
-const DescList = (props) => (
+const DescList = ({
+  currentSlides,
+  setCurrentSlides,
+  selectedSlideId,
+  setSelectedSlideId,
+}) => (
   <div className="flex h-full w-full">
     <div className="grow flex flex-col gap-2 items-center h-full py-2">
       {currentSlides.map((slide) => (
-        <div key={slide.id} className="bg-red-300 h-24 w-3/4 rounded-lg">
-          {slide.content}
+        <div
+          key={slide.slideId}
+          className="flex w-full h-24 justify-center items-center gap-2"
+        >
+          {/* TODO: Implement the DescSlide component - hard code */}
+          <div className=" self-start pt-2 ">{slide.slideId}</div>
+
+          <div
+            onClick={() => {
+              setSelectedSlideId(slide.slideId);
+            }}
+            className={`bg-white h-24 w-3/4 rounded-lg border-solid border-2 ${
+              selectedSlideId === slide.slideId
+                ? "border-blue-500"
+                : "border-inherit"
+            }`}
+          >
+            {slide.content}
+          </div>
         </div>
       ))}
     </div>
-    <div className=" w-8 h-ful">{Tooltips()}</div>
+    <div className=" w-8 h-ful">{Tooltips(setCurrentSlides)}</div>
   </div>
 );
 
@@ -102,6 +129,16 @@ const DescSlide = (props) => (
 
 function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
+  const [selectedSlideId, setSelectedSlideId] = useState(1);
+
+  // TODO: Implement the DescList component - hard code
+  const [currentSlides, setCurrentSlides] = React.useState([
+    {
+      slideId: 1,
+      content: "",
+    },
+  ]);
+
   const styles = {
     sider: {
       height: "100vh",
@@ -157,7 +194,12 @@ function PresentationPage() {
             }}
           >
             <Splitter.Panel defaultSize="20%" min="20%" max="70%">
-              <DescList text="First" />
+              <DescList
+                currentSlides={currentSlides}
+                setCurrentSlides={setCurrentSlides}
+                selectedSlideId={selectedSlideId}
+                setSelectedSlideId={setSelectedSlideId}
+              />
             </Splitter.Panel>
             {/* add a tooltip */}
 
