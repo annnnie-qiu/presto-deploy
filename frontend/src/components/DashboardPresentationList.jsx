@@ -3,12 +3,15 @@ import { Button, Flex, Typography, Row, Col, Modal, Input } from "antd";
 import { Avatar, Card } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+// import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { apiCall } from "../../utils/API/apiCall";
+import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
 
 const { Meta } = Card;
 
-const DashboardPresentationList = ({ presentations = [] }) => {
+const DashboardPresentationList = ({ presentations = [], setPresentations, refetchPresentations }) => {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   // State for modal visibiliy and currently selected presentation
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -41,20 +44,25 @@ const DashboardPresentationList = ({ presentations = [] }) => {
   };
 
   // Function to handle modal save
-  const handleSave = () => {
+  const handleSave = async () => {
     if (currentPresentation) {
-      currentPresentation.name = presentationUpdates.name;
-      currentPresentation.description = presentationUpdates.description;
+      try {
+        const updatedPresentation = {
+          ...currentPresentation,
+          name: presentationUpdates.name,
+          description: presentationUpdates.description,
+        };
+
+        // Use PUT to update the presentation via the API
+        await apiCall("PUT", `presentations/${currentPresentation.id}`, updatedPresentation, "", token);
+
+        await refetchPresentations();
+        showSuccessToast("Presentation updated successfully!");
+      } catch (error) {
+        console.error("Error updating presentation:", error);
+        showErrorToast("Failed to update the presentation.");
+      }
     }
-    // send the updated presentation to the backend
-    const token = localStorage.getItem("token");
-    sendDetail(
-      token,
-      currentPresentation.id,
-      presentationUpdates.name,
-      presentationUpdates.description,
-      currentPresentation.thumbnail
-    );
     setIsModalVisible(false);
   };
 
@@ -124,47 +132,53 @@ const DashboardPresentationList = ({ presentations = [] }) => {
 
       {/* Grid layout for consistent spacing without overlapping */}
       <div style={styles.gridContainer}>
-        {presentations.map((presentation) => (
-          <div key={presentation.id} style={styles.cardWrapper}>
-            <Card
-              onClick={() => handleCardClick(presentation.id)}
-              hoverable
-              style={styles.card}
-            >
-              <Meta
-                avatar={
-                  presentation.thumbnail ? (
-                    <Avatar
-                      shape="square"
-                      src={presentation.thumbnail}
-                      alt={presentation.name}
-                      style={styles.thumbnail}
-                    />
-                  ) : (
-                    <Avatar shape="square" style={styles.emptyThumbnail} />
-                  )
-                }
-                title={presentation.name}
-                description={
-                  <>
-                    <div style={styles.description}>
-                      {presentation.description || "No description available"}
-                    </div>
-                    <div style={styles.numSlides}>
-                      Slides: {presentation.numSlides}
-                    </div>
-                  </>
-                }
-              />
-            </Card>
-            <Button
-              style={styles.editBtn}
-              type="text"
-              icon={<EditOutlined />}
-              onClick={(e) => handleEditClick(e, presentation)} // Prevents navigation when icon is clicked
-            />
-          </div>
-        ))}
+        {presentations.length > 0 ? (
+          presentations.map((presentation, index) => (
+            presentation ? (
+              <div key={`${presentation.id}-${index}`} style={styles.cardWrapper}>
+                <Card
+                  onClick={() => handleCardClick(presentation.id)}
+                  hoverable
+                  style={styles.card}
+                >
+                  <Meta
+                    avatar={
+                      presentation.thumbnail ? (
+                        <Avatar
+                          shape="square"
+                          src={presentation.thumbnail}
+                          alt={presentation.name}
+                          style={styles.thumbnail}
+                        />
+                      ) : (
+                        <Avatar shape="square" style={styles.emptyThumbnail} />
+                      )
+                    }
+                    title={presentation.name || "Untitled Presentation"}
+                    description={
+                      <>
+                        <div style={styles.description}>
+                          {presentation.description || "No description available"}
+                        </div>
+                        <div style={styles.numSlides}>
+                          Slides: {presentation.numSlides || 0}
+                        </div>
+                      </>
+                    }
+                  />
+                </Card>
+                <Button
+                  style={styles.editBtn}
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={(e) => handleEditClick(e, presentation)}
+                />
+              </div>
+            ) : null
+          ))
+        ) : (
+          <Typography.Text>No presentations available. Create a new one!</Typography.Text>
+        )}
       </div>
 
       {/* Modal for quick editing presentation details */}

@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ToastNotification from '../components/ToastNotification';
 import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
+import { apiCall } from "../../utils/API/apiCall";
 // import DashboardSideContent from '../components/DashboardSideContent';
 
 const { Sider, Header, Content } = Layout;
@@ -19,25 +20,44 @@ function DashboardPage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [collapsed, setCollapsed] = React.useState(false);
-  const [presentations, setPresentations] = React.useState([
-    {
-      id: 1,
-      name: "Presentation 1",
-      thumbnail: "",
-      description: "This is the description",
-      numSlides: 1,
-    },
-  ]);
+  // const [presentations, setPresentations] = React.useState([
+  //   {
+  //     id: 1,
+  //     name: "Presentation 1",
+  //     thumbnail: "",
+  //     description: "This is the description",
+  //     numSlides: 1,
+  //   },
+  // ]);
+  const [presentations, setPresentations] = React.useState([]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newPresentationName, setNewPresentationName] = useState("");
 
-  // React.useEffect(() => {
-  //   // If no token is found, navigate back to the login page.
-  //   if (!token) {
-  //     navigate('/login')
-  //   }
-  // });
+  // Fetch presentations when the component loads
+  React.useEffect(() => {
+    // If no token is found, navigate back to the login page.
+    if (!token) {
+      navigate('/login');
+    } else {
+      refetchPresentations(); // Fetch presentations when the component mounts
+    }
+  }, [token]);
+
+  // Function to refetch presentations
+  const refetchPresentations = async () => {
+    try {
+      console.log("Refetch presentations called");
+      const response = await apiCall("GET", "presentations", {}, "", token);
+      console.log("Response from /presentations:", response);
+      if (response.presentations) {
+        setPresentations(response.presentations);
+      }
+    } catch (error) {
+      console.error("Error fetching presentations:", error);
+      showErrorToast("Failed to load presentations");
+    }
+  };
 
   const styles = {
     layout: {
@@ -90,23 +110,20 @@ function DashboardPage() {
       description: "",
       numSlides: 1,
     };
-    setPresentations([...presentations, newPresentation]);
+    try {
+      // Use POST to create a new presentation via the API
+      const response = await apiCall("POST", "presentations", newPresentation, "", token);
+      refetchPresentations();
+      // Update state with the newly created presentation from the response
+      setPresentations([...presentations, response.newPresentation]);
+      showSuccessToast('🦄 Presentation created successfully!');
+    } catch (error) {
+      console.error("Error creating presentation:", error);
+      showErrorToast("Failed to create the presentation.");
+    }
+
     setIsModalVisible(false);
     setNewPresentationName(""); // Reset input
-
-    // Show a success toast after the presentation is created
-    showSuccessToast('🦄 Presentation created successfully!')
-
-    await sendDetail(
-      token,
-      newPresentation.id,
-      newPresentation.name,
-      newPresentation.description,
-      newPresentation.thumbnail
-    );
-    // TODO: delete this only for testing if GET request works
-    // console.log("New presentation created:", newPresentation);
-    // await getDetail(token);
   };
 
   return (
@@ -136,6 +153,8 @@ function DashboardPage() {
             <DashboardMainContent
               presentations={presentations}
               onCreate={showModal}
+              setPresentations={setPresentations}
+              refetchPresentations={refetchPresentations}
             />
             {/* <DashboardSideContent /> */}
           </Flex>

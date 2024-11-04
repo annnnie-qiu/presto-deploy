@@ -2,6 +2,8 @@ import AsyncLock from "async-lock";
 import fs from "fs";
 import jwt from "jsonwebtoken";
 import { AccessError, InputError } from "./error";
+import { resolve } from "path";
+import { rejects } from "assert";
 
 const lock = new AsyncLock();
 
@@ -152,3 +154,4 @@ export const setStore = (email, store) =>
     admins[email].store = store;
     resolve();
   });
+
