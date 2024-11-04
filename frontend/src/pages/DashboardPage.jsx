@@ -34,20 +34,9 @@ function DashboardPage() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newPresentationName, setNewPresentationName] = useState("");
 
-  // Fetch presentations when the component loads
-  React.useEffect(() => {
-    // If no token is found, navigate back to the login page.
-    if (!token) {
-      navigate('/login');
-    } else {
-      refetchPresentations(); // Fetch presentations when the component mounts
-    }
-  }, [token]);
-
   // Function to refetch presentations
-  const refetchPresentations = async () => {
+  const refetchPresentations = React.useCallback(async () => {
     try {
-      console.log("Refetch presentations called");
       const response = await apiCall("GET", "presentations", {}, "", token);
       console.log("Response from /presentations:", response);
       if (response.presentations) {
@@ -57,7 +46,18 @@ function DashboardPage() {
       console.error("Error fetching presentations:", error);
       showErrorToast("Failed to load presentations");
     }
-  };
+  }, [token, setPresentations]);
+
+  // Fetch presentations when the component loads
+  React.useEffect(() => {
+    // If no token is found, navigate back to the login page.
+    if (!token) {
+      navigate('/login');
+    } else {
+      refetchPresentations(); // Fetch presentations when the component mounts
+    }
+  }, [token, navigate, refetchPresentations]);
+  
 
   const styles = {
     layout: {
