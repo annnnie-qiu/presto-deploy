@@ -1,9 +1,7 @@
 import React from "react";
 import { Button, Flex, Typography, Row, Col, Modal, Input } from "antd";
 import { Avatar, Card } from "antd";
-import {
-  EditOutlined,
-} from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const { Meta } = Card;
@@ -21,7 +19,7 @@ const DashboardPresentationList = ({ presentations = [] }) => {
 
   // Function to naviagte to the specific presentation page
   const handleCardClick = (id) => {
-    navigate(`/presentation/${id}`)
+    navigate(`/presentation/${id}`);
   };
 
   const handleEditClick = (e, presentation) => {
@@ -63,15 +61,15 @@ const DashboardPresentationList = ({ presentations = [] }) => {
       justifyContent: "center",
     },
     cardWrapper: {
-      width: '100%',
-      aspectRatio: '2 / 1',
-      minWidth: '100px',
-      position: 'relative',
+      width: "100%",
+      aspectRatio: "2 / 1",
+      minWidth: "100px",
+      position: "relative",
     },
     card: {
-      width: '100%',
-      height: '100%',
-      position: 'absolute',
+      width: "100%",
+      height: "100%",
+      position: "absolute",
       top: 0,
       left: 0,
     },
@@ -127,16 +125,15 @@ const DashboardPresentationList = ({ presentations = [] }) => {
                         style={styles.thumbnail}
                       />
                     ) : (
-                      <Avatar
-                        shape="square"
-                        style={styles.emptyThumbnail}
-                      />
+                      <Avatar shape="square" style={styles.emptyThumbnail} />
                     )
                   }
                   title={presentation.name}
                   description={
                     <>
-                      <div>{presentation.description || "No description available"}</div>
+                      <div>
+                        {presentation.description || "No description available"}
+                      </div>
                       <div>Slides: {presentation.numSlides}</div>
                     </>
                   }

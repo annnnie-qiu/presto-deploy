@@ -9,10 +9,10 @@ export async function apiCall(
   const BASE_URL = "http://localhost:5005";
 
   // Set the target address with query string for GET and DELETE
-  const targetAddress =
-    method === "GET"
-      ? `${BASE_URL}/${endpoint}?${queryString}`
-      : `${BASE_URL}/${endpoint}`;
+  const targetAddress = `${BASE_URL}/${endpoint}`;
+  // method === "GET"
+  //   ? `${BASE_URL}/${endpoint}?${queryString}`
+  //   : `${BASE_URL}/${endpoint}`;
 
   // Set the headers and method for the request
   const fetchOptions = {
@@ -26,6 +26,7 @@ export async function apiCall(
   if (method !== "GET") {
     fetchOptions.body = JSON.stringify(body);
   }
+  console.log("fetchOptions:", fetchOptions);
 
   try {
     const response = await fetch(targetAddress, fetchOptions);
