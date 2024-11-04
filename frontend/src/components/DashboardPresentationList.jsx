@@ -60,30 +60,31 @@ const DashboardPresentationList = ({ presentations = [] }) => {
 
   const styles = {
     headerFlex: {
+      display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
+      marginBottom: "20px",
     },
-    row: {
+    gridContainer: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(100px, 300px))",
+      gap: "24px",
       marginTop: "20px",
-    },
-    col: {
-      display: "flex",
-      justifyContent: "center",
     },
     cardWrapper: {
       width: "100%",
       aspectRatio: "2 / 1",
-      minWidth: "200px",
       position: "relative",
       display: "flex",
       flexDirection: "column",
-      marginBottom: "16px",
+      overflow: "hidden",
+      maxWidth: "400px",
     },
     card: {
       width: "100%",
       height: "100%",
       position: "relative",
-      overflow: "hidden",
+      // overflow: "hidden",
       flex: "1 1 auto",
     },
     thumbnail: {
@@ -114,66 +115,58 @@ const DashboardPresentationList = ({ presentations = [] }) => {
 
   return (
     <>
-      <Flex style={styles.headerFlex}>
+      <div style={styles.headerFlex}>
         <Typography.Title level={3} strong>
           Your Presentation List
         </Typography.Title>
         <Button type="link">View All</Button>
-      </Flex>
+      </div>
 
-      <Row gutter={[16, 16]} style={styles.row}>
+      {/* Grid layout for consistent spacing without overlapping */}
+      <div style={styles.gridContainer}>
         {presentations.map((presentation) => (
-          <Col
-            key={presentation.id}
-            xs={24}
-            sm={12}
-            md={8}
-            lg={6}
-            xl={4}
-            style={styles.col}
-          >
-            <div style={styles.cardWrapper}>
-              <Card
-                onClick={() => handleCardClick(presentation.id)}
-                hoverable
-                style={styles.card}
-              >
-                <Meta
-                  avatar={
-                    presentation.thumbnail ? (
-                      <Avatar
-                        shape="square"
-                        src={presentation.thumbnail}
-                        alt={presentation.name}
-                        style={styles.thumbnail}
-                      />
-                    ) : (
-                      <Avatar shape="square" style={styles.emptyThumbnail} />
-                    )
-                  }
-                  title={presentation.name}
-                  description={
-                    <>
-                      <div style={styles.description}>
-                        {presentation.description || "No description available"}
-                      </div>
-                      <div style={styles.numSlides}>
-                        Slides: {presentation.numSlides}
-                      </div>
-                    </>
-                  }
-                />
-              </Card>
-              <Button
-                style={styles.editBtn}
-                type="text"
-                icon={<EditOutlined />}
-                onClick={(e) => handleEditClick(e, presentation)} // Prevents navigation when icon is clicked
+          <div key={presentation.id} style={styles.cardWrapper}>
+            <Card
+              onClick={() => handleCardClick(presentation.id)}
+              hoverable
+              style={styles.card}
+            >
+              <Meta
+                avatar={
+                  presentation.thumbnail ? (
+                    <Avatar
+                      shape="square"
+                      src={presentation.thumbnail}
+                      alt={presentation.name}
+                      style={styles.thumbnail}
+                    />
+                  ) : (
+                    <Avatar shape="square" style={styles.emptyThumbnail} />
+                  )
+                }
+                title={presentation.name}
+                description={
+                  <>
+                    <div style={styles.description}>
+                      {presentation.description || "No description available"}
+                    </div>
+                    <div style={styles.numSlides}>
+                      Slides: {presentation.numSlides}
+                    </div>
+                  </>
+                }
               />
-            </div>
-          </Col>
+            </Card>
+            <Button
+              style={styles.editBtn}
+              type="text"
+              icon={<EditOutlined />}
+              onClick={(e) => handleEditClick(e, presentation)} // Prevents navigation when icon is clicked
+            />
+          </div>
         ))}
-      </Row>
+      </div>
+
       {/* Modal for quick editing presentation details */}
       <Modal
         title="Modify the name or description?"

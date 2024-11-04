@@ -7,6 +7,10 @@ import CustomHeader from "../components/Header";
 import DashboardMainContent from "../components/DashboardMainContent";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ToastNotification from '../components/ToastNotification';
+import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
 // import DashboardSideContent from '../components/DashboardSideContent';
 
 const { Sider, Header, Content } = Layout;
@@ -74,7 +78,10 @@ function DashboardPage() {
   };
 
   const handleCreateNewPresentation = async () => {
-    if (newPresentationName.trim() === "") return;
+    if (newPresentationName.trim() === "") {
+      showErrorToast('Please provide a name for your new presentation.')
+      return;
+    };
 
     const newPresentation = {
       id: presentations.length + 1,
@@ -86,6 +93,10 @@ function DashboardPage() {
     setPresentations([...presentations, newPresentation]);
     setIsModalVisible(false);
     setNewPresentationName(""); // Reset input
+
+    // Show a success toast after the presentation is created
+    showSuccessToast('🦄 Presentation created successfully!')
+
     await sendDetail(
       token,
       newPresentation.id,
@@ -145,6 +156,9 @@ function DashboardPage() {
           onChange={(e) => setNewPresentationName(e.target.value)}
         />
       </Modal>
+
+      {/* Include ToastNotification to handle toast notifications */}
+      <ToastNotification />
     </Layout>
   );
 }
