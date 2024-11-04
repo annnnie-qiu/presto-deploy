@@ -75,18 +75,14 @@ const DashboardPresentationList = ({ presentations = [] }) => {
       top: 0,
       left: 0,
     },
-    cardCoverContainer: (hasThumbnail) => ({
-      backgroundColor: hasThumbnail ? "transparent" : "#ccc",
-      marginTop: '0px',
-      height: "50%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }),
+    thumbnail: {
+      width: 45,
+      height: 45,
+    },
     emptyThumbnail: {
-      width: "80%",
-      height: "80%",
-      backgroundColor: "gray",
+      width: 45,
+      height: 45,
+      backgroundColor: "#ccc",
     },
     cardImage: {
       width: "100%",
@@ -120,32 +116,27 @@ const DashboardPresentationList = ({ presentations = [] }) => {
                 onClick={() => handleCardClick(presentation.id)}
                 hoverable
                 style={styles.card}
-                cover={
-                  <div
-                    style={styles.cardCoverContainer(!!presentation.thumbnail)}
-                  >
-                    {presentation.thumbnail ? (
-                      <img
-                        alt={presentation.name}
-                        src={presentation.thumbnail}
-                        style={styles.cardImage}
-                      />
-                    ) : (
-                      <div style={styles.emptyThumbnail}></div>
-                    )}
-                  </div>
-                }
               >
                 <Meta
                   avatar={
-                    <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />
+                    presentation.thumbnail ? (
+                      <Avatar
+                        shape="square"
+                        src={presentation.thumbnail}
+                        alt={presentation.name}
+                        style={styles.thumbnail}
+                      />
+                    ) : (
+                      <Avatar
+                        shape="square"
+                        style={styles.emptyThumbnail}
+                      />
+                    )
                   }
                   title={presentation.name}
                   description={
                     <>
-                      <div>
-                        {presentation.description || "No description available"}
-                      </div>
+                      <div>{presentation.description || "No description available"}</div>
                       <div>Slides: {presentation.numSlides}</div>
                     </>
                   }
