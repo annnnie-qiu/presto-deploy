@@ -134,6 +134,8 @@ function RegisterPage() {
                 value={confirmPassword}
                 onChange={(text) => {
                   setConfirmPassword(text.target.value);
+                }}
+                onBlur={() => {
                   if (password !== confirmPassword) {
                     // TODO: not sure is error pop up or not
                     errorPopUp("Error", "Passwords do not match");
