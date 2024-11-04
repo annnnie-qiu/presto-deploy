@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Flex, Typography, Row, Col, Modal, Input } from "antd";
+import { Button, Typography, Modal, Input } from "antd";
 import { Avatar, Card } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +9,7 @@ import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
 
 const { Meta } = Card;
 
-const DashboardPresentationList = ({ presentations = [], setPresentations, refetchPresentations }) => {
+const DashboardPresentationList = ({ presentations = [], refetchPresentations }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
