@@ -65,15 +65,18 @@ const DashboardPresentationList = ({ presentations = [] }) => {
     cardWrapper: {
       width: '100%',
       aspectRatio: '2 / 1',
-      minWidth: '100px',
+      minWidth: '200px',
       position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+      marginBottom: '16px',
     },
     card: {
       width: '100%',
       height: '100%',
-      position: 'absolute',
-      top: 0,
-      left: 0,
+      position: 'relative',
+      overflow: 'hidden',
+      flex: '1 1 auto',
     },
     thumbnail: {
       width: 45,
@@ -84,11 +87,21 @@ const DashboardPresentationList = ({ presentations = [] }) => {
       height: 45,
       backgroundColor: "#ccc",
     },
-    cardImage: {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
+    description: {
+      maxHeight: '40px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
     },
+    numSlides: {
+      maxHeight: '40px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
+    editBtn: {
+      marginTop: '-30px',
+    }
   };
 
   return (
@@ -136,13 +149,19 @@ const DashboardPresentationList = ({ presentations = [] }) => {
                   title={presentation.name}
                   description={
                     <>
-                      <div>{presentation.description || "No description available"}</div>
-                      <div>Slides: {presentation.numSlides}</div>
+                      <div
+                        style={styles.description}
+                      >
+                        {presentation.description || "No description available"}</div>
+                      <div style={styles.numSlides}>
+                        Slides: {presentation.numSlides}
+                      </div>
                     </>
                   }
                 />
               </Card>
               <Button
+                style={styles.editBtn}
                 type="text"
                 icon={<EditOutlined />}
                 onClick={(e) => handleEditClick(e, presentation)} // Prevents navigation when icon is clicked

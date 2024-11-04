@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, Menu } from 'antd';
 import PrestoLogo from "../assets/Presto.png";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   UserOutlined,
@@ -36,6 +36,24 @@ const Sidebar = () => {
   };
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Highlight the appropriate menu item based on the current route
+  const getSelectedKey = () => {
+    if (location.pathname.startsWith('/presentation')) {
+      return '2';
+    }
+    switch (location.pathname) {
+    case '/dashboard':
+      return '1';
+    case '/profile':
+      return '3';
+    case '/setting':
+      return '4';
+    default:
+      return '';
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -57,7 +75,7 @@ const Sidebar = () => {
 
       <StyledMenu 
         mode="inline" 
-        defaultSelectedKeys={['1']} 
+        selectedKeys={[getSelectedKey()]}
         style={styles.menubar} 
         items={[
           {
