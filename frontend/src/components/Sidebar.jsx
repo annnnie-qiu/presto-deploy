@@ -42,6 +42,10 @@ const Sidebar = () => {
     navigate('/');
   };
 
+  const handleDashboard = () => {
+    navigate('/dashboard');
+  }
+
   return (
     <>
       <Flex align="center" justify="center">
@@ -60,6 +64,7 @@ const Sidebar = () => {
             key: '1',
             icon: <UserOutlined />,
             label: 'Dashboard',
+            onClick: handleDashboard,
           },
           {
             key: '2',
