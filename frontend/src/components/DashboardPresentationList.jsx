@@ -1,9 +1,7 @@
 import React from "react";
 import { Button, Flex, Typography, Row, Col, Modal, Input } from "antd";
 import { Avatar, Card } from "antd";
-import {
-  EditOutlined,
-} from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const { Meta } = Card;
@@ -21,7 +19,7 @@ const DashboardPresentationList = ({ presentations = [] }) => {
 
   // Function to naviagte to the specific presentation page
   const handleCardClick = (id) => {
-    navigate(`/presentation/${id}`)
+    navigate(`/presentation/${id}`);
   };
 
   const handleEditClick = (e, presentation) => {
@@ -140,10 +138,7 @@ const DashboardPresentationList = ({ presentations = [] }) => {
                         style={styles.thumbnail}
                       />
                     ) : (
-                      <Avatar
-                        shape="square"
-                        style={styles.emptyThumbnail}
-                      />
+                      <Avatar shape="square" style={styles.emptyThumbnail} />
                     )
                   }
                   title={presentation.name}
