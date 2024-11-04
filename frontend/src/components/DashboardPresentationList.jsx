@@ -1,14 +1,17 @@
 import React from "react";
-import { Button, Flex, Typography, Row, Col, Modal, Input } from "antd";
+import { Button, Typography, Modal, Input } from "antd";
 import { Avatar, Card } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+// import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { apiCall } from "../../utils/API/apiCall";
+import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
 
 const { Meta } = Card;
 
-const DashboardPresentationList = ({ presentations = [] }) => {
+const DashboardPresentationList = ({ presentations = [], refetchPresentations }) => {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   // State for modal visibiliy and currently selected presentation
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -41,49 +44,55 @@ const DashboardPresentationList = ({ presentations = [] }) => {
   };
 
   // Function to handle modal save
-  const handleSave = () => {
+  const handleSave = async () => {
     if (currentPresentation) {
-      currentPresentation.name = presentationUpdates.name;
-      currentPresentation.description = presentationUpdates.description;
+      try {
+        const updatedPresentation = {
+          ...currentPresentation,
+          name: presentationUpdates.name,
+          description: presentationUpdates.description,
+        };
+
+        // Use PUT to update the presentation via the API
+        await apiCall("PUT", `presentations/${currentPresentation.id}`, updatedPresentation, "", token);
+
+        await refetchPresentations();
+        showSuccessToast("Presentation updated successfully!");
+      } catch (error) {
+        console.error("Error updating presentation:", error);
+        showErrorToast("Failed to update the presentation.");
+      }
     }
-    // send the updated presentation to the backend
-    const token = localStorage.getItem("token");
-    sendDetail(
-      token,
-      currentPresentation.id,
-      presentationUpdates.name,
-      presentationUpdates.description,
-      currentPresentation.thumbnail
-    );
     setIsModalVisible(false);
   };
 
   const styles = {
     headerFlex: {
+      display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
+      marginBottom: "20px",
     },
-    row: {
+    gridContainer: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(100px, 300px))",
+      gap: "24px",
       marginTop: "20px",
-    },
-    col: {
-      display: "flex",
-      justifyContent: "center",
     },
     cardWrapper: {
       width: "100%",
       aspectRatio: "2 / 1",
-      minWidth: "200px",
       position: "relative",
       display: "flex",
       flexDirection: "column",
-      marginBottom: "16px",
+      overflow: "hidden",
+      maxWidth: "400px",
     },
     card: {
       width: "100%",
       height: "100%",
       position: "relative",
-      overflow: "hidden",
+      // overflow: "hidden",
       flex: "1 1 auto",
     },
     thumbnail: {
@@ -114,66 +123,64 @@ const DashboardPresentationList = ({ presentations = [] }) => {
 
   return (
     <>
-      <Flex style={styles.headerFlex}>
+      <div style={styles.headerFlex}>
         <Typography.Title level={3} strong>
           Your Presentation List
         </Typography.Title>
         <Button type="link">View All</Button>
-      </Flex>
+      </div>
 
-      <Row gutter={[16, 16]} style={styles.row}>
-        {presentations.map((presentation) => (
-          <Col
-            key={presentation.id}
-            xs={24}
-            sm={12}
-            md={8}
-            lg={6}
-            xl={4}
-            style={styles.col}
-          >
-            <div style={styles.cardWrapper}>
-              <Card
-                onClick={() => handleCardClick(presentation.id)}
-                hoverable
-                style={styles.card}
-              >
-                <Meta
-                  avatar={
-                    presentation.thumbnail ? (
-                      <Avatar
-                        shape="square"
-                        src={presentation.thumbnail}
-                        alt={presentation.name}
-                        style={styles.thumbnail}
-                      />
-                    ) : (
-                      <Avatar shape="square" style={styles.emptyThumbnail} />
-                    )
-                  }
-                  title={presentation.name}
-                  description={
-                    <>
-                      <div style={styles.description}>
-                        {presentation.description || "No description available"}
-                      </div>
-                      <div style={styles.numSlides}>
-                        Slides: {presentation.numSlides}
-                      </div>
-                    </>
-                  }
+      {/* Grid layout for consistent spacing without overlapping */}
+      <div style={styles.gridContainer}>
+        {presentations.length > 0 ? (
+          presentations.map((presentation, index) => (
+            presentation ? (
+              <div key={`${presentation.id}-${index}`} style={styles.cardWrapper}>
+                <Card
+                  onClick={() => handleCardClick(presentation.id)}
+                  hoverable
+                  style={styles.card}
+                >
+                  <Meta
+                    avatar={
+                      presentation.thumbnail ? (
+                        <Avatar
+                          shape="square"
+                          src={presentation.thumbnail}
+                          alt={presentation.name}
+                          style={styles.thumbnail}
+                        />
+                      ) : (
+                        <Avatar shape="square" style={styles.emptyThumbnail} />
+                      )
+                    }
+                    title={presentation.name || "Untitled Presentation"}
+                    description={
+                      <>
+                        <div style={styles.description}>
+                          {presentation.description || "No description available"}
+                        </div>
+                        <div style={styles.numSlides}>
+                          Slides: {presentation.numSlides || 0}
+                        </div>
+                      </>
+                    }
+                  />
+                </Card>
+                <Button
+                  style={styles.editBtn}
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={(e) => handleEditClick(e, presentation)}
                 />
-              </Card>
-              <Button
-                style={styles.editBtn}
-                type="text"
-                icon={<EditOutlined />}
-                onClick={(e) => handleEditClick(e, presentation)} // Prevents navigation when icon is clicked
-              />
-            </div>
-          </Col>
-        ))}
-      </Row>
+              </div>
+            ) : null
+          ))
+        ) : (
+          <Typography.Text>No presentations available. Create a new one!</Typography.Text>
+        )}
+      </div>
+
       {/* Modal for quick editing presentation details */}
       <Modal
         title="Modify the name or description?"
