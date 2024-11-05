@@ -48,57 +48,45 @@ const Tooltips = (
               placement="rightTop"
               title={"add a new slide"}
               onClick={async () => {
-                console.log("add a new slide");
                 const token = localStorage.getItem("token");
                 const response = await getDetail(token);
-                console.log(response);
+                const { store } = response;
 
-                // Update the current slides array with the new slide
-                const numberOfSlides = currentSlides.length + 1;
-                const newSlideList = [];
-                let newSelectedSlideId = undefined;
-                // Insert a new slide after the current selected slide (selectedSlideId)
-                if (selectedSlideId === currentSlides.length) {
-                  newSelectedSlideId = currentSlides.length + 1;
-                  setCurrentSlides((current) => [
-                    ...current,
-                    { slideId: newSelectedSlideId, content: "" },
-                  ]);
-                } else {
-                  for (let i = 0; i < currentSlides.length; i++) {
-                    console.log(currentSlides[i]);
-                    newSlideList.push({
-                      slideId: i,
-                      content: currentSlides[i].content,
-                    });
+                // Find the next available slide ID from the store
+                const nextAvailableSlideId = store.presentations.find(
+                  (item) => item.id == presentationId
+                ).nextSlideId;
 
-                    if (currentSlides[i].slideId == selectedSlideId) {
-                      newSlideList.push({
-                        slideId: i + 1,
-                        content: "",
-                      });
-                      newSelectedSlideId = i + 1;
-                    }
-                  }
-                  setCurrentSlides(newSlideList);
-                }
+                // Find the index of the selected slide
+                const targetIndex = currentSlides.findIndex(
+                  (slide) => slide.slideId === selectedSlideId
+                );
 
-                setSelectedSlideId(newSelectedSlideId);
+                // Insert a new slide after it
+                const newSlideList = currentSlides
+                  .slice(0, targetIndex + 1)
+                  .concat({
+                    slideId: nextAvailableSlideId,
+                    content: "",
+                  })
+                  .concat(currentSlides.slice(targetIndex + 1));
+
+                setCurrentSlides(newSlideList);
+
+                setSelectedSlideId(nextAvailableSlideId);
+
                 // Find the corresponding presentation
                 // And update the numSlides and change the slides array to the latest version
-                // SendDetails is the new whole response
-                for (let i = 0; i < response.presentations.length; i++) {
-                  if (response.presentations[i].id == presentationId) {
-                    response.presentations[i].numSlides = numberOfSlides;
-                    response.presentations[i].slides = newSlideList;
-                    await sendDetail(
-                      token,
-                      presentationId,
-                      response.presentations[i]
-                    );
+                for (let i = 0; i < store.presentations.length; i++) {
+                  if (store.presentations[i].id == presentationId) {
+                    store.presentations[i].numSlides = nextAvailableSlideId;
+                    store.presentations[i].slides = newSlideList;
+                    store.presentations[i].nextSlideId =
+                      nextAvailableSlideId + 1;
                     break;
                   }
                 }
+                await sendDetail(token, store);
               }}
               arrow={mergedArrow}
             >
@@ -106,34 +94,50 @@ const Tooltips = (
                 <PlusCircleOutlined />
               </Button>
             </Tooltip>
+
             <Tooltip
               placement="right"
               title={"delete slide"}
               arrow={mergedArrow}
               onClick={async () => {
-                console.log("delete slide");
                 const token = localStorage.getItem("token");
                 const response = await getDetail(token);
-                console.log(response);
-                // check response is matching with presentationId
-                for (let i = 0; i < response.presentations.length; i++) {
-                  if (response.presentations[i].id == presentationId) {
-                    response.presentations[i].numSlides -= 1;
-                    await sendDetail(
-                      token,
-                      presentationId,
-                      response.presentations[i]
+                const { store } = response;
+
+                // Find the id of the next selected slide, if the current selected slide is the last slide, then the next slide is the previous slide
+                // Otherwise, the next slide is the next slide
+                const targetIndex = currentSlides.findIndex(
+                  (slide) => slide.slideId === selectedSlideId
+                );
+
+                // Find the next slide ID
+                let nextSlideId;
+                if (targetIndex === currentSlides.length - 1) {
+                  nextSlideId = currentSlides[targetIndex - 1].slideId;
+                } else {
+                  nextSlideId = currentSlides[targetIndex + 1].slideId;
+                }
+
+                // Find the corresponding presentation
+                for (let i = 0; i < store.presentations.length; i++) {
+                  if (store.presentations[i].id == presentationId) {
+                    // delete the slide with the given ID
+                    store.presentations[i].slides = store.presentations[
+                      i
+                    ].slides.filter(
+                      (slide) => slide.slideId != selectedSlideId
                     );
+                    // update the nextSlideId
+                    setCurrentSlides(store.presentations[i].slides);
+                    setSelectedSlideId(nextSlideId);
+
+                    // update the numSlides
+                    store.presentations[i].numSlides =
+                      store.presentations[i].slides.length;
+                    await sendDetail(token, store);
+                    break;
                   }
                 }
-                setCurrentSlides((currentSlides) => {
-                  console.log(currentSlides);
-                  // should be delete current slide
-                  return currentSlides.filter(
-                    (slide) => slide.slideId !== currentSlides.length
-                  );
-                  // console.log(currentSlides);
-                });
               }}
             >
               <Button>
@@ -156,13 +160,13 @@ const DescList = ({
 }) => (
   <div className="flex h-full w-full">
     <div className="grow flex flex-col gap-2 items-center h-full py-2">
-      {currentSlides.map((slide) => (
+      {currentSlides.map((slide, index) => (
         <div
           key={slide.slideId}
           className="flex w-full h-24 justify-center items-center gap-2"
         >
           {/* TODO: Implement the DescSlide component - hard code */}
-          <div className=" self-start pt-2 ">{slide.slideId}</div>
+          <div className=" self-end pb-2 ">{index + 1}</div>
 
           <div
             onClick={() => {
@@ -216,17 +220,16 @@ function PresentationPage() {
   const [selectedSlideId, setSelectedSlideId] = useState(1);
   const { presentationId } = useParams();
 
-  // TODO: Implement the DescList component - hard code
   // get the current slides from the backend
   React.useEffect(() => {
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
-      // Get the presentation with the given ID
-      const presentation = response.presentations.find(
+      const presentation = response.store.presentations.find(
         (presentation) => presentation.id == presentationId
       );
 
       // Get the current presentation and slides
+      console.log("这里: ", presentation);
       setCurrentPresentation(presentation);
       setCurrentSlides(presentation.slides);
     };
@@ -287,7 +290,6 @@ function PresentationPage() {
           <HeaherPresent />
         </Header>
         <Content style={styles.content}>
-          {/* check */}
           <Splitter
             style={{
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
@@ -302,7 +304,6 @@ function PresentationPage() {
                 presentationId={presentationId}
               />
             </Splitter.Panel>
-            {/* add a tooltip */}
 
             <Splitter.Panel>
               <DescSlide text="Second" />
