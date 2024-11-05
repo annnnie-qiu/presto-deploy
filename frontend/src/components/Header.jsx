@@ -4,7 +4,7 @@ import Search from 'antd/es/transfer/search';
 import { MessageOutlined, NotificationOutlined, UserOutlined} from '@ant-design/icons';
 import { FaMoon, FaSun } from "react-icons/fa";
 
-const CustomHeader = ({ darkMode, toggleDarkMode }) => {
+const CustomHeader = ({ darkMode, toggleDarkMode, style }) => {
   const styles = {
     headerIcon: {
       backgroundColor: '#d2e3c8',
@@ -21,11 +21,14 @@ const CustomHeader = ({ darkMode, toggleDarkMode }) => {
       fontSize: '20px',
       color: darkMode ? '#ffdd57' : '#4f6f52',
     },
+    welcomeMessage: {
+      marginLeft: "30px"
+    }
   }
 
   return (
-    <Flex align="center" justify="space-between">
-      <Typography.Title level={3} type="secondary">
+    <Flex align="center" justify="space-between" style={style}>
+      <Typography.Title level={3} type="secondary" style={styles.welcomeMessage}>
         Welcome back
       </Typography.Title>
 

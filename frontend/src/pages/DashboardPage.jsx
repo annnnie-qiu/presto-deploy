@@ -70,9 +70,9 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       backgroundColor: darkMode ? "#113536" : "#fff",
     },
     header: {
-      paddingTop: "12px",
+      paddingTop: "20px",
       // backgroundColor: "#fff",
-      backgroundColor: darkMode ? "#113536" : "#fff",
+      backgroundColor: darkMode ? "#113536" : "white",
     },
     content: {
       margin: "24px 16px",
