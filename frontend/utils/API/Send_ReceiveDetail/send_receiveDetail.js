@@ -1,15 +1,11 @@
 import { apiCall } from "../apiCall";
 
-export default async function sendDetail(
-  token,
-  currentPresentationId,
-  presentation
-) {
+export default async function sendDetail(token, currentPresentationId, slides) {
   try {
     const response = await apiCall(
       "PUT",
       `presentations/${currentPresentationId}`,
-      presentation,
+      slides,
       "",
       token
     );

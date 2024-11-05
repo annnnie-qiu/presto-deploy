@@ -11,7 +11,13 @@ import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { useParams } from "react-router-dom";
 
-const Tooltips = (setCurrentSlides, presentationId) => {
+const Tooltips = (
+  currentSlides,
+  setCurrentSlides,
+  presentationId,
+  selectedSlideId,
+  setSelectedSlideId
+) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
     if (arrow === "Hide") {
@@ -46,25 +52,53 @@ const Tooltips = (setCurrentSlides, presentationId) => {
                 const token = localStorage.getItem("token");
                 const response = await getDetail(token);
                 console.log(response);
-                // check response is matching with presentationId
+
+                // Update the current slides array with the new slide
+                const numberOfSlides = currentSlides.length + 1;
+                const newSlideList = [];
+                let newSelectedSlideId = undefined;
+                // Insert a new slide after the current selected slide (selectedSlideId)
+                if (selectedSlideId === currentSlides.length) {
+                  newSelectedSlideId = currentSlides.length + 1;
+                  setCurrentSlides((current) => [
+                    ...current,
+                    { slideId: newSelectedSlideId, content: "" },
+                  ]);
+                } else {
+                  for (let i = 0; i < currentSlides.length; i++) {
+                    console.log(currentSlides[i]);
+                    newSlideList.push({
+                      slideId: i,
+                      content: currentSlides[i].content,
+                    });
+
+                    if (currentSlides[i].slideId == selectedSlideId) {
+                      newSlideList.push({
+                        slideId: i + 1,
+                        content: "",
+                      });
+                      newSelectedSlideId = i + 1;
+                    }
+                  }
+                  setCurrentSlides(newSlideList);
+                }
+
+                setSelectedSlideId(newSelectedSlideId);
+                // Find the corresponding presentation
+                // And update the numSlides and change the slides array to the latest version
+                // SendDetails is the new whole response
                 for (let i = 0; i < response.presentations.length; i++) {
                   if (response.presentations[i].id == presentationId) {
-                    console.log("match");
-                    console.log(response.presentations[i]);
-                    response.presentations[i].numSlides += 1;
-                    await sendDetail(token, presentationId, response.presentations[i]);
+                    response.presentations[i].numSlides = numberOfSlides;
+                    response.presentations[i].slides = newSlideList;
+                    await sendDetail(
+                      token,
+                      presentationId,
+                      response.presentations[i]
+                    );
+                    break;
                   }
                 }
-                setCurrentSlides((currentSlides) => {
-                  // sendDetail(token, id, name, description, thumbnail);
-                  return [
-                    ...currentSlides,
-                    {
-                      slideId: currentSlides.length + 1,
-                      content: "",
-                    },
-                  ];
-                });
               }}
               arrow={mergedArrow}
             >
@@ -76,6 +110,31 @@ const Tooltips = (setCurrentSlides, presentationId) => {
               placement="right"
               title={"delete slide"}
               arrow={mergedArrow}
+              onClick={async () => {
+                console.log("delete slide");
+                const token = localStorage.getItem("token");
+                const response = await getDetail(token);
+                console.log(response);
+                // check response is matching with presentationId
+                for (let i = 0; i < response.presentations.length; i++) {
+                  if (response.presentations[i].id == presentationId) {
+                    response.presentations[i].numSlides -= 1;
+                    await sendDetail(
+                      token,
+                      presentationId,
+                      response.presentations[i]
+                    );
+                  }
+                }
+                setCurrentSlides((currentSlides) => {
+                  console.log(currentSlides);
+                  // should be delete current slide
+                  return currentSlides.filter(
+                    (slide) => slide.slideId !== currentSlides.length
+                  );
+                  // console.log(currentSlides);
+                });
+              }}
             >
               <Button>
                 <DeleteOutlined />
@@ -120,7 +179,15 @@ const DescList = ({
         </div>
       ))}
     </div>
-    <div className=" w-8 h-ful">{Tooltips(setCurrentSlides, presentationId)}</div>
+    <div className=" w-8 h-ful">
+      {Tooltips(
+        currentSlides,
+        setCurrentSlides,
+        presentationId,
+        selectedSlideId,
+        setSelectedSlideId
+      )}
+    </div>
   </div>
 );
 
@@ -150,12 +217,26 @@ function PresentationPage() {
   const { presentationId } = useParams();
 
   // TODO: Implement the DescList component - hard code
-  const [currentSlides, setCurrentSlides] = React.useState([
-    {
-      slideId: 1,
-      content: "",
-    },
-  ]);
+  // get the current slides from the backend
+  React.useEffect(() => {
+    const getPresentationDetail = async () => {
+      const response = await getDetail(localStorage.getItem("token"));
+      // Get the presentation with the given ID
+      const presentation = response.presentations.find(
+        (presentation) => presentation.id == presentationId
+      );
+
+      // Get the current presentation and slides
+      setCurrentPresentation(presentation);
+      setCurrentSlides(presentation.slides);
+    };
+    getPresentationDetail();
+  }, []);
+
+  const [currentPresentation, setCurrentPresentation] =
+    React.useState(undefined);
+
+  const [currentSlides, setCurrentSlides] = React.useState([]);
 
   const styles = {
     sider: {
@@ -182,6 +263,7 @@ function PresentationPage() {
       left: "10px",
     },
   };
+
   return (
     <Layout>
       <Sider

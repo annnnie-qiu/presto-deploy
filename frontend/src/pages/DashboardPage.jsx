@@ -109,6 +109,12 @@ function DashboardPage() {
       thumbnail: "",
       description: "",
       numSlides: 1,
+      slides: [
+        {
+          slideId: 1,
+          content: "",
+        },
+      ],
     };
     try {
       // Use POST to create a new presentation via the API
