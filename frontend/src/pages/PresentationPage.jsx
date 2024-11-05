@@ -51,85 +51,39 @@ const Tooltips = (
                 console.log("add a new slide");
                 const token = localStorage.getItem("token");
                 const response = await getDetail(token);
+                console.log("哈哈: ", response);
                 const { store } = response;
-                console.log(store);
-                console.log(response);
-                console.log(response.store);
 
                 // Update the current slides array with the new slide
                 const numberOfSlides = currentSlides.length + 1;
-                const newSlideList = [];
-                let newSelectedSlideId = undefined;
-                // Insert a new slide after the current selected slide (selectedSlideId)
-                // if (selectedSlideId === currentSlides.length) {
-                //   console.log("selected slide is the last slide");
-                //   console.log(currentSlides);
-                //   console.log(currentSlides.length);
-                //   console.log(selectedSlideId);
-                //   newSelectedSlideId = currentSlides.length + 1;
-                //   setCurrentSlides((current) => [
-                //     ...current,
-                //     { slideId: newSelectedSlideId, content: "" },
-                //   ]);
-                // } else {
-                //   for (let i = 0; i < currentSlides.length; i++) {
-                //     console.log(currentSlides[i]);
-                //     newSlideList.push({
-                //       slideId: i,
-                //       content: currentSlides[i].content,
-                //     });
+                // Find the index of the selected slide
+                const targetIndex = currentSlides.findIndex(
+                  (slide) => slide.slideId === selectedSlideId
+                );
 
-                //     if (currentSlides[i].slideId == selectedSlideId) {
-                //       newSlideList.push({
-                //         slideId: i + 1,
-                //         content: "",
-                //       });
-                //       newSelectedSlideId = i + 1;
-                //     }
-                //   }
-                //   setCurrentSlides(newSlideList);
-                // }
-                for (let i = 0; i < currentSlides.length; i++) {
-                  console.log(currentSlides[i]);
-                  newSlideList.push({
-                    slideId: i+1,
-                    content: currentSlides[i].content,
-                  });
+                // Insert a new slide after it
+                const newSlideList = currentSlides
+                  .slice(0, targetIndex + 1)
+                  .concat({
+                    slideId: numberOfSlides,
+                    content: "",
+                  })
+                  .concat(currentSlides.slice(targetIndex + 1));
 
-                  if (currentSlides[i].slideId == selectedSlideId) {
-                    newSlideList.push({
-                      slideId: i + 2,
-                      content: "",
-                    });
-                    newSelectedSlideId = i + 1;
-                  }
-                }
                 setCurrentSlides(newSlideList);
 
-                setSelectedSlideId(newSelectedSlideId);
+                setSelectedSlideId(numberOfSlides);
+
                 // Find the corresponding presentation
                 // And update the numSlides and change the slides array to the latest version
-                // SendDetails is the new whole response
-                console.log(response);
-                console.log(response.store);
-                console.log(response.store.presentations);
-                console.log(response.store.presentations.length);
                 for (let i = 0; i < store.presentations.length; i++) {
-                  console.log(store.presentations[i].id);
-                  console.log(presentationId);
-                  console.log(newSlideList);
                   if (store.presentations[i].id == presentationId) {
                     store.presentations[i].numSlides = numberOfSlides;
                     store.presentations[i].slides = newSlideList;
-                    console.log(store.presentations[i]);
-                    console.log(store);
-                    await sendDetail(
-                      token,
-                      store
-                    );
                     break;
                   }
                 }
+                await sendDetail(token, store);
               }}
               arrow={mergedArrow}
             >
@@ -146,7 +100,7 @@ const Tooltips = (
                 const token = localStorage.getItem("token");
                 const response = await getDetail(token);
                 console.log(response);
-                const store = response.store;
+                const { store } = response;
                 // check response is matching with presentationId
                 for (let i = 0; i < store.presentations.length; i++) {
                   if (store.presentations[i].id == presentationId) {
@@ -188,13 +142,13 @@ const DescList = ({
 }) => (
   <div className="flex h-full w-full">
     <div className="grow flex flex-col gap-2 items-center h-full py-2">
-      {currentSlides.map((slide) => (
+      {currentSlides.map((slide, index) => (
         <div
           key={slide.slideId}
           className="flex w-full h-24 justify-center items-center gap-2"
         >
           {/* TODO: Implement the DescSlide component - hard code */}
-          <div className=" self-start pt-2 ">{slide.slideId}</div>
+          <div className=" self-end pb-2 ">{index + 1}</div>
 
           <div
             onClick={() => {
@@ -248,19 +202,16 @@ function PresentationPage() {
   const [selectedSlideId, setSelectedSlideId] = useState(1);
   const { presentationId } = useParams();
 
-  // TODO: Implement the DescList component - hard code
   // get the current slides from the backend
   React.useEffect(() => {
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
-      // console.log(response);
-      // console.log(response.store);
-      // Get the presentation with the given ID
       const presentation = response.store.presentations.find(
         (presentation) => presentation.id == presentationId
       );
 
       // Get the current presentation and slides
+      console.log("这里: ", presentation);
       setCurrentPresentation(presentation);
       setCurrentSlides(presentation.slides);
     };
