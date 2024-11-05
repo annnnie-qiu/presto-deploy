@@ -3,13 +3,16 @@ import { Button, Typography, Modal, Input } from "antd";
 import { Avatar, Card } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-// import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
-import { apiCall } from "../../utils/API/apiCall";
-import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
+import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+// import { apiCall } from "../../utils/API/apiCall";
+import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
 
 const { Meta } = Card;
 
-const DashboardPresentationList = ({ presentations = [], refetchPresentations }) => {
+const DashboardPresentationList = ({
+  presentations = [],
+  refetchPresentations,
+}) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -54,7 +57,8 @@ const DashboardPresentationList = ({ presentations = [], refetchPresentations })
         };
 
         // Use PUT to update the presentation via the API
-        await apiCall("PUT", `presentations/${currentPresentation.id}`, updatedPresentation, "", token);
+        // await apiCall("PUT", `presentations/${currentPresentation.id}`, updatedPresentation, "", token);
+        await sendDetail(token, currentPresentation.id, updatedPresentation);
 
         await refetchPresentations();
         showSuccessToast("Presentation updated successfully!");
@@ -133,9 +137,12 @@ const DashboardPresentationList = ({ presentations = [], refetchPresentations })
       {/* Grid layout for consistent spacing without overlapping */}
       <div style={styles.gridContainer}>
         {presentations.length > 0 ? (
-          presentations.map((presentation, index) => (
+          presentations.map((presentation, index) =>
             presentation ? (
-              <div key={`${presentation.id}-${index}`} style={styles.cardWrapper}>
+              <div
+                key={`${presentation.id}-${index}`}
+                style={styles.cardWrapper}
+              >
                 <Card
                   onClick={() => handleCardClick(presentation.id)}
                   hoverable
@@ -158,7 +165,8 @@ const DashboardPresentationList = ({ presentations = [], refetchPresentations })
                     description={
                       <>
                         <div style={styles.description}>
-                          {presentation.description || "No description available"}
+                          {presentation.description ||
+                            "No description available"}
                         </div>
                         <div style={styles.numSlides}>
                           Slides: {presentation.numSlides || 0}
@@ -175,9 +183,11 @@ const DashboardPresentationList = ({ presentations = [], refetchPresentations })
                 />
               </div>
             ) : null
-          ))
+          )
         ) : (
-          <Typography.Text>No presentations available. Create a new one!</Typography.Text>
+          <Typography.Text>
+            No presentations available. Create a new one!
+          </Typography.Text>
         )}
       </div>
 

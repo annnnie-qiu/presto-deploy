@@ -6,7 +6,7 @@ import Sidebar from "../components/Sidebar";
 import CustomHeader from "../components/Header";
 import DashboardMainContent from "../components/DashboardMainContent";
 // import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
-// import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 // import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ToastNotification from '../components/ToastNotification';
@@ -37,7 +37,8 @@ function DashboardPage() {
   // Function to refetch presentations
   const refetchPresentations = React.useCallback(async () => {
     try {
-      const response = await apiCall("GET", "presentations", {}, "", token);
+      // const response = await apiCall("GET", "presentations", {}, "", token);
+      const response = await getDetail(token);
       console.log("Response from /presentations:", response);
       if (response.presentations) {
         setPresentations(response.presentations);
@@ -108,6 +109,12 @@ function DashboardPage() {
       thumbnail: "",
       description: "",
       numSlides: 1,
+      slides: [
+        {
+          slideId: 1,
+          content: "",
+        },
+      ],
     };
     try {
       // Use POST to create a new presentation via the API
