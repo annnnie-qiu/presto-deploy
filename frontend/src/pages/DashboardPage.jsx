@@ -8,9 +8,9 @@ import DashboardMainContent from "../components/DashboardMainContent";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 // import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ToastNotification from '../components/ToastNotification';
-import { showErrorToast, showSuccessToast } from '../../utils/toastUtils';
+import "react-toastify/dist/ReactToastify.css";
+import ToastNotification from "../components/ToastNotification";
+import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
 import { apiCall } from "../../utils/API/apiCall";
 // import DashboardSideContent from '../components/DashboardSideContent';
 
@@ -51,12 +51,12 @@ function DashboardPage() {
   React.useEffect(() => {
     // If no token is found, navigate back to the login page.
     if (!token) {
-      navigate('/login');
+      navigate("/login");
     } else {
       refetchPresentations(); // Fetch presentations when the component mounts
     }
   }, [token, navigate, refetchPresentations]);
-  
+
   const styles = {
     layout: {
       minHeight: "100vh",
@@ -97,16 +97,17 @@ function DashboardPage() {
 
   const handleCreateNewPresentation = async () => {
     if (newPresentationName.trim() === "") {
-      showErrorToast('Please provide a name for your new presentation.');
+      showErrorToast("Please provide a name for your new presentation.");
       return;
     }
-  
+
     const newPresentation = {
       id: presentations.length + 1,
       name: newPresentationName,
       thumbnail: "",
       description: "",
       numSlides: 1,
+      nextSlideId: 2,
       slides: [
         {
           slideId: 1,
@@ -114,30 +115,32 @@ function DashboardPage() {
         },
       ],
     };
-  
+
     try {
       // Get the current store details
       const response = await getDetail(token);
       const { store } = response;
-  
+
       // Update the presentations list in the store with the new presentation
-      const updatedPresentations = [...(store.presentations || []), newPresentation];
+      const updatedPresentations = [
+        ...(store.presentations || []),
+        newPresentation,
+      ];
       store.presentations = updatedPresentations;
-  
+
       // Use PUT to update the store via the API
-      // await apiCall("PUT", "store", { store }, "", token);
       await sendDetail(token, store);
-  
+
       refetchPresentations();
-      showSuccessToast('🦄 Presentation created successfully!');
+      showSuccessToast("🦄 Presentation created successfully!");
     } catch (error) {
       console.error("Error creating presentation:", error);
       showErrorToast("Failed to create the presentation.");
     }
-  
+
     setIsModalVisible(false);
     setNewPresentationName(""); // Reset input
-  };  
+  };
 
   return (
     <Layout style={styles.layout}>

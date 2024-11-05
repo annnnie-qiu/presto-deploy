@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, Flex, Typography, Modal } from "antd";
+import { Avatar, Flex, Typography, Modal, Tooltip } from "antd";
 import { useNavigate } from "react-router-dom";
 import { DeleteTwoTone } from "@ant-design/icons";
 import Search from "antd/es/transfer/search";
@@ -37,17 +37,13 @@ function HeaherPresent() {
     const { store } = updateDetails;
     store.presentations = store.presentations.filter(
       (presentation) => presentation.id == presentationId,
-      console.log("store.presentations:", store.presentations),
-      console.log("presentationId:", presentationId),
       // pop out the presentation with the given ID
       store.presentations.pop(presentationId),
       // update to the backend
       sendDetail(localStorage.getItem("token"), store),
-      console.log("store.presentations:", store.presentations),
       // navigate to the dashboard
       navigate(`/dashboard`)
     );
-
   };
 
   const handleCancel = () => {
@@ -63,9 +59,7 @@ function HeaherPresent() {
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
       setUpdateDetails(response);
-      console.log("response:", response);
       const { store } = response;
-      console.log("store:", store);
       // Get the presentation with the given ID
       const presentation = store.presentations.find(
         (presentation) => presentation.id == presentationId
@@ -81,7 +75,9 @@ function HeaherPresent() {
     <Flex align="center" justify="space-between">
       <Typography.Title level={3} type="secondary">
         {currentPresentation?.name}
-        <DeleteTwoTone className="pl-2 text-sm" onClick={showModal} />
+        <Tooltip placement="right" title={"Delete the current presentation"}>
+          <DeleteTwoTone className="pl-2 text-sm" onClick={showModal} />
+        </Tooltip>
       </Typography.Title>
 
       <Flex align="center" gap="3rem">
