@@ -95,6 +95,13 @@ function DashboardPage() {
     setNewPresentationName("");
   };
 
+  // Function to handle the create button by 'Enter' key
+  const handleEnterKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleCreateNewPresentation();
+    }
+  };
+
   const handleCreateNewPresentation = async () => {
     if (newPresentationName.trim() === "") {
       showErrorToast("Please provide a name for your new presentation.");
@@ -189,6 +196,7 @@ function DashboardPage() {
           placeholder="Enter presentation name"
           value={newPresentationName}
           onChange={(e) => setNewPresentationName(e.target.value)}
+          onKeyDown={handleEnterKeyPress}
         />
       </Modal>
 
