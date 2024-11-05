@@ -1,18 +1,12 @@
 import { apiCall } from "../apiCall";
 
-export default async function sendDetail(token, currentPresentationId, slides) {
+export default async function sendDetail(token, updatedStore) {
   try {
-    const response = await apiCall(
-      "PUT",
-      `presentations/${currentPresentationId}`,
-      slides,
-      "",
-      token
-    );
-    console.log("PUT response:", response);
-    return response;
+    const updateResponse = await apiCall("PUT", "store", { store: updatedStore }, "", token);
+    console.log("PUT response:", updateResponse);
+    return updateResponse;
   } catch (error) {
-    console.error("Login failed:", error.message);
+    console.error("Failed to update the store:", error.message);
     throw error;
   }
 }
@@ -20,11 +14,14 @@ export default async function sendDetail(token, currentPresentationId, slides) {
 export async function getDetail(token) {
   try {
     console.log("GET request");
-    const response = await apiCall("GET", "presentations", {}, "", token);
+    const response = await apiCall("GET", "store", {}, "", token);
+    if (!response.store) {
+      throw new Error("Failed to retrieve the current store data");
+    }
     console.log("GET response:", response);
     return response;
   } catch (error) {
-    console.error("Login failed:", error.message);
+    console.error("Failed to retrieve the store data:", error.message);
     throw error;
   }
 }
