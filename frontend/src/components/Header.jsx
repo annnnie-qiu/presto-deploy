@@ -1,9 +1,10 @@
 import React from 'react'
 import { Avatar, Flex, Typography } from 'antd';
 import Search from 'antd/es/transfer/search';
-import { MessageOutlined, NotificationOutlined, UserOutlined} from '@ant-design/icons'
+import { MessageOutlined, NotificationOutlined, UserOutlined} from '@ant-design/icons';
+import { FaMoon, FaSun } from "react-icons/fa";
 
-const CustomHeader = () => {
+const CustomHeader = ({ darkMode, toggleDarkMode }) => {
   const styles = {
     headerIcon: {
       backgroundColor: '#d2e3c8',
@@ -12,9 +13,15 @@ const CustomHeader = () => {
       fontSize: '15px',
       color: '#4f6f52',
       cursor: 'pointer',
-    }
+    },
+    modeBtn: {
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '20px',
+      color: darkMode ? '#ffdd57' : '#4f6f52',
+    },
   }
-
 
   return (
     <Flex align="center" justify="space-between">
@@ -26,8 +33,13 @@ const CustomHeader = () => {
         <Search placeholder="Search" allowClear />
 
         <Flex align="center" gap="10px">
-          <MessageOutlined style={styles.headerIcon} />
-          <NotificationOutlined style={styles.headerIcon} />
+          {/* <MessageOutlined style={styles.headerIcon} />
+          <NotificationOutlined style={styles.headerIcon} /> */}
+          <button 
+            style={styles.modeBtn}
+            onClick={toggleDarkMode}
+          >{darkMode ? <FaSun/> : <FaMoon />}
+          </button>
           <Avatar icon={<UserOutlined />}/>
         </Flex>
       </Flex>
