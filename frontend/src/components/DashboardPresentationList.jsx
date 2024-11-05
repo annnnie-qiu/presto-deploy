@@ -30,6 +30,13 @@ const DashboardPresentationList = ({
     navigate(`/presentation/${id}`);
   };
 
+  // Function to handle the edit button click
+  const handleEnterKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSave();
+    }
+  };
+
   const handleEditClick = (e, presentation) => {
     // Prevent navigation when the edit icon is clicked
     e.stopPropagation();
@@ -56,29 +63,30 @@ const DashboardPresentationList = ({
           name: presentationUpdates.name,
           description: presentationUpdates.description,
         };
-  
+
         // Use the updated sendDetail to only modify the relevant presentation in the store
         try {
           // Get the current store details
           const response = await getDetail(token);
           const { store } = response;
-        
+
           // Find the existing presentation by ID and update it
           store.presentations = store.presentations.map((presentation) =>
-            presentation.id === updatedPresentation.id ? updatedPresentation : presentation
+            presentation.id === updatedPresentation.id
+              ? updatedPresentation
+              : presentation
           );
-        
+
           // Use sendDetail to update the entire store with the modified presentations list
           await sendDetail(token, store);
-        
+
           await refetchPresentations(); // Refetch to update the local state
           // showSuccessToast("Presentation updated successfully!");
         } catch (error) {
           console.error("Error updating presentation:", error);
           // showErrorToast("Failed to update the presentation.");
         }
-        
-  
+
         await refetchPresentations(); // Refetch to update the local state
         showSuccessToast("Presentation updated successfully!");
       } catch (error) {
@@ -88,7 +96,6 @@ const DashboardPresentationList = ({
     }
     setIsModalVisible(false);
   };
-  
 
   const styles = {
     headerFlex: {
@@ -224,12 +231,14 @@ const DashboardPresentationList = ({
           placeholder="Enter presentation name"
           value={presentationUpdates.name}
           onChange={handleInputChange}
+          onKeyDown={handleEnterKeyPress}
         />
         <Input.TextArea
           name="description"
           placeholder="Enter presentation description"
           value={presentationUpdates.description}
           onChange={handleInputChange}
+          onKeyDown={handleEnterKeyPress}
           rows={4}
         />
       </Modal>
