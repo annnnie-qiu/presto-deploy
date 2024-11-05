@@ -55,12 +55,11 @@ const DashboardPresentationList = ({
           name: presentationUpdates.name,
           description: presentationUpdates.description,
         };
-
-        // Use PUT to update the presentation via the API
-        // await apiCall("PUT", `presentations/${currentPresentation.id}`, updatedPresentation, "", token);
-        await sendDetail(token, currentPresentation.id, updatedPresentation);
-
-        await refetchPresentations();
+  
+        // Use the updated sendDetail to only modify the relevant presentation in the store
+        await sendDetail(token, updatedPresentation);
+  
+        await refetchPresentations(); // Refetch to update the local state
         showSuccessToast("Presentation updated successfully!");
       } catch (error) {
         console.error("Error updating presentation:", error);
@@ -69,6 +68,7 @@ const DashboardPresentationList = ({
     }
     setIsModalVisible(false);
   };
+  
 
   const styles = {
     headerFlex: {

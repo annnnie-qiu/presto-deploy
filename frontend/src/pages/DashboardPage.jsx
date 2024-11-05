@@ -5,7 +5,7 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import CustomHeader from "../components/Header";
 import DashboardMainContent from "../components/DashboardMainContent";
-// import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 // import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -37,12 +37,10 @@ function DashboardPage() {
   // Function to refetch presentations
   const refetchPresentations = React.useCallback(async () => {
     try {
-      // const response = await apiCall("GET", "presentations", {}, "", token);
       const response = await getDetail(token);
-      console.log("Response from /presentations:", response);
-      if (response.presentations) {
-        setPresentations(response.presentations);
-      }
+      console.log("Response from /store:", response);
+      const presentations = response.store?.presentations || [];
+      setPresentations(presentations);
     } catch (error) {
       console.error("Error fetching presentations:", error);
       showErrorToast("Failed to load presentations");
@@ -99,10 +97,10 @@ function DashboardPage() {
 
   const handleCreateNewPresentation = async () => {
     if (newPresentationName.trim() === "") {
-      showErrorToast('Please provide a name for your new presentation.')
+      showErrorToast('Please provide a name for your new presentation.');
       return;
-    };
-
+    }
+  
     const newPresentation = {
       id: presentations.length + 1,
       name: newPresentationName,
@@ -116,21 +114,29 @@ function DashboardPage() {
         },
       ],
     };
+  
     try {
-      // Use POST to create a new presentation via the API
-      const response = await apiCall("POST", "presentations", newPresentation, "", token);
+      // Get the current store details
+      const response = await getDetail(token);
+      const { store } = response;
+  
+      // Update the presentations list in the store with the new presentation
+      const updatedPresentations = [...(store.presentations || []), newPresentation];
+      store.presentations = updatedPresentations;
+  
+      // Use PUT to update the store via the API
+      await apiCall("PUT", "store", { store }, "", token);
+  
       refetchPresentations();
-      // Update state with the newly created presentation from the response
-      setPresentations([...presentations, response.newPresentation]);
       showSuccessToast('🦄 Presentation created successfully!');
     } catch (error) {
       console.error("Error creating presentation:", error);
       showErrorToast("Failed to create the presentation.");
     }
-
+  
     setIsModalVisible(false);
     setNewPresentationName(""); // Reset input
-  };
+  };  
 
   return (
     <Layout style={styles.layout}>
