@@ -30,6 +30,13 @@ const DashboardPresentationList = ({
     navigate(`/presentation/${id}`);
   };
 
+  // Function to handle the edit button click
+  const handleEnterKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSave();
+    }
+  };
+
   const handleEditClick = (e, presentation) => {
     // Prevent navigation when the edit icon is clicked
     e.stopPropagation();
@@ -224,12 +231,14 @@ const DashboardPresentationList = ({
           placeholder="Enter presentation name"
           value={presentationUpdates.name}
           onChange={handleInputChange}
+          onKeyDown={handleEnterKeyPress}
         />
         <Input.TextArea
           name="description"
           placeholder="Enter presentation description"
           value={presentationUpdates.description}
           onChange={handleInputChange}
+          onKeyDown={handleEnterKeyPress}
           rows={4}
         />
       </Modal>
