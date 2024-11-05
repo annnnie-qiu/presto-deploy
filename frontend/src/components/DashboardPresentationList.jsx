@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 // import { apiCall } from "../../utils/API/apiCall";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
+import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 
 const { Meta } = Card;
 
@@ -55,12 +56,30 @@ const DashboardPresentationList = ({
           name: presentationUpdates.name,
           description: presentationUpdates.description,
         };
-
-        // Use PUT to update the presentation via the API
-        // await apiCall("PUT", `presentations/${currentPresentation.id}`, updatedPresentation, "", token);
-        await sendDetail(token, currentPresentation.id, updatedPresentation);
-
-        await refetchPresentations();
+  
+        // Use the updated sendDetail to only modify the relevant presentation in the store
+        try {
+          // Get the current store details
+          const response = await getDetail(token);
+          const { store } = response;
+        
+          // Find the existing presentation by ID and update it
+          store.presentations = store.presentations.map((presentation) =>
+            presentation.id === updatedPresentation.id ? updatedPresentation : presentation
+          );
+        
+          // Use sendDetail to update the entire store with the modified presentations list
+          await sendDetail(token, store);
+        
+          await refetchPresentations(); // Refetch to update the local state
+          // showSuccessToast("Presentation updated successfully!");
+        } catch (error) {
+          console.error("Error updating presentation:", error);
+          // showErrorToast("Failed to update the presentation.");
+        }
+        
+  
+        await refetchPresentations(); // Refetch to update the local state
         showSuccessToast("Presentation updated successfully!");
       } catch (error) {
         console.error("Error updating presentation:", error);
@@ -69,6 +88,7 @@ const DashboardPresentationList = ({
     }
     setIsModalVisible(false);
   };
+  
 
   const styles = {
     headerFlex: {
