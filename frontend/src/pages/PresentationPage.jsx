@@ -51,50 +51,81 @@ const Tooltips = (
                 console.log("add a new slide");
                 const token = localStorage.getItem("token");
                 const response = await getDetail(token);
+                const { store } = response;
+                console.log(store);
                 console.log(response);
+                console.log(response.store);
 
                 // Update the current slides array with the new slide
                 const numberOfSlides = currentSlides.length + 1;
                 const newSlideList = [];
                 let newSelectedSlideId = undefined;
                 // Insert a new slide after the current selected slide (selectedSlideId)
-                if (selectedSlideId === currentSlides.length) {
-                  newSelectedSlideId = currentSlides.length + 1;
-                  setCurrentSlides((current) => [
-                    ...current,
-                    { slideId: newSelectedSlideId, content: "" },
-                  ]);
-                } else {
-                  for (let i = 0; i < currentSlides.length; i++) {
-                    console.log(currentSlides[i]);
-                    newSlideList.push({
-                      slideId: i,
-                      content: currentSlides[i].content,
-                    });
+                // if (selectedSlideId === currentSlides.length) {
+                //   console.log("selected slide is the last slide");
+                //   console.log(currentSlides);
+                //   console.log(currentSlides.length);
+                //   console.log(selectedSlideId);
+                //   newSelectedSlideId = currentSlides.length + 1;
+                //   setCurrentSlides((current) => [
+                //     ...current,
+                //     { slideId: newSelectedSlideId, content: "" },
+                //   ]);
+                // } else {
+                //   for (let i = 0; i < currentSlides.length; i++) {
+                //     console.log(currentSlides[i]);
+                //     newSlideList.push({
+                //       slideId: i,
+                //       content: currentSlides[i].content,
+                //     });
 
-                    if (currentSlides[i].slideId == selectedSlideId) {
-                      newSlideList.push({
-                        slideId: i + 1,
-                        content: "",
-                      });
-                      newSelectedSlideId = i + 1;
-                    }
+                //     if (currentSlides[i].slideId == selectedSlideId) {
+                //       newSlideList.push({
+                //         slideId: i + 1,
+                //         content: "",
+                //       });
+                //       newSelectedSlideId = i + 1;
+                //     }
+                //   }
+                //   setCurrentSlides(newSlideList);
+                // }
+                for (let i = 0; i < currentSlides.length; i++) {
+                  console.log(currentSlides[i]);
+                  newSlideList.push({
+                    slideId: i+1,
+                    content: currentSlides[i].content,
+                  });
+
+                  if (currentSlides[i].slideId == selectedSlideId) {
+                    newSlideList.push({
+                      slideId: i + 2,
+                      content: "",
+                    });
+                    newSelectedSlideId = i + 1;
                   }
-                  setCurrentSlides(newSlideList);
                 }
+                setCurrentSlides(newSlideList);
 
                 setSelectedSlideId(newSelectedSlideId);
                 // Find the corresponding presentation
                 // And update the numSlides and change the slides array to the latest version
                 // SendDetails is the new whole response
-                for (let i = 0; i < response.presentations.length; i++) {
-                  if (response.presentations[i].id == presentationId) {
-                    response.presentations[i].numSlides = numberOfSlides;
-                    response.presentations[i].slides = newSlideList;
+                console.log(response);
+                console.log(response.store);
+                console.log(response.store.presentations);
+                console.log(response.store.presentations.length);
+                for (let i = 0; i < store.presentations.length; i++) {
+                  console.log(store.presentations[i].id);
+                  console.log(presentationId);
+                  console.log(newSlideList);
+                  if (store.presentations[i].id == presentationId) {
+                    store.presentations[i].numSlides = numberOfSlides;
+                    store.presentations[i].slides = newSlideList;
+                    console.log(store.presentations[i]);
+                    console.log(store);
                     await sendDetail(
                       token,
-                      presentationId,
-                      response.presentations[i]
+                      store
                     );
                     break;
                   }
@@ -115,14 +146,15 @@ const Tooltips = (
                 const token = localStorage.getItem("token");
                 const response = await getDetail(token);
                 console.log(response);
+                const store = response.store;
                 // check response is matching with presentationId
-                for (let i = 0; i < response.presentations.length; i++) {
-                  if (response.presentations[i].id == presentationId) {
-                    response.presentations[i].numSlides -= 1;
+                for (let i = 0; i < store.presentations.length; i++) {
+                  if (store.presentations[i].id == presentationId) {
+                    store.presentations[i].numSlides -= 1;
                     await sendDetail(
                       token,
                       presentationId,
-                      response.presentations[i]
+                      store.presentations[i]
                     );
                   }
                 }
@@ -221,8 +253,10 @@ function PresentationPage() {
   React.useEffect(() => {
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
+      // console.log(response);
+      // console.log(response.store);
       // Get the presentation with the given ID
-      const presentation = response.presentations.find(
+      const presentation = response.store.presentations.find(
         (presentation) => presentation.id == presentationId
       );
 
