@@ -125,7 +125,8 @@ function DashboardPage() {
       store.presentations = updatedPresentations;
   
       // Use PUT to update the store via the API
-      await apiCall("PUT", "store", { store }, "", token);
+      // await apiCall("PUT", "store", { store }, "", token);
+      await sendDetail(token, store);
   
       refetchPresentations();
       showSuccessToast('🦄 Presentation created successfully!');
