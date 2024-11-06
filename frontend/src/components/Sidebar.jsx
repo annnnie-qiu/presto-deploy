@@ -19,7 +19,7 @@ const StyledMenu = styled(Menu)`
 }
 `;
 
-const Sidebar = () => {
+const Sidebar = ({ darkMode }) => {
 
   const styles = {
     logo: {
@@ -33,6 +33,8 @@ const Sidebar = () => {
       flexDirection: 'column',
       gap: '10px',
       fontWeight: '500',
+      backgroundColor: darkMode ? "#113536" : "#fff",
+      color: darkMode ? "#f5f5f5" : "#000",
     }
   };
 
@@ -79,7 +81,7 @@ const Sidebar = () => {
       <StyledMenu 
         mode="inline" 
         selectedKeys={[getSelectedKey()]}
-        style={styles.menubar} 
+        style={styles.menubar}
         items={[
           {
             key: '1',

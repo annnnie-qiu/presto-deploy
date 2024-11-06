@@ -16,7 +16,7 @@ import { apiCall } from "../../utils/API/apiCall";
 
 const { Sider, Header, Content } = Layout;
 
-function DashboardPage() {
+function DashboardPage({ darkMode, toggleDarkMode }) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [collapsed, setCollapsed] = React.useState(false);
@@ -60,20 +60,24 @@ function DashboardPage() {
   const styles = {
     layout: {
       minHeight: "100vh",
+      backgroundColor: darkMode ? "#203175" : "#fff",
     },
     sider: {
       position: "sticky !important",
       left: 0,
       bottom: 0,
       top: 0,
+      backgroundColor: darkMode ? "#113536" : "#fff",
     },
     header: {
-      paddingTop: "12px",
-      backgroundColor: "#fff",
+      paddingTop: "20px",
+      // backgroundColor: "#fff",
+      backgroundColor: darkMode ? "#113536" : "white",
     },
     content: {
       margin: "24px 16px",
       padding: "20px",
+      backgroundColor: darkMode ? "#113536" : "",
     },
     trigerbtn: {
       fontSize: "16px",
@@ -93,6 +97,13 @@ function DashboardPage() {
   const handleCancel = () => {
     setIsModalVisible(false);
     setNewPresentationName("");
+  };
+
+  // Function to handle the create button by 'Enter' key
+  const handleEnterKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleCreateNewPresentation();
+    }
   };
 
   const handleCreateNewPresentation = async () => {
@@ -151,7 +162,7 @@ function DashboardPage() {
         collapsed={collapsed}
         style={styles.sider}
       >
-        <Sidebar />
+        <Sidebar darkMode={darkMode} />
 
         <Button
           type="text"
@@ -161,9 +172,10 @@ function DashboardPage() {
         />
       </Sider>
       <Layout>
-        <Header style={styles.header}>
+        {/* <Header style={styles.header}>
           <CustomHeader />
-        </Header>
+        </Header> */}
+        <CustomHeader style={styles.header} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
         <Content style={styles.content}>
           <Flex gap="large">
             <DashboardMainContent
@@ -189,6 +201,7 @@ function DashboardPage() {
           placeholder="Enter presentation name"
           value={newPresentationName}
           onChange={(e) => setNewPresentationName(e.target.value)}
+          onKeyDown={handleEnterKeyPress}
         />
       </Modal>
 
