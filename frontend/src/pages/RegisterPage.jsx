@@ -18,6 +18,58 @@ function RegisterPage() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+  // press enter key to register and login
+  const handleEnterKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleRegister();
+    }
+  };
+
+  //
+  const handleRegister = async () => {
+    // check email is valid or not
+    // I assume that the email should have the format of
+    // 1. At least one character before the @
+    // 2. At least one character before the .
+    // 3. At least one character after the .
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      errorPopUp("Error", "Invalid email");
+      return;
+    }
+    // check password is valid or not
+    // I assume that the name should only contain letters
+    // and the length should be between 1 and 20
+    const nameRegex = /^[a-zA-Z ]{1,20}$/;
+    if (!nameRegex.test(name)) {
+      errorPopUp("Error", "Invalid name");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      errorPopUp("Error", "Passwords do not match");
+      return;
+    }
+    try {
+      const response = await register(email, password, name);
+      // save in the localStorage
+      localStorage.setItem("token", response.token);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("There was an error registering", error.message);
+    }
+  };
+
+  // check if the user press enter key to register
+  React.useEffect(() => {
+    window.addEventListener("keydown", handleEnterKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleEnterKeyPress);
+    };
+  }, [email, password, name, confirmPassword]);
+
   return (
     <div className="w-screen h-screen flex justify-center items-center bg-violet-500">
       <div className="w-4/6 h-4/6 border-solid border-2 bg-white border-gray-100 shadow-md rounded-lg flex justify-center items-center">
@@ -135,9 +187,9 @@ function RegisterPage() {
                 onChange={(text) => {
                   setConfirmPassword(text.target.value);
                 }}
+                // check if the password is matched with the confirm password
                 onBlur={() => {
                   if (password !== confirmPassword) {
-                    // TODO: not sure is error pop up or not
                     errorPopUp("Error", "Passwords do not match");
                   }
                 }}
@@ -150,37 +202,7 @@ function RegisterPage() {
               <CustomizedBtn
                 id="registerBtn"
                 content="Register"
-                action={async () => {
-                  // check email is valid or not
-                  // I assume that the email should have the format of
-                  // 1. At least one character before the @
-                  // 2. At least one character before the .
-                  // 3. At least one character after the .
-                  const emailRegex = /\S+@\S+\.\S+/;
-                  if (!emailRegex.test(email)) {
-                    errorPopUp("Error", "Invalid email");
-                    return;
-                  }
-                  // check password is valid or not
-                  // I assume that the name should only contain letters
-                  // and the length should be between 1 and 20
-                  const nameRegex = /^[a-zA-Z ]{1,20}$/;
-                  if (!nameRegex.test(name)) {
-                    errorPopUp("Error", "Invalid name");
-                    return;
-                  }
-                  try {
-                    const response = await register(email, password, name);
-                    // save in the localStorage
-                    localStorage.setItem("token", response.token);
-                    navigate("/dashboard");
-                  } catch (error) {
-                    console.error(
-                      "There was an error registering",
-                      error.message
-                    );
-                  }
-                }}
+                action={handleRegister}
               />
               <a
                 className="text-blue-500 text-center"

@@ -36,6 +36,15 @@ function LoginPage() {
     }
   };
 
+  // check if the user press enter key to login TODO: not working
+  React.useEffect(() => {
+    window.addEventListener("keydown", handleEnterKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleEnterKeyPress);
+    };
+  }, [email, password]);
+
   return (
     <div className="w-screen h-screen flex justify-center items-center bg-violet-500">
       <div className="w-4/6 h-4/6 border-solid border-2 bg-white border-gray-100 shadow-md rounded-lg flex justify-center items-center">
