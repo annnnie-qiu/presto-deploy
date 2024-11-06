@@ -117,8 +117,7 @@ const Tooltips = (
                   // only one slide - can not be delete - error popup
                   errorPopUp("Error", "Can not delete the only slide");
                   return;
-                }
-                else if (targetIndex === currentSlides.length - 1) {
+                } else if (targetIndex === currentSlides.length - 1) {
                   nextSlideId = currentSlides[targetIndex - 1].slideId;
                 } else {
                   nextSlideId = currentSlides[targetIndex + 1].slideId;
@@ -171,7 +170,6 @@ const DescList = ({
           key={slide.slideId}
           className="flex w-full h-24 justify-center items-center gap-2"
         >
-          {/* TODO: Implement the DescSlide component - hard code */}
           <div className=" self-end pb-2 ">{index + 1}</div>
 
           <div
@@ -225,9 +223,47 @@ function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedSlideId, setSelectedSlideId] = useState(1);
   const { presentationId } = useParams();
+  const [currentSlides, setCurrentSlides] = React.useState([]);
+
+  // Function to handle the edit button click
+  const handleArrowKeyPress = (e) => {
+    if (e.key === "ArrowLeft") {
+      console.log("left");
+      // Move the selected slide to the previous slide
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId
+      );
+      console.log(targetIndex);
+      console.log(selectedSlideId);
+      console.log(currentSlides);
+      if (targetIndex > 0) {
+        setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+      }
+    } else if (e.key === "ArrowRight") {
+      // Move the selected slide to the next slide
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId,
+        console.log(currentSlides.length),
+        console.log(selectedSlideId)
+      );
+      console.log(targetIndex);
+      if (targetIndex < currentSlides.length - 1) {
+        setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("keydown", handleArrowKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleArrowKeyPress);
+    };
+  }, [currentSlides]);
 
   // get the current slides from the backend
   React.useEffect(() => {
+    // Add event listener for keydown event
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
       const presentation = response.store.presentations.find(
@@ -235,17 +271,15 @@ function PresentationPage() {
       );
 
       // Get the current presentation and slides
-      console.log("这里: ", presentation);
       setCurrentPresentation(presentation);
-      setCurrentSlides(presentation.slides);
+      setCurrentSlides((current) => presentation.slides);
     };
+
     getPresentationDetail();
   }, []);
 
   const [currentPresentation, setCurrentPresentation] =
     React.useState(undefined);
-
-  const [currentSlides, setCurrentSlides] = React.useState([]);
 
   const styles = {
     sider: {
@@ -295,20 +329,27 @@ function PresentationPage() {
         <Header style={styles.header}>
           <HeaherPresent />
         </Header>
+      
         <Content style={styles.content}>
           <Splitter
             style={{
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Splitter.Panel defaultSize="20%" min="20%" max="70%">
-              <DescList
-                currentSlides={currentSlides}
-                setCurrentSlides={setCurrentSlides}
-                selectedSlideId={selectedSlideId}
-                setSelectedSlideId={setSelectedSlideId}
-                presentationId={presentationId}
-              />
+            <Splitter.Panel style={{ flex: "none" }}>
+              {" "}
+              {/* Set flex to "none" for fixed width */}
+              <div style={{ width: "300px" }}>
+                {" "}
+                {/* Fixed width container */}
+                <DescList
+                  currentSlides={currentSlides}
+                  setCurrentSlides={setCurrentSlides}
+                  selectedSlideId={selectedSlideId}
+                  setSelectedSlideId={setSelectedSlideId}
+                  presentationId={presentationId}
+                />
+              </div>
             </Splitter.Panel>
 
             <Splitter.Panel>

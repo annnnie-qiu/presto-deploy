@@ -35,8 +35,6 @@ function HeaherPresent() {
   const [currentPresentation, setCurrentPresentation] =
     React.useState(undefined);
 
-  console.log(presentationId);
-
   const handleOk = () => {
     setIsModalOpen(false);
     // delete the presentation from the backend and navigate to the dashboard
