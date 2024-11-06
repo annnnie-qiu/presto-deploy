@@ -36,14 +36,14 @@ function LoginPage() {
     }
   };
 
-  // check if the user press enter key to register
+  // check if the user press enter key to login TODO: not working
   React.useEffect(() => {
     window.addEventListener("keydown", handleEnterKeyPress);
 
     return () => {
       window.removeEventListener("keydown", handleEnterKeyPress);
     };
-  }, []);
+  }, [email, password]);
 
   return (
     <div className="w-screen h-screen flex justify-center items-center bg-violet-500">
@@ -101,6 +101,7 @@ function LoginPage() {
                 onChange={(text) => {
                   setEmail(text.target.value);
                 }}
+                onKeyDown={handleEnterKeyPress}
               />
             </Form.Item>
 
@@ -119,6 +120,7 @@ function LoginPage() {
                 onChange={(text) => {
                   setPassword(text.target.value);
                 }}
+                onKeyDown={handleEnterKeyPress}
               />
             </Form.Item>
           </Form>

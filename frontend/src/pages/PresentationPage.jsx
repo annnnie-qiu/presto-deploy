@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import HeaherPresent from "../components/HeaherPresent";
-import { Button, Flex, Layout, Modal, Input } from "antd";
+import { Button, Flex, Layout, Input } from "antd";
 import { Splitter, Typography } from "antd";
 const { Sider, Header, Content } = Layout;
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
@@ -228,25 +228,26 @@ function PresentationPage() {
   // Function to handle the edit button click
   const handleArrowKeyPress = (e) => {
     if (e.key === "ArrowLeft") {
-      console.log("left");
       // Move the selected slide to the previous slide
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
-      console.log(targetIndex);
-      console.log(selectedSlideId);
       console.log(currentSlides);
+      console.log("selectedSlideId", selectedSlideId);
+      console.log(targetIndex);
+
       if (targetIndex > 0) {
         setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
       }
     } else if (e.key === "ArrowRight") {
       // Move the selected slide to the next slide
       const targetIndex = currentSlides.findIndex(
-        (slide) => slide.slideId === selectedSlideId,
-        console.log(currentSlides.length),
-        console.log(selectedSlideId)
+        (slide) => slide.slideId === selectedSlideId
       );
+      console.log(currentSlides);
+      console.log("selectedSlideId", selectedSlideId);
       console.log(targetIndex);
+
       if (targetIndex < currentSlides.length - 1) {
         setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
       }
@@ -259,7 +260,7 @@ function PresentationPage() {
     return () => {
       window.removeEventListener("keydown", handleArrowKeyPress);
     };
-  }, [currentSlides]);
+  }, [currentSlides, selectedSlideId]);
 
   // get the current slides from the backend
   React.useEffect(() => {
@@ -329,7 +330,7 @@ function PresentationPage() {
         <Header style={styles.header}>
           <HeaherPresent />
         </Header>
-      
+
         <Content style={styles.content}>
           <Splitter
             style={{

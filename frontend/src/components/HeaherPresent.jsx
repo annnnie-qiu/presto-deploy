@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, Flex, Typography, Modal, Tooltip } from "antd";
+import { Avatar, Flex, Typography, Modal, Tooltip, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import { DeleteTwoTone } from "@ant-design/icons";
 import Search from "antd/es/transfer/search";
@@ -40,16 +40,28 @@ function HeaherPresent() {
     // delete the presentation from the backend and navigate to the dashboard
     const { store } = updateDetails;
     // pop out the presentation with the given ID
-    store.presentations = store.presentations.filter((presentation) => presentation.id != presentationId);
+    store.presentations = store.presentations.filter(
+      (presentation) => presentation.id != presentationId
+    );
 
     // update to the backend
     sendDetail(localStorage.getItem("token"), store),
-    // navigate to the dashboard
-    navigate(`/dashboard`)
+      // navigate to the dashboard
+      navigate(`/dashboard`);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  // State to track the current value of the input
+  const [inputValue, setInputValue] = useState(currentPresentation?.name || "");
+
+  // Handler for input change
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    console.log("Current input value:", value); // Log the updated value
   };
 
   // get the current slides from the backend
@@ -72,10 +84,14 @@ function HeaherPresent() {
   return (
     <Flex align="center" justify="space-between">
       <Typography.Title level={3} type="secondary">
-        {currentPresentation?.name}
-        <Tooltip placement="right" title={"Delete the current presentation"}>
-          <DeleteTwoTone className="pl-2 text-sm" onClick={showModal} />
-        </Tooltip>
+        <div className="flex gap-1">
+          {/* display the current presentation name */}
+          <Input value={currentPresentation?.name} />
+          {/* display the delete presentation icon */}
+          <Tooltip placement="right" title={"Delete the current presentation"}>
+            <DeleteTwoTone className="pl-2 text-sm" onClick={showModal} />
+          </Tooltip>
+        </div>
       </Typography.Title>
 
       <Flex align="center" gap="3rem">

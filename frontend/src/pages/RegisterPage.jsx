@@ -68,8 +68,7 @@ function RegisterPage() {
     return () => {
       window.removeEventListener("keydown", handleEnterKeyPress);
     };
-  }, []);
-
+  }, [email, password, name, confirmPassword]);
 
   return (
     <div className="w-screen h-screen flex justify-center items-center bg-violet-500">
