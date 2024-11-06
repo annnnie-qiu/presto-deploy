@@ -98,6 +98,15 @@ const DashboardPresentationList = ({
     setIsModalVisible(false);
   };
 
+  // Function to get the thumbnail from localStorage when displaying the presentation
+  const getThumbnail = (thumbnailReference) => {
+    if (thumbnailReference && localStorage.getItem(thumbnailReference)) {
+      return localStorage.getItem(thumbnailReference);
+    }
+    return null;
+  };
+
+
   const styles = {
     headerFlex: {
       display: "flex",
@@ -181,7 +190,7 @@ const DashboardPresentationList = ({
                       presentation.thumbnail ? (
                         <Avatar
                           shape="square"
-                          src={presentation.thumbnail}
+                          src={getThumbnail(presentation.thumbnail)}
                           alt={presentation.name}
                           style={styles.thumbnail}
                         />
