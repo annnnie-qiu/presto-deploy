@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import HeaherPresent from "../components/HeaherPresent";
-import { Button, Flex, Layout, Modal, Input } from "antd";
+import { Button, Flex, Layout, Input } from "antd";
 import { Splitter, Typography } from "antd";
 const { Sider, Header, Content } = Layout;
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
@@ -10,6 +10,7 @@ import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { useParams } from "react-router-dom";
+import { errorPopUp } from "../../utils/errorPopUp";
 
 const Tooltips = (
   currentSlides,
@@ -112,7 +113,11 @@ const Tooltips = (
 
                 // Find the next slide ID
                 let nextSlideId;
-                if (targetIndex === currentSlides.length - 1) {
+                if (targetIndex === 0 && currentSlides.length === 1) {
+                  // only one slide - can not be delete - error popup
+                  errorPopUp("Error", "Can not delete the only slide");
+                  return;
+                } else if (targetIndex === currentSlides.length - 1) {
                   nextSlideId = currentSlides[targetIndex - 1].slideId;
                 } else {
                   nextSlideId = currentSlides[targetIndex + 1].slideId;
@@ -165,7 +170,6 @@ const DescList = ({
           key={slide.slideId}
           className="flex w-full h-24 justify-center items-center gap-2"
         >
-          {/* TODO: Implement the DescSlide component - hard code */}
           <div className=" self-end pb-2 ">{index + 1}</div>
 
           <div
@@ -219,9 +223,48 @@ function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedSlideId, setSelectedSlideId] = useState(1);
   const { presentationId } = useParams();
+  const [currentSlides, setCurrentSlides] = React.useState([]);
+
+  // Function to handle the edit button click
+  const handleArrowKeyPress = (e) => {
+    if (e.key === "ArrowLeft") {
+      // Move the selected slide to the previous slide
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId
+      );
+      console.log(currentSlides);
+      console.log("selectedSlideId", selectedSlideId);
+      console.log(targetIndex);
+
+      if (targetIndex > 0) {
+        setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+      }
+    } else if (e.key === "ArrowRight") {
+      // Move the selected slide to the next slide
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId
+      );
+      console.log(currentSlides);
+      console.log("selectedSlideId", selectedSlideId);
+      console.log(targetIndex);
+
+      if (targetIndex < currentSlides.length - 1) {
+        setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("keydown", handleArrowKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleArrowKeyPress);
+    };
+  }, [currentSlides, selectedSlideId]);
 
   // get the current slides from the backend
   React.useEffect(() => {
+    // Add event listener for keydown event
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
       const presentation = response.store.presentations.find(
@@ -229,17 +272,15 @@ function PresentationPage() {
       );
 
       // Get the current presentation and slides
-      console.log("这里: ", presentation);
       setCurrentPresentation(presentation);
-      setCurrentSlides(presentation.slides);
+      setCurrentSlides((current) => presentation.slides);
     };
+
     getPresentationDetail();
   }, []);
 
   const [currentPresentation, setCurrentPresentation] =
     React.useState(undefined);
-
-  const [currentSlides, setCurrentSlides] = React.useState([]);
 
   const styles = {
     sider: {
@@ -289,20 +330,27 @@ function PresentationPage() {
         <Header style={styles.header}>
           <HeaherPresent />
         </Header>
+
         <Content style={styles.content}>
           <Splitter
             style={{
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Splitter.Panel defaultSize="20%" min="20%" max="70%">
-              <DescList
-                currentSlides={currentSlides}
-                setCurrentSlides={setCurrentSlides}
-                selectedSlideId={selectedSlideId}
-                setSelectedSlideId={setSelectedSlideId}
-                presentationId={presentationId}
-              />
+            <Splitter.Panel style={{ flex: "none" }}>
+              {" "}
+              {/* Set flex to "none" for fixed width */}
+              <div style={{ width: "250px" }}>
+                {" "}
+                {/* Fixed width container */}
+                <DescList
+                  currentSlides={currentSlides}
+                  setCurrentSlides={setCurrentSlides}
+                  selectedSlideId={selectedSlideId}
+                  setSelectedSlideId={setSelectedSlideId}
+                  presentationId={presentationId}
+                />
+              </div>
             </Splitter.Panel>
 
             <Splitter.Panel>

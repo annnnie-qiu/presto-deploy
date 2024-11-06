@@ -26,7 +26,6 @@ export async function apiCall(
   if (method !== "GET") {
     fetchOptions.body = JSON.stringify(body);
   }
-  console.log("fetchOptions:", fetchOptions);
 
   try {
     const response = await fetch(targetAddress, fetchOptions);
