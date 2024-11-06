@@ -12,6 +12,7 @@ const { Meta } = Card;
 
 const DashboardPresentationList = ({
   presentations = [],
+  darkMode,
   refetchPresentations,
 }) => {
   const navigate = useNavigate();
@@ -226,21 +227,27 @@ const DashboardPresentationList = ({
         onCancel={() => setIsModalVisible(false)}
         okText="Save"
       >
-        <Input
-          name="name"
-          placeholder="Enter presentation name"
-          value={presentationUpdates.name}
-          onChange={handleInputChange}
-          onKeyDown={handleEnterKeyPress}
-        />
-        <Input.TextArea
-          name="description"
-          placeholder="Enter presentation description"
-          value={presentationUpdates.description}
-          onChange={handleInputChange}
-          onKeyDown={handleEnterKeyPress}
-          rows={4}
-        />
+        <div style={{ marginBottom: "10px" }}>
+          <Typography.Text strong>Name:</Typography.Text>
+          <Input
+            name="name"
+            placeholder="Enter presentation name"
+            value={presentationUpdates.name}
+            onChange={handleInputChange}
+            onKeyDown={handleEnterKeyPress}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <Typography.Text strong>Description:</Typography.Text>
+          <Input.TextArea
+            name="description"
+            placeholder="Enter presentation description"
+            value={presentationUpdates.description}
+            onChange={handleInputChange}
+            onKeyDown={handleEnterKeyPress}
+            rows={4}
+          />
+        </div>
       </Modal>
     </>
   );
