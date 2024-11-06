@@ -340,7 +340,7 @@ function PresentationPage() {
             <Splitter.Panel style={{ flex: "none" }}>
               {" "}
               {/* Set flex to "none" for fixed width */}
-              <div style={{ width: "300px" }}>
+              <div style={{ width: "250px" }}>
                 {" "}
                 {/* Fixed width container */}
                 <DescList

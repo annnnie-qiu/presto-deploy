@@ -46,23 +46,15 @@ function HeaherPresent() {
 
     // update to the backend
     sendDetail(localStorage.getItem("token"), store),
-      // navigate to the dashboard
-      navigate(`/dashboard`);
+    // navigate to the dashboard
+    navigate(`/dashboard`);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
-  // State to track the current value of the input
-  const [inputValue, setInputValue] = useState(currentPresentation?.name || "");
-
-  // Handler for input change
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setInputValue(value);
-    console.log("Current input value:", value); // Log the updated value
-  };
+  const [newPresentationName, setNewPresentationName] = useState("");
 
   // get the current slides from the backend
   React.useEffect(() => {
@@ -86,7 +78,35 @@ function HeaherPresent() {
       <Typography.Title level={3} type="secondary">
         <div className="flex gap-1">
           {/* display the current presentation name */}
-          <Input value={currentPresentation?.name} />
+          <Input
+            value={currentPresentation?.name}
+            onChange={(text) => {
+              console.log("text", text.target.value);
+              console.log("currentPresentation", currentPresentation);
+              // update the name in the backend
+              const { store } = updateDetails;
+              console.log("store", store);
+              // update the name of the presentation with the given ID
+              store.presentations = store.presentations.map((presentation) =>{
+                if (presentation.id == presentationId) {
+                  // Update the name
+                  return {
+                    ...presentation,
+                    name: text.target.value,
+                  };
+                }
+                return presentation;
+              });
+              console.log("store", store);
+              // update the current presentation na,e
+              setCurrentPresentation({
+                ...currentPresentation,
+                name: text.target.value,
+              });
+              // update to the backend
+              sendDetail(localStorage.getItem("token"), store);
+            }}
+          />
           {/* display the delete presentation icon */}
           <Tooltip placement="right" title={"Delete the current presentation"}>
             <DeleteTwoTone className="pl-2 text-sm" onClick={showModal} />
