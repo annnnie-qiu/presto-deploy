@@ -31,28 +31,28 @@ function HeaherPresent() {
     setIsModalOpen(true);
   };
 
+  const { presentationId } = useParams();
+  const [currentPresentation, setCurrentPresentation] =
+    React.useState(undefined);
+
+  console.log(presentationId);
+
   const handleOk = () => {
     setIsModalOpen(false);
     // delete the presentation from the backend and navigate to the dashboard
     const { store } = updateDetails;
-    store.presentations = store.presentations.filter(
-      (presentation) => presentation.id == presentationId,
-      // pop out the presentation with the given ID
-      store.presentations.pop(presentationId),
-      // update to the backend
-      sendDetail(localStorage.getItem("token"), store),
-      // navigate to the dashboard
-      navigate(`/dashboard`)
-    );
+    // pop out the presentation with the given ID
+    store.presentations = store.presentations.filter((presentation) => presentation.id != presentationId);
+
+    // update to the backend
+    sendDetail(localStorage.getItem("token"), store),
+    // navigate to the dashboard
+    navigate(`/dashboard`)
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-
-  const { presentationId } = useParams();
-  const [currentPresentation, setCurrentPresentation] =
-    React.useState(undefined);
 
   // get the current slides from the backend
   React.useEffect(() => {

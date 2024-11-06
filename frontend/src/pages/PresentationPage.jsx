@@ -10,6 +10,7 @@ import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { useParams } from "react-router-dom";
+import { errorPopUp } from "../../utils/errorPopUp";
 
 const Tooltips = (
   currentSlides,
@@ -112,7 +113,12 @@ const Tooltips = (
 
                 // Find the next slide ID
                 let nextSlideId;
-                if (targetIndex === currentSlides.length - 1) {
+                if (targetIndex === 0 && currentSlides.length === 1) {
+                  // only one slide - can not be delete - error popup
+                  errorPopUp("Error", "Can not delete the only slide");
+                  return;
+                }
+                else if (targetIndex === currentSlides.length - 1) {
                   nextSlideId = currentSlides[targetIndex - 1].slideId;
                 } else {
                   nextSlideId = currentSlides[targetIndex + 1].slideId;
