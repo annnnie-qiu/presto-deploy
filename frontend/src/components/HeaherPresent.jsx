@@ -11,6 +11,7 @@ import {
 import { useParams } from "react-router-dom";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import ToastNotification from "../components/ToastNotification";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
 
 function HeaherPresent() {
@@ -62,6 +63,46 @@ function HeaherPresent() {
     setIsModalOpen(false);
   };
 
+  // // Function to handle the thumbnail upload
+  // const handleThumbnailUpload = async (event) => {
+  //   const file = event.target.files[0];
+  //   if (!file) {
+  //     return;
+  //   }
+
+  //   // Create a URL for the uploaded file
+  //   const uploadImageUrl = URL.createObjectURL(file);
+
+  //   try {
+  //     const storeResponse = await getDetail(localStorage.getItem("token"));
+  //     const { store } = storeResponse;
+
+  //     // Find and update the current presentation with the new thunmbnail URL
+  //     store.presentations = store.presentations.map((presentation) => {
+  //       if (presentation.id === parseInt(presentationId, 10)) {
+  //         return {
+  //           ...presentation,
+  //           thumbnail: uploadImageUrl,
+  //         };
+  //       }
+  //       return presentation;
+  //     });
+
+  //     // Update the state with the new presentation
+  //     setCurrentPresentation((prev) => ({
+  //       ...prev,
+  //       thumbnail: uploadImageUrl,
+  //     }));
+
+  //     // Send the updated 'store' data to the backend to hold this change
+  //     await sendDetail(localStorage.getItem("token"), store);
+  //     showSuccessToast("Thumbnail uploaded successfully!");
+  //   } catch (error) {
+  //     console.error("Error updating thumbnail:", error);
+  //     showErrorToast("Failed to upload thumbnail :(");
+  //   }
+  // };
+
   // Function to handle the thumbnail upload
   const handleThumbnailUpload = async (event) => {
     const file = event.target.files[0];
@@ -69,37 +110,44 @@ function HeaherPresent() {
       return;
     }
 
-    // Create a URL for the uploaded file
-    const uploadImageUrl = URL.createObjectURL(file);
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64String = reader.result;
 
-    try {
-      const storeResponse = await getDetail(localStorage.getItem("token"));
-      const { store } = storeResponse;
+      try {
+        const storeResponse = await getDetail(localStorage.getItem("token"));
+        const { store } = storeResponse;
 
-      // Find and update the current presentation with the new thunmbnail URL
-      store.presentations = store.presentations.map((presentation) => {
-        if (presentation.id === parseInt(presentationId, 10)) {
-          return {
-            ...presentation,
-            thumbnail: uploadImageUrl,
-          };
-        }
-        return presentation;
-      });
+        // Find and update the current presentation with the new thumbnail base64 string
+        store.presentations = store.presentations.map((presentation) => {
+          if (presentation.id === parseInt(presentationId, 10)) {
+            return {
+              ...presentation,
+              thumbnail: base64String,
+            };
+          }
+          return presentation;
+        });
 
-      // Update the state with the new presentation
-      setCurrentPresentation((prev) => ({
-        ...prev,
-        thumbnail: uploadImageUrl,
-      }));
+        // Update the state with the new presentation
+        setCurrentPresentation((prev) => ({
+          ...prev,
+          thumbnail: base64String,
+        }));
 
-      // Send the updated 'store' data to the backend to hold this change
-      await sendDetail(localStorage.getItem("token"), store);
-      showSuccessToast("Thumbnail uploaded successfully!");
-    } catch (error) {
-      console.error("Error updating thumbnail:", error);
-      showErrorToast("Failed to upload thumbnail :(");
-    }
+        // Save the base64 string to localStorage
+        localStorage.setItem(`thumbnail-${presentationId}`, base64String);
+
+        // Send the updated 'store' data to the backend to hold this change
+        await sendDetail(localStorage.getItem("token"), store);
+        showSuccessToast("Thumbnail uploaded successfully!");
+      } catch (error) {
+        console.error("Error updating thumbnail:", error);
+        showErrorToast("Failed to upload thumbnail :(");
+      }
+    };
+
+    reader.readAsDataURL(file); // Convert file to base64
   };
 
   const [newPresentationName, setNewPresentationName] = useState("");
@@ -193,7 +241,11 @@ function HeaherPresent() {
       >
         <p>Are you sure?</p>
       </Modal>
+      {/* Include ToastNotification to handle toast notifications */}
+      <ToastNotification />
     </Flex>
+
+    
   );
 }
 
