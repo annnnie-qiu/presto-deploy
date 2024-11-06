@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Avatar, Flex, Typography, Modal, Tooltip, Input } from "antd";
+import { Avatar, Flex, Typography, Modal, Tooltip, Input, Button } from "antd";
 import { useNavigate } from "react-router-dom";
-import { DeleteTwoTone } from "@ant-design/icons";
+import { DeleteTwoTone, CloudUploadOutlined } from "@ant-design/icons";
 import Search from "antd/es/transfer/search";
 import {
   MessageOutlined,
@@ -11,6 +11,7 @@ import {
 import { useParams } from "react-router-dom";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
 
 function HeaherPresent() {
   const styles = {
@@ -22,6 +23,13 @@ function HeaherPresent() {
       color: "#4f6f52",
       cursor: "pointer",
     },
+    uploadThumbnail: {
+      opacity: "0",
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      cursor: "pointer",
+    }
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updateDetails, setUpdateDetails] = useState({});
@@ -52,6 +60,46 @@ function HeaherPresent() {
 
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  // Function to handle the thumbnail upload
+  const handleThumbnailUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    // Create a URL for the uploaded file
+    const uploadImageUrl = URL.createObjectURL(file);
+
+    try {
+      const storeResponse = await getDetail(localStorage.getItem("token"));
+      const { store } = storeResponse;
+
+      // Find and update the current presentation with the new thunmbnail URL
+      store.presentations = store.presentations.map((presentation) => {
+        if (presentation.id === parseInt(presentationId, 10)) {
+          return {
+            ...presentation,
+            thumbnail: uploadImageUrl,
+          };
+        }
+        return presentation;
+      });
+
+      // Update the state with the new presentation
+      setCurrentPresentation((prev) => ({
+        ...prev,
+        thumbnail: uploadImageUrl,
+      }));
+
+      // Send the updated 'store' data to the backend to hold this change
+      await sendDetail(localStorage.getItem("token"), store);
+      showSuccessToast("Thumbnail uploaded successfully!");
+    } catch (error) {
+      console.error("Error updating thumbnail:", error);
+      showErrorToast("Failed to upload thumbnail :(");
+    }
   };
 
   const [newPresentationName, setNewPresentationName] = useState("");
@@ -110,6 +158,18 @@ function HeaherPresent() {
           {/* display the delete presentation icon */}
           <Tooltip placement="right" title={"Delete the current presentation"}>
             <DeleteTwoTone className="pl-2 text-sm" onClick={showModal} />
+          </Tooltip>
+
+          {/* Upload Thumbnail Icon */}
+          <Tooltip placement="right" title={"Upload Thumbnail"}>
+            <Button type="text" icon={<CloudUploadOutlined />}>
+              <input
+                type="file"
+                accept="image/*"
+                style={styles.uploadThumbnail}
+                onChange={handleThumbnailUpload}
+              />
+            </Button>
           </Tooltip>
         </div>
       </Typography.Title>
