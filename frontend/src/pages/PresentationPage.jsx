@@ -11,6 +11,7 @@ import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { useParams } from "react-router-dom";
 import { errorPopUp } from "../../utils/errorPopUp";
+import { showErrorToast } from "../../utils/toastUtils";
 
 const Tooltips = (
   currentSlides,
@@ -168,7 +169,7 @@ const DescList = ({
       {currentSlides.map((slide, index) => (
         <div
           key={slide.slideId}
-          className="flex w-full h-24 justify-center items-center gap-2"
+          className="flex w-full h-24 justify-center items-center gap-2 size-4"
         >
           <div className=" self-end pb-2 ">{index + 1}</div>
 
@@ -199,24 +200,23 @@ const DescList = ({
   </div>
 );
 
-const DescSlide = (props) => (
-  <Flex
-    justify="center"
-    align="center"
-    style={{
-      height: "100%",
-    }}
-  >
-    <Typography.Title
-      type="secondary"
-      level={5}
-      style={{
-        whiteSpace: "nowrap",
-      }}
+const DescSlide = (
+  currentSlides,
+  setCurrentSlides,
+  presentationId,
+  selectedSlideId,
+  setSelectedSlideId
+) => (
+  // TODO: hard code now
+  <div className="flex h-full w-full justify-center items-center">
+    <div
+      className={
+        "bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
+      }
     >
-      {props.text}
-    </Typography.Title>
-  </Flex>
+      {"check"}
+    </div>
+  </div>
 );
 
 function PresentationPage() {
@@ -238,6 +238,9 @@ function PresentationPage() {
 
       if (targetIndex > 0) {
         setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+      } else {
+        // the first slide - can not move to the previous slide - error popup
+        showErrorToast("This is the first slide now");
       }
     } else if (e.key === "ArrowRight") {
       // Move the selected slide to the next slide
@@ -250,6 +253,9 @@ function PresentationPage() {
 
       if (targetIndex < currentSlides.length - 1) {
         setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+      } else {
+        // the last slide - can not move to the next slide - error popup
+        showErrorToast("This is the last slide now");
       }
     }
   };
@@ -337,11 +343,11 @@ function PresentationPage() {
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Splitter.Panel style={{ flex: "none" }}>
-              {" "}
+            <Splitter.Panel className="flex">
+              {/* {" "} */}
               {/* Set flex to "none" for fixed width */}
-              <div style={{ width: "250px" }}>
-                {" "}
+              <div style={{ width: "200px" }}>
+                {/* {" "} */}
                 {/* Fixed width container */}
                 <DescList
                   currentSlides={currentSlides}
