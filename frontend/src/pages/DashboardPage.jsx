@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Flex, Layout, Modal, Input } from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
@@ -11,7 +11,7 @@ import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail
 import "react-toastify/dist/ReactToastify.css";
 import ToastNotification from "../components/ToastNotification";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
-import { apiCall } from "../../utils/API/apiCall";
+import { debounce } from 'lodash';
 // import DashboardSideContent from '../components/DashboardSideContent';
 
 const { Sider, Header, Content } = Layout;
@@ -99,10 +99,20 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
     setNewPresentationName("");
   };
 
+  const debounceTimeout = useRef(null);
+
   // Function to handle the create button by 'Enter' key
   const handleEnterKeyPress = (e) => {
     if (e.key === "Enter") {
-      handleCreateNewPresentation();
+      // clear the previous timer
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+      
+      // set a new timer debounce
+      debounceTimeout.current = setTimeout(() => {
+        handleCreateNewPresentation();
+      }, 500); // set a 500ms debounce
     }
   };
 
