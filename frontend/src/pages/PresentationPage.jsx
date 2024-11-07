@@ -54,31 +54,19 @@ const Tooltips = (
                 const response = await getDetail(token);
                 const { store } = response;
 
-                // Find the next available slide ID from the store
                 const nextAvailableSlideId = store.presentations.find(
                   (item) => item.id == presentationId
                 ).nextSlideId;
 
-                // Find the index of the selected slide
-                const targetIndex = currentSlides.findIndex(
-                  (slide) => slide.slideId === selectedSlideId
-                );
+                const newSlide = {
+                  slideId: nextAvailableSlideId,
+                  content: `Slide ${nextAvailableSlideId}`,
+                };
 
-                // Insert a new slide after it
-                const newSlideList = currentSlides
-                  .slice(0, targetIndex + 1)
-                  .concat({
-                    slideId: nextAvailableSlideId,
-                    content: "",
-                  })
-                  .concat(currentSlides.slice(targetIndex + 1));
-
+                const newSlideList = [...currentSlides, newSlide];
                 setCurrentSlides(newSlideList);
-
                 setSelectedSlideId(nextAvailableSlideId);
 
-                // Find the corresponding presentation
-                // And update the numSlides and change the slides array to the latest version
                 for (let i = 0; i < store.presentations.length; i++) {
                   if (store.presentations[i].id == presentationId) {
                     store.presentations[i].numSlides = nextAvailableSlideId;
@@ -106,17 +94,13 @@ const Tooltips = (
                 const response = await getDetail(token);
                 const { store } = response;
 
-                // Find the id of the next selected slide, if the current selected slide is the last slide, then the next slide is the previous slide
-                // Otherwise, the next slide is the next slide
                 const targetIndex = currentSlides.findIndex(
                   (slide) => slide.slideId === selectedSlideId
                 );
 
-                // Find the next slide ID
                 let nextSlideId;
                 if (targetIndex === 0 && currentSlides.length === 1) {
-                  // only one slide - can not be delete - error popup
-                  errorPopUp("Error", "Can not delete the only slide");
+                  errorPopUp("Error", "Cannot delete the only slide");
                   return;
                 } else if (targetIndex === currentSlides.length - 1) {
                   nextSlideId = currentSlides[targetIndex - 1].slideId;
@@ -124,20 +108,15 @@ const Tooltips = (
                   nextSlideId = currentSlides[targetIndex + 1].slideId;
                 }
 
-                // Find the corresponding presentation
                 for (let i = 0; i < store.presentations.length; i++) {
                   if (store.presentations[i].id == presentationId) {
-                    // delete the slide with the given ID
                     store.presentations[i].slides = store.presentations[
                       i
                     ].slides.filter(
                       (slide) => slide.slideId != selectedSlideId
                     );
-                    // update the nextSlideId
                     setCurrentSlides(store.presentations[i].slides);
                     setSelectedSlideId(nextSlideId);
-
-                    // update the numSlides
                     store.presentations[i].numSlides =
                       store.presentations[i].slides.length;
                     await sendDetail(token, store);
@@ -165,14 +144,13 @@ const DescList = ({
   presentationId,
 }) => (
   <div className="flex h-full w-full">
-    <div className="grow flex flex-col gap-2 items-center h-full py-2">
+    <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
       {currentSlides.map((slide, index) => (
         <div
           key={slide.slideId}
           className="flex w-full h-24 justify-center items-center gap-2 size-4"
         >
-          <div className=" self-end pb-2 ">{index + 1}</div>
-
+          <div className="self-end pb-2">{index + 1}</div>
           <div
             onClick={() => {
               setSelectedSlideId(slide.slideId);
@@ -188,7 +166,7 @@ const DescList = ({
         </div>
       ))}
     </div>
-    <div className=" w-8 h-ful">
+    <div className="w-8 h-full">
       {Tooltips(
         currentSlides,
         setCurrentSlides,
@@ -200,21 +178,23 @@ const DescList = ({
   </div>
 );
 
-const DescSlide = (
+const DescSlide = ({
   currentSlides,
   setCurrentSlides,
   presentationId,
   selectedSlideId,
-  setSelectedSlideId
-) => (
-  // TODO: hard code now
+}) => (
   <div className="flex h-full w-full justify-center items-center">
-    <div
-      className={
-        "bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
-      }
-    >
-      {"check"}
+    <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
+      {currentSlides?.map((slide) => {
+        if (slide.slideId === selectedSlideId) {
+          return (
+            <div key={slide.slideId} className="h-full w-full">
+              {slide.content}
+            </div>
+          );
+        }
+      })}
     </div>
   </div>
 );
@@ -225,36 +205,23 @@ function PresentationPage() {
   const { presentationId } = useParams();
   const [currentSlides, setCurrentSlides] = React.useState([]);
 
-  // Function to handle the edit button click
   const handleArrowKeyPress = (e) => {
     if (e.key === "ArrowLeft") {
-      // Move the selected slide to the previous slide
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
-      console.log(currentSlides);
-      console.log("selectedSlideId", selectedSlideId);
-      console.log(targetIndex);
-
       if (targetIndex > 0) {
         setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
       } else {
-        // the first slide - can not move to the previous slide - error popup
         showErrorToast("This is the first slide now");
       }
     } else if (e.key === "ArrowRight") {
-      // Move the selected slide to the next slide
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
-      console.log(currentSlides);
-      console.log("selectedSlideId", selectedSlideId);
-      console.log(targetIndex);
-
       if (targetIndex < currentSlides.length - 1) {
         setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
       } else {
-        // the last slide - can not move to the next slide - error popup
         showErrorToast("This is the last slide now");
       }
     }
@@ -262,26 +229,20 @@ function PresentationPage() {
 
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
-
     return () => {
       window.removeEventListener("keydown", handleArrowKeyPress);
     };
   }, [currentSlides, selectedSlideId]);
 
-  // get the current slides from the backend
   React.useEffect(() => {
-    // Add event listener for keydown event
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
       const presentation = response.store.presentations.find(
         (presentation) => presentation.id == presentationId
       );
-
-      // Get the current presentation and slides
       setCurrentPresentation(presentation);
-      setCurrentSlides((current) => presentation.slides);
+      setCurrentSlides(presentation.slides);
     };
-
     getPresentationDetail();
   }, []);
 
@@ -343,12 +304,13 @@ function PresentationPage() {
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Splitter.Panel className="flex">
-              {/* {" "} */}
-              {/* Set flex to "none" for fixed width */}
-              <div style={{ width: "200px" }}>
-                {/* {" "} */}
-                {/* Fixed width container */}
+            <Splitter.Panel
+              defaultSize="20%"
+              min="20%"
+              max="70%"
+              className="max-h-screen overflow-y-auto"
+            >
+              <div className="h-full">
                 <DescList
                   currentSlides={currentSlides}
                   setCurrentSlides={setCurrentSlides}
@@ -360,7 +322,12 @@ function PresentationPage() {
             </Splitter.Panel>
 
             <Splitter.Panel>
-              <DescSlide text="Second" />
+              <DescSlide
+                currentSlides={currentSlides}
+                presentationId={presentationId}
+                selectedSlideId={selectedSlideId}
+                text="Second"
+              />
             </Splitter.Panel>
           </Splitter>
         </Content>
