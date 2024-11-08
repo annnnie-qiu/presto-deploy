@@ -12,6 +12,7 @@ import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail
 import { useParams } from "react-router-dom";
 import { errorPopUp } from "../../utils/errorPopUp";
 import { showErrorToast } from "../../utils/toastUtils";
+import PresentationText from "../components/presentationItem/PresentationText";
 
 const Tooltips = (
   currentSlides,
@@ -143,7 +144,7 @@ const DescList = ({
   setSelectedSlideId,
   presentationId,
 }) => (
-  <div className="flex h-full w-full">
+  <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
       {currentSlides.map((slide, index) => (
         <div
@@ -191,6 +192,7 @@ const DescSlide = ({
           return (
             <div key={slide.slideId} className="h-full w-full">
               {slide.content}
+              <PresentationText />
             </div>
           );
         }
