@@ -28,7 +28,10 @@ const Tooltips = (
   setCurrentSlides,
   presentationId,
   selectedSlideId,
-  setSelectedSlideId
+  setSelectedSlideId,
+  showModal,
+  handleCancel,
+  isModalOpen
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -43,14 +46,9 @@ const Tooltips = (
     };
   }, [arrow]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
   const handleOk = async () => {
     console.log(textSizeLength);
-    setIsModalOpen(false);
+    handleCancel();
     // save the text to the backend
     const token = localStorage.getItem("token");
     const response = await getDetail(token);
@@ -74,8 +72,10 @@ const Tooltips = (
         textFontSize: textFontSize,
         textFontColor: textFontColor,
         zIndex: zIndex,
+        id: currentSlides[targetIndex].nextElementId,
       },
     ];
+
     console.log("newContent", newContent);
 
     setZIndex(zIndex + 1);
@@ -83,6 +83,7 @@ const Tooltips = (
     const newSlideList = currentSlides.map((slide) => {
       if (slide.slideId === selectedSlideId) {
         slide.content = newContent;
+        slide.nextElementId = slide.nextElementId + 1;
       }
       return slide;
     });
@@ -97,10 +98,6 @@ const Tooltips = (
       }
     }
     await sendDetail(token, store);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
   };
 
   const [form] = Form.useForm();
@@ -146,6 +143,7 @@ const Tooltips = (
                 const newSlide = {
                   slideId: nextAvailableSlideId,
                   content: [],
+                  nextElementId: 1,
                 };
 
                 const newSlideList = [...currentSlides, newSlide];
@@ -324,6 +322,9 @@ const DescList = ({
   selectedSlideId,
   setSelectedSlideId,
   presentationId,
+  showModal,
+  handleCancel,
+  isModalOpen,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -352,7 +353,10 @@ const DescList = ({
         setCurrentSlides,
         presentationId,
         selectedSlideId,
-        setSelectedSlideId
+        setSelectedSlideId,
+        showModal,
+        handleCancel,
+        isModalOpen
       )}
     </div>
   </div>
@@ -363,6 +367,7 @@ const DescSlide = ({
   setCurrentSlides,
   presentationId,
   selectedSlideId,
+  showModal,
 }) => (
   <div className="flex h-full w-full justify-center items-center">
     <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
@@ -370,7 +375,15 @@ const DescSlide = ({
         if (slide.slideId === selectedSlideId) {
           return slide.content?.map((element) => {
             if (element.type === "text") {
-              return <PresentationText key={element.id} data={element} />; // Use a unique key for each element
+              return (
+                <PresentationText
+                  showModal={showModal}
+                  key={element.id}
+                  data={element}
+                  selectedSlideId={selectedSlideId}
+                  presentationId={presentationId}
+                />
+              ); // Use a unique key for each element
             }
             return null;
           });
@@ -386,6 +399,15 @@ function PresentationPage() {
   const [selectedSlideId, setSelectedSlideId] = useState(1);
   const { presentationId } = useParams();
   const [currentSlides, setCurrentSlides] = React.useState([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   const handleArrowKeyPress = (e) => {
     if (e.key === "ArrowLeft") {
@@ -499,6 +521,9 @@ function PresentationPage() {
                   selectedSlideId={selectedSlideId}
                   setSelectedSlideId={setSelectedSlideId}
                   presentationId={presentationId}
+                  showModal={showModal}
+                  handleCancel={handleCancel}
+                  isModalOpen={isModalOpen}
                 />
               </div>
             </Splitter.Panel>
@@ -508,6 +533,7 @@ function PresentationPage() {
                 currentSlides={currentSlides}
                 presentationId={presentationId}
                 selectedSlideId={selectedSlideId}
+                showModal={showModal}
                 text="Second"
               />
             </Splitter.Panel>
