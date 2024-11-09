@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import HeaherPresent from "../components/HeaherPresent";
 import { Button, Flex, Layout, Modal } from "antd";
-import { Splitter, Form, ColorPicker, Input } from "antd";
+import { Splitter, Form, ColorPicker, Input, InputNumber } from "antd";
 const { Sider, Header, Content } = Layout;
 import {
   MenuUnfoldOutlined,
@@ -47,9 +47,46 @@ const Tooltips = (
   const showModal = () => {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
+
+  const handleOk =async () => {
+    console.log(textSizeLength);
     setIsModalOpen(false);
+    // save the text to the backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+
+    const newContent = {
+      ...currentSlides[targetIndex],
+      textInput: textInput,
+      textSizeLength: textSizeLength,
+      textSizeWidth: textSizeWidth,
+      textFontSize: textFontSize,
+      textFontColor: textFontColor,
+      zIndex: zIndex,
+
+    };
+    setZIndex(zIndex + 1);
+
+    setCurrentSlides(
+      currentSlides.map((slide) =>
+        slide.slideId === selectedSlideId ? newContent : slide
+      )
+    );
+
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides[targetIndex] = newContent;
+        break;
+      }
+    }
+    await sendDetail(token, store);
   };
+
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -60,6 +97,14 @@ const Tooltips = (
     setFormLayout(layout);
   };
   const { TextArea } = Input;
+
+  // for the text input
+  const [textSizeLength, setTextSizeLength] = useState(0);
+  const [textSizeWidth, setTextSizeWidth] = useState(0);
+  const [textInput, setTextInput] = useState("");
+  const [textFontSize, setTextFontSize] = useState(2);
+  const [textFontColor, setTextFontColor] = useState("#111111");
+  const [zIndex, setZIndex] = useState(0);
 
   return (
     <ConfigProvider
@@ -168,8 +213,9 @@ const Tooltips = (
               <Button onClick={showModal}>
                 <FileTextOutlined />
               </Button>
+
               <Modal
-                title="Basic Modal"
+                title="Input Text"
                 open={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}
@@ -185,20 +231,54 @@ const Tooltips = (
                     maxWidth: formLayout === "inline" ? "none" : 600,
                   }}
                 >
-                  <Form.Item label="Size of the text area">
-                    <Input placeholder="input placeholder" />
+                  <Form.Item label="Size length">
+                    <Input
+                      placeholder="input placeholder"
+                      onChange={(e) => {
+                        setTextSizeLength(e.target.value);
+                      }}
+                    />
                   </Form.Item>
+
+                  <Form.Item label="Size width">
+                    <Input
+                      placeholder="input placeholder"
+                      onChange={(e) => {
+                        setTextSizeWidth(e.target.value);
+                      }}
+                    />
+                  </Form.Item>
+
                   <Form.Item label="Text in the textarea">
                     <TextArea
                       placeholder="input your text here"
                       autoSize={{ minRows: 1, maxRows: 4 }}
+                      onChange={(e) => {
+                        setTextInput(e.target.value);
+                      }}
                     />
                   </Form.Item>
                   <Form.Item label="Font size of the text ">
-                    <Input addonAfter="em" defaultValue="2" />
+                    <InputNumber
+                      min={1}
+                      max={100}
+                      defaultValue={3}
+                      addonAfter="em"
+                      changeOnWheel
+                      onChange={(e) => {
+                        setTextFontSize(e.target.value);
+                      }}
+                    />
                   </Form.Item>
                   <Form.Item label="Font color of the text">
-                    <ColorPicker defaultValue="#111111" showText allowClear />
+                    <ColorPicker
+                      defaultValue="#111111"
+                      showText
+                      allowClear
+                      onChange={(e) => {
+                        setTextFontColor(e.target.value);
+                      }}
+                    />
                   </Form.Item>
                 </Form>
               </Modal>
@@ -281,7 +361,7 @@ const DescSlide = ({
           return (
             <div key={slide.slideId} className="h-full w-full">
               {slide.content}
-              <PresentationText />
+              {/* <PresentationText selectedSlideId={selectedSlideId} currentSlides={currentSlides}/> */}
             </div>
           );
         }
