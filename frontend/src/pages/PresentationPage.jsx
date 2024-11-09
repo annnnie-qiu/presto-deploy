@@ -283,7 +283,78 @@ function PresentationPage() {
   //
   const [selectedElementId, setSelectedElementId] = useState(undefined);
 
-  
+  const handleOk = async () => {
+    handleCancel();
+    // save the text to the backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    // Check if content already exists (edit mode) or is new (add mode)
+    const existingElementIndex = currentSlides[targetIndex].content.findIndex(
+      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
+    );
+    console.log("existingElementIndex", existingElementIndex);
+    let newContent;
+    if (existingElementIndex !== -1) {
+      // Edit mode
+      // Update existing content
+      newContent = currentSlides[targetIndex].content.map((element, index) =>
+        index === existingElementIndex
+          ? {
+            ...element,
+            textInput: textInput,
+            textSizeLength: textSizeLength,
+            textSizeWidth: textSizeWidth,
+            textFontSize: textFontSize,
+            textFontColor: textFontColor,
+            zIndex: zIndex,
+          }
+          : element
+      );
+    } else {
+      // put them into content list and update the currentSlides
+      newContent = [
+        ...currentSlides[targetIndex].content,
+        {
+          type: "text",
+          textInput: textInput,
+          textSizeLength: textSizeLength,
+          textSizeWidth: textSizeWidth,
+          textFontSize: textFontSize,
+          textFontColor: textFontColor,
+          zIndex: zIndex,
+          id: currentSlides[targetIndex].nextElementId,
+        },
+      ];
+    }
+
+    console.log("newContent", newContent);
+
+    setZIndex(zIndex + 1);
+
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        slide.content = newContent;
+        slide.nextElementId = slide.nextElementId + 1;
+      }
+      return slide;
+    });
+
+    setCurrentSlides(newSlideList);
+    console.log("newSlideList", newSlideList);
+
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlideList;
+        break;
+      }
+    }
+    await sendDetail(token, store);
+  };
+
   const [form] = Form.useForm();
   const [formLayout, setFormLayout] = useState("horizontal");
   const onFormLayoutChange = ({ layout }) => {
