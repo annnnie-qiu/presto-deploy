@@ -48,7 +48,7 @@ const Tooltips = (
     setIsModalOpen(true);
   };
 
-  const handleOk =async () => {
+  const handleOk = async () => {
     console.log(textSizeLength);
     setIsModalOpen(false);
     // save the text to the backend
@@ -58,34 +58,46 @@ const Tooltips = (
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
+    console.log("targetIndex", targetIndex);
+    console.log("currentSlides", currentSlides);
+    console.log("currentPresentation", store.presentations);
+    console.log(textFontColor);
 
-    const newContent = {
-      ...currentSlides[targetIndex],
-      textInput: textInput,
-      textSizeLength: textSizeLength,
-      textSizeWidth: textSizeWidth,
-      textFontSize: textFontSize,
-      textFontColor: textFontColor,
-      zIndex: zIndex,
+    // put them into content list and update the currentSlides
+    const newContent = [
+      ...currentSlides[targetIndex].content,
+      {
+        type: "text",
+        textInput: textInput,
+        textSizeLength: textSizeLength,
+        textSizeWidth: textSizeWidth,
+        textFontSize: textFontSize,
+        textFontColor: textFontColor,
+        zIndex: zIndex,
+      },
+    ];
+    console.log("newContent", newContent);
 
-    };
     setZIndex(zIndex + 1);
 
-    setCurrentSlides(
-      currentSlides.map((slide) =>
-        slide.slideId === selectedSlideId ? newContent : slide
-      )
-    );
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        slide.content = newContent;
+      }
+      return slide;
+    });
+
+    setCurrentSlides(newSlideList);
+    console.log("newSlideList", newSlideList);
 
     for (let i = 0; i < store.presentations.length; i++) {
       if (store.presentations[i].id == presentationId) {
-        store.presentations[i].slides[targetIndex] = newContent;
+        store.presentations[i].slides = newSlideList;
         break;
       }
     }
     await sendDetail(token, store);
   };
-
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -133,7 +145,7 @@ const Tooltips = (
 
                 const newSlide = {
                   slideId: nextAvailableSlideId,
-                  content: `Slide ${nextAvailableSlideId}`,
+                  content: [],
                 };
 
                 const newSlideList = [...currentSlides, newSlide];
@@ -270,13 +282,13 @@ const Tooltips = (
                       }}
                     />
                   </Form.Item>
+
                   <Form.Item label="Font color of the text">
                     <ColorPicker
-                      defaultValue="#111111"
-                      showText
+                      defaultValue={"#111111"}
                       allowClear
-                      onChange={(e) => {
-                        setTextFontColor(e.target.value);
+                      onChange={(temp, _) => {
+                        setTextFontColor(temp.toHexString());
                       }}
                     />
                   </Form.Item>
@@ -330,9 +342,7 @@ const DescList = ({
                 ? "border-blue-500"
                 : "border-inherit"
             }`}
-          >
-            {slide.content}
-          </div>
+          ></div>
         </div>
       ))}
     </div>
@@ -358,13 +368,14 @@ const DescSlide = ({
     <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
       {currentSlides?.map((slide) => {
         if (slide.slideId === selectedSlideId) {
-          return (
-            <div key={slide.slideId} className="h-full w-full">
-              {slide.content}
-              {/* <PresentationText selectedSlideId={selectedSlideId} currentSlides={currentSlides}/> */}
-            </div>
-          );
+          return slide.content?.map((element) => {
+            if (element.type === "text") {
+              return <PresentationText key={element.id} data={element} />; // Use a unique key for each element
+            }
+            return null;
+          });
         }
+        return null;
       })}
     </div>
   </div>

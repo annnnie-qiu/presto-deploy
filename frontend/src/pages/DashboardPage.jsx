@@ -132,7 +132,7 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       slides: [
         {
           slideId: 1,
-          content: "",
+          content: [],
         },
       ],
     };
