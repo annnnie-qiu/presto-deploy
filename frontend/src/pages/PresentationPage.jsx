@@ -1,12 +1,21 @@
 import React, { useMemo, useState } from "react";
 import HeaherPresent from "../components/HeaherPresent";
-import { Button, Flex, Layout, Input } from "antd";
-import { Splitter, Typography } from "antd";
+import { Button, Flex, Layout, Modal } from "antd";
+import { Splitter, Form, ColorPicker, Input } from "antd";
 const { Sider, Header, Content } = Layout;
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  FileTextOutlined,
+  FileImageOutlined,
+} from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import { ConfigProvider, Segmented, Tooltip } from "antd";
-import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  PlusCircleOutlined,
+  VideoCameraAddOutlined,
+} from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { useParams } from "react-router-dom";
@@ -33,6 +42,24 @@ const Tooltips = (
       pointAtCenter: true,
     };
   }, [arrow]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const [form] = Form.useForm();
+  const [formLayout, setFormLayout] = useState("horizontal");
+  const onFormLayoutChange = ({ layout }) => {
+    setFormLayout(layout);
+  };
+  const { TextArea } = Input;
 
   return (
     <ConfigProvider
@@ -128,6 +155,68 @@ const Tooltips = (
             >
               <Button>
                 <DeleteOutlined />
+              </Button>
+            </Tooltip>
+
+            <Tooltip
+              placement="right"
+              title={"put TEXT on the slide"}
+              onClick={async () => {
+                console.log("put text");
+              }}
+            >
+              <Button onClick={showModal}>
+                <FileTextOutlined />
+              </Button>
+              <Modal
+                title="Basic Modal"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+              >
+                <Form
+                  layout={formLayout}
+                  form={form}
+                  initialValues={{
+                    layout: formLayout,
+                  }}
+                  onValuesChange={onFormLayoutChange}
+                  style={{
+                    maxWidth: formLayout === "inline" ? "none" : 600,
+                  }}
+                >
+                  <Form.Item label="Size of the text area">
+                    <Input placeholder="input placeholder" />
+                  </Form.Item>
+                  <Form.Item label="Text in the textarea">
+                    <TextArea
+                      placeholder="input your text here"
+                      autoSize={{ minRows: 1, maxRows: 4 }}
+                    />
+                  </Form.Item>
+                  <Form.Item label="Font size of the text ">
+                    <Input addonAfter="em" defaultValue="2" />
+                  </Form.Item>
+                  <Form.Item label="Font color of the text">
+                    <ColorPicker defaultValue="#111111" showText allowClear />
+                  </Form.Item>
+                </Form>
+              </Modal>
+            </Tooltip>
+
+            <Tooltip
+              placement="right"
+              title={"put an IMAGE on the slide"}
+              arrow={mergedArrow}
+            >
+              <Button>
+                <FileImageOutlined />
+              </Button>
+            </Tooltip>
+
+            <Tooltip placement="right" title={"put a VIDEO on the slide"}>
+              <Button>
+                <VideoCameraAddOutlined />
               </Button>
             </Tooltip>
           </Flex>
