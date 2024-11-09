@@ -1,16 +1,27 @@
 import React, { useMemo, useState } from "react";
 import HeaherPresent from "../components/HeaherPresent";
-import { Button, Flex, Layout, Input } from "antd";
-import { Splitter, Typography } from "antd";
+import { Button, Flex, Layout, Modal } from "antd";
+import { Splitter, Form, ColorPicker, Input, InputNumber } from "antd";
 const { Sider, Header, Content } = Layout;
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  FileTextOutlined,
+  FileImageOutlined,
+} from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import { ConfigProvider, Segmented, Tooltip } from "antd";
-import { DeleteOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  PlusCircleOutlined,
+  VideoCameraAddOutlined,
+} from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { useParams } from "react-router-dom";
 import { errorPopUp } from "../../utils/errorPopUp";
+import { showErrorToast } from "../../utils/toastUtils";
+import PresentationText from "../components/presentationItem/PresentationText";
 
 const Tooltips = (
   currentSlides,
@@ -31,6 +42,81 @@ const Tooltips = (
       pointAtCenter: true,
     };
   }, [arrow]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = async () => {
+    console.log(textSizeLength);
+    setIsModalOpen(false);
+    // save the text to the backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    console.log("targetIndex", targetIndex);
+    console.log("currentSlides", currentSlides);
+    console.log("currentPresentation", store.presentations);
+    console.log(textFontColor);
+
+    // put them into content list and update the currentSlides
+    const newContent = [
+      ...currentSlides[targetIndex].content,
+      {
+        type: "text",
+        textInput: textInput,
+        textSizeLength: textSizeLength,
+        textSizeWidth: textSizeWidth,
+        textFontSize: textFontSize,
+        textFontColor: textFontColor,
+        zIndex: zIndex,
+      },
+    ];
+    console.log("newContent", newContent);
+
+    setZIndex(zIndex + 1);
+
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        slide.content = newContent;
+      }
+      return slide;
+    });
+
+    setCurrentSlides(newSlideList);
+    console.log("newSlideList", newSlideList);
+
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlideList;
+        break;
+      }
+    }
+    await sendDetail(token, store);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const [form] = Form.useForm();
+  const [formLayout, setFormLayout] = useState("horizontal");
+  const onFormLayoutChange = ({ layout }) => {
+    setFormLayout(layout);
+  };
+  const { TextArea } = Input;
+
+  // for the text input
+  const [textSizeLength, setTextSizeLength] = useState(0);
+  const [textSizeWidth, setTextSizeWidth] = useState(0);
+  const [textInput, setTextInput] = useState("");
+  const [textFontSize, setTextFontSize] = useState(2);
+  const [textFontColor, setTextFontColor] = useState("#111111");
+  const [zIndex, setZIndex] = useState(0);
 
   return (
     <ConfigProvider
@@ -53,31 +139,19 @@ const Tooltips = (
                 const response = await getDetail(token);
                 const { store } = response;
 
-                // Find the next available slide ID from the store
                 const nextAvailableSlideId = store.presentations.find(
                   (item) => item.id == presentationId
                 ).nextSlideId;
 
-                // Find the index of the selected slide
-                const targetIndex = currentSlides.findIndex(
-                  (slide) => slide.slideId === selectedSlideId
-                );
+                const newSlide = {
+                  slideId: nextAvailableSlideId,
+                  content: [],
+                };
 
-                // Insert a new slide after it
-                const newSlideList = currentSlides
-                  .slice(0, targetIndex + 1)
-                  .concat({
-                    slideId: nextAvailableSlideId,
-                    content: "",
-                  })
-                  .concat(currentSlides.slice(targetIndex + 1));
-
+                const newSlideList = [...currentSlides, newSlide];
                 setCurrentSlides(newSlideList);
-
                 setSelectedSlideId(nextAvailableSlideId);
 
-                // Find the corresponding presentation
-                // And update the numSlides and change the slides array to the latest version
                 for (let i = 0; i < store.presentations.length; i++) {
                   if (store.presentations[i].id == presentationId) {
                     store.presentations[i].numSlides = nextAvailableSlideId;
@@ -105,17 +179,13 @@ const Tooltips = (
                 const response = await getDetail(token);
                 const { store } = response;
 
-                // Find the id of the next selected slide, if the current selected slide is the last slide, then the next slide is the previous slide
-                // Otherwise, the next slide is the next slide
                 const targetIndex = currentSlides.findIndex(
                   (slide) => slide.slideId === selectedSlideId
                 );
 
-                // Find the next slide ID
                 let nextSlideId;
                 if (targetIndex === 0 && currentSlides.length === 1) {
-                  // only one slide - can not be delete - error popup
-                  errorPopUp("Error", "Can not delete the only slide");
+                  errorPopUp("Error", "Cannot delete the only slide");
                   return;
                 } else if (targetIndex === currentSlides.length - 1) {
                   nextSlideId = currentSlides[targetIndex - 1].slideId;
@@ -123,20 +193,15 @@ const Tooltips = (
                   nextSlideId = currentSlides[targetIndex + 1].slideId;
                 }
 
-                // Find the corresponding presentation
                 for (let i = 0; i < store.presentations.length; i++) {
                   if (store.presentations[i].id == presentationId) {
-                    // delete the slide with the given ID
                     store.presentations[i].slides = store.presentations[
                       i
                     ].slides.filter(
                       (slide) => slide.slideId != selectedSlideId
                     );
-                    // update the nextSlideId
                     setCurrentSlides(store.presentations[i].slides);
                     setSelectedSlideId(nextSlideId);
-
-                    // update the numSlides
                     store.presentations[i].numSlides =
                       store.presentations[i].slides.length;
                     await sendDetail(token, store);
@@ -147,6 +212,103 @@ const Tooltips = (
             >
               <Button>
                 <DeleteOutlined />
+              </Button>
+            </Tooltip>
+
+            <Tooltip
+              placement="right"
+              title={"put TEXT on the slide"}
+              onClick={async () => {
+                console.log("put text");
+              }}
+            >
+              <Button onClick={showModal}>
+                <FileTextOutlined />
+              </Button>
+
+              <Modal
+                title="Input Text"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+              >
+                <Form
+                  layout={formLayout}
+                  form={form}
+                  initialValues={{
+                    layout: formLayout,
+                  }}
+                  onValuesChange={onFormLayoutChange}
+                  style={{
+                    maxWidth: formLayout === "inline" ? "none" : 600,
+                  }}
+                >
+                  <Form.Item label="Size length">
+                    <Input
+                      placeholder="input placeholder"
+                      onChange={(e) => {
+                        setTextSizeLength(e.target.value);
+                      }}
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Size width">
+                    <Input
+                      placeholder="input placeholder"
+                      onChange={(e) => {
+                        setTextSizeWidth(e.target.value);
+                      }}
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Text in the textarea">
+                    <TextArea
+                      placeholder="input your text here"
+                      autoSize={{ minRows: 1, maxRows: 4 }}
+                      onChange={(e) => {
+                        setTextInput(e.target.value);
+                      }}
+                    />
+                  </Form.Item>
+                  <Form.Item label="Font size of the text ">
+                    <InputNumber
+                      min={1}
+                      max={100}
+                      defaultValue={3}
+                      addonAfter="em"
+                      changeOnWheel
+                      onChange={(e) => {
+                        setTextFontSize(e.target.value);
+                      }}
+                    />
+                  </Form.Item>
+
+                  <Form.Item label="Font color of the text">
+                    <ColorPicker
+                      defaultValue={"#111111"}
+                      allowClear
+                      onChange={(temp, _) => {
+                        setTextFontColor(temp.toHexString());
+                      }}
+                    />
+                  </Form.Item>
+                </Form>
+              </Modal>
+            </Tooltip>
+
+            <Tooltip
+              placement="right"
+              title={"put an IMAGE on the slide"}
+              arrow={mergedArrow}
+            >
+              <Button>
+                <FileImageOutlined />
+              </Button>
+            </Tooltip>
+
+            <Tooltip placement="right" title={"put a VIDEO on the slide"}>
+              <Button>
+                <VideoCameraAddOutlined />
               </Button>
             </Tooltip>
           </Flex>
@@ -163,15 +325,14 @@ const DescList = ({
   setSelectedSlideId,
   presentationId,
 }) => (
-  <div className="flex h-full w-full">
-    <div className="grow flex flex-col gap-2 items-center h-full py-2">
+  <div className="flex h-full w-full px-2">
+    <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
       {currentSlides.map((slide, index) => (
         <div
           key={slide.slideId}
-          className="flex w-full h-24 justify-center items-center gap-2"
+          className="flex w-full h-24 justify-center items-center gap-2 size-4"
         >
-          <div className=" self-end pb-2 ">{index + 1}</div>
-
+          <div className="self-end pb-2">{index + 1}</div>
           <div
             onClick={() => {
               setSelectedSlideId(slide.slideId);
@@ -181,13 +342,11 @@ const DescList = ({
                 ? "border-blue-500"
                 : "border-inherit"
             }`}
-          >
-            {slide.content}
-          </div>
+          ></div>
         </div>
       ))}
     </div>
-    <div className=" w-8 h-ful">
+    <div className="w-8 h-full">
       {Tooltips(
         currentSlides,
         setCurrentSlides,
@@ -199,24 +358,27 @@ const DescList = ({
   </div>
 );
 
-const DescSlide = (props) => (
-  <Flex
-    justify="center"
-    align="center"
-    style={{
-      height: "100%",
-    }}
-  >
-    <Typography.Title
-      type="secondary"
-      level={5}
-      style={{
-        whiteSpace: "nowrap",
-      }}
-    >
-      {props.text}
-    </Typography.Title>
-  </Flex>
+const DescSlide = ({
+  currentSlides,
+  setCurrentSlides,
+  presentationId,
+  selectedSlideId,
+}) => (
+  <div className="flex h-full w-full justify-center items-center">
+    <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
+      {currentSlides?.map((slide) => {
+        if (slide.slideId === selectedSlideId) {
+          return slide.content?.map((element) => {
+            if (element.type === "text") {
+              return <PresentationText key={element.id} data={element} />; // Use a unique key for each element
+            }
+            return null;
+          });
+        }
+        return null;
+      })}
+    </div>
+  </div>
 );
 
 function PresentationPage() {
@@ -225,57 +387,44 @@ function PresentationPage() {
   const { presentationId } = useParams();
   const [currentSlides, setCurrentSlides] = React.useState([]);
 
-  // Function to handle the edit button click
   const handleArrowKeyPress = (e) => {
     if (e.key === "ArrowLeft") {
-      // Move the selected slide to the previous slide
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
-      console.log(currentSlides);
-      console.log("selectedSlideId", selectedSlideId);
-      console.log(targetIndex);
-
       if (targetIndex > 0) {
         setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+      } else {
+        showErrorToast("This is the first slide now");
       }
     } else if (e.key === "ArrowRight") {
-      // Move the selected slide to the next slide
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
-      console.log(currentSlides);
-      console.log("selectedSlideId", selectedSlideId);
-      console.log(targetIndex);
-
       if (targetIndex < currentSlides.length - 1) {
         setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+      } else {
+        showErrorToast("This is the last slide now");
       }
     }
   };
 
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
-
     return () => {
       window.removeEventListener("keydown", handleArrowKeyPress);
     };
   }, [currentSlides, selectedSlideId]);
 
-  // get the current slides from the backend
   React.useEffect(() => {
-    // Add event listener for keydown event
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
       const presentation = response.store.presentations.find(
         (presentation) => presentation.id == presentationId
       );
-
-      // Get the current presentation and slides
       setCurrentPresentation(presentation);
-      setCurrentSlides((current) => presentation.slides);
+      setCurrentSlides(presentation.slides);
     };
-
     getPresentationDetail();
   }, []);
 
@@ -337,12 +486,13 @@ function PresentationPage() {
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Splitter.Panel style={{ flex: "none" }}>
-              {" "}
-              {/* Set flex to "none" for fixed width */}
-              <div style={{ width: "250px" }}>
-                {" "}
-                {/* Fixed width container */}
+            <Splitter.Panel
+              defaultSize="20%"
+              min="20%"
+              max="70%"
+              className="max-h-screen overflow-y-auto"
+            >
+              <div className="h-full">
                 <DescList
                   currentSlides={currentSlides}
                   setCurrentSlides={setCurrentSlides}
@@ -354,7 +504,12 @@ function PresentationPage() {
             </Splitter.Panel>
 
             <Splitter.Panel>
-              <DescSlide text="Second" />
+              <DescSlide
+                currentSlides={currentSlides}
+                presentationId={presentationId}
+                selectedSlideId={selectedSlideId}
+                text="Second"
+              />
             </Splitter.Panel>
           </Splitter>
         </Content>
