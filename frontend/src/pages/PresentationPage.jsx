@@ -29,9 +29,7 @@ const Tooltips = (
   presentationId,
   selectedSlideId,
   setSelectedSlideId,
-  showModal,
-  handleCancel,
-  isModalOpen
+  showModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -45,75 +43,6 @@ const Tooltips = (
       pointAtCenter: true,
     };
   }, [arrow]);
-
-  const handleOk = async () => {
-    console.log(textSizeLength);
-    handleCancel();
-    // save the text to the backend
-    const token = localStorage.getItem("token");
-    const response = await getDetail(token);
-    const { store } = response;
-    const targetIndex = currentSlides.findIndex(
-      (slide) => slide.slideId === selectedSlideId
-    );
-    console.log("targetIndex", targetIndex);
-    console.log("currentSlides", currentSlides);
-    console.log("currentPresentation", store.presentations);
-    console.log(textFontColor);
-
-    // put them into content list and update the currentSlides
-    const newContent = [
-      ...currentSlides[targetIndex].content,
-      {
-        type: "text",
-        textInput: textInput,
-        textSizeLength: textSizeLength,
-        textSizeWidth: textSizeWidth,
-        textFontSize: textFontSize,
-        textFontColor: textFontColor,
-        zIndex: zIndex,
-        id: currentSlides[targetIndex].nextElementId,
-      },
-    ];
-
-    console.log("newContent", newContent);
-
-    setZIndex(zIndex + 1);
-
-    const newSlideList = currentSlides.map((slide) => {
-      if (slide.slideId === selectedSlideId) {
-        slide.content = newContent;
-        slide.nextElementId = slide.nextElementId + 1;
-      }
-      return slide;
-    });
-
-    setCurrentSlides(newSlideList);
-    console.log("newSlideList", newSlideList);
-
-    for (let i = 0; i < store.presentations.length; i++) {
-      if (store.presentations[i].id == presentationId) {
-        store.presentations[i].slides = newSlideList;
-        break;
-      }
-    }
-    await sendDetail(token, store);
-  };
-
-  const [form] = Form.useForm();
-  const [formLayout, setFormLayout] = useState("horizontal");
-  const onFormLayoutChange = ({ layout }) => {
-    setFormLayout(layout);
-  };
-  const { TextArea } = Input;
-
-  // for the text input
-  const [textSizeLength, setTextSizeLength] = useState(0);
-  const [textSizeWidth, setTextSizeWidth] = useState(0);
-  const [textInput, setTextInput] = useState("");
-  const [textFontSize, setTextFontSize] = useState(2);
-  const [textFontColor, setTextFontColor] = useState("#111111");
-  const [zIndex, setZIndex] = useState(0);
 
   return (
     <ConfigProvider
@@ -224,74 +153,6 @@ const Tooltips = (
                 <FileTextOutlined />
               </Button>
 
-              <Modal
-                title="Input Text"
-                open={isModalOpen}
-                onOk={handleOk}
-                onCancel={handleCancel}
-              >
-                <Form
-                  layout={formLayout}
-                  form={form}
-                  initialValues={{
-                    layout: formLayout,
-                  }}
-                  onValuesChange={onFormLayoutChange}
-                  style={{
-                    maxWidth: formLayout === "inline" ? "none" : 600,
-                  }}
-                >
-                  <Form.Item label="Size length">
-                    <Input
-                      placeholder="input placeholder"
-                      onChange={(e) => {
-                        setTextSizeLength(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item label="Size width">
-                    <Input
-                      placeholder="input placeholder"
-                      onChange={(e) => {
-                        setTextSizeWidth(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item label="Text in the textarea">
-                    <TextArea
-                      placeholder="input your text here"
-                      autoSize={{ minRows: 1, maxRows: 4 }}
-                      onChange={(e) => {
-                        setTextInput(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-                  <Form.Item label="Font size of the text ">
-                    <InputNumber
-                      min={1}
-                      max={100}
-                      defaultValue={3}
-                      addonAfter="em"
-                      changeOnWheel
-                      onChange={(e) => {
-                        setTextFontSize(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item label="Font color of the text">
-                    <ColorPicker
-                      defaultValue={"#111111"}
-                      allowClear
-                      onChange={(temp, _) => {
-                        setTextFontColor(temp.toHexString());
-                      }}
-                    />
-                  </Form.Item>
-                </Form>
-              </Modal>
             </Tooltip>
 
             <Tooltip
@@ -364,10 +225,15 @@ const DescList = ({
 
 const DescSlide = ({
   currentSlides,
-  setCurrentSlides,
   presentationId,
   selectedSlideId,
   showModal,
+  setTextSizeLength,
+  setTextSizeWidth,
+  setTextInput,
+  setTextFontSize,
+  setTextFontColor,
+  setSelectedElementId,
 }) => (
   <div className="flex h-full w-full justify-center items-center">
     <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
@@ -382,6 +248,12 @@ const DescSlide = ({
                   data={element}
                   selectedSlideId={selectedSlideId}
                   presentationId={presentationId}
+                  setTextSizeLength={setTextSizeLength}
+                  setTextSizeWidth={setTextSizeWidth}
+                  setTextInput={setTextInput}
+                  setTextFontSize={setTextFontSize}
+                  setTextFontColor={setTextFontColor}
+                  setSelectedElementId={setSelectedElementId}
                 />
               ); // Use a unique key for each element
             }
@@ -399,6 +271,25 @@ function PresentationPage() {
   const [selectedSlideId, setSelectedSlideId] = useState(1);
   const { presentationId } = useParams();
   const [currentSlides, setCurrentSlides] = React.useState([]);
+
+  // for the text input
+  const [textSizeLength, setTextSizeLength] = useState(0);
+  const [textSizeWidth, setTextSizeWidth] = useState(0);
+  const [textInput, setTextInput] = useState("");
+  const [textFontSize, setTextFontSize] = useState(2);
+  const [textFontColor, setTextFontColor] = useState("#111111");
+  const [zIndex, setZIndex] = useState(0);
+
+  //
+  const [selectedElementId, setSelectedElementId] = useState(undefined);
+
+  
+  const [form] = Form.useForm();
+  const [formLayout, setFormLayout] = useState("horizontal");
+  const onFormLayoutChange = ({ layout }) => {
+    setFormLayout(layout);
+  };
+  const { TextArea } = Input;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -534,12 +425,92 @@ function PresentationPage() {
                 presentationId={presentationId}
                 selectedSlideId={selectedSlideId}
                 showModal={showModal}
+                setTextSizeLength={setTextSizeLength}
+                setTextSizeWidth={setTextSizeWidth}
+                setTextInput={setTextInput}
+                setTextFontSize={setTextFontSize}
+                setTextFontColor={setTextFontColor}
+                setSelectedElementId={setSelectedElementId}
                 text="Second"
               />
             </Splitter.Panel>
           </Splitter>
         </Content>
       </Layout>
+
+      <Modal
+        title="Input Text"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <Form
+          layout={formLayout}
+          form={form}
+          initialValues={{
+            layout: formLayout,
+          }}
+          onValuesChange={onFormLayoutChange}
+          style={{
+            maxWidth: formLayout === "inline" ? "none" : 600,
+          }}
+        >
+          <Form.Item label="Size length">
+            <Input
+              value={textSizeLength}
+              placeholder="input placeholder"
+              onChange={(e) => {
+                setTextSizeLength(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item label="Size width">
+            <Input
+              value={textSizeWidth}
+              placeholder="input placeholder"
+              onChange={(e) => {
+                setTextSizeWidth(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item label="Text in the textarea">
+            <TextArea
+              value={textInput}
+              placeholder="input your text here"
+              autoSize={{ minRows: 1, maxRows: 4 }}
+              onChange={(e) => {
+                setTextInput(e.target.value);
+              }}
+            />
+          </Form.Item>
+          <Form.Item label="Font size of the text ">
+            <InputNumber
+              min={1}
+              max={100}
+              defaultValue={3}
+              value={textFontSize}
+              addonAfter="em"
+              changeOnWheel
+              onChange={(e) => {
+                setTextFontSize(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item label="Font color of the text">
+            <ColorPicker
+              value={textFontColor}
+              defaultValue={"#111111"}
+              allowClear
+              onChange={(temp, _) => {
+                setTextFontColor(temp.toHexString());
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Layout>
   );
 }
