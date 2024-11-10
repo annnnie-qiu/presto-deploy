@@ -10,6 +10,7 @@ function PresentationText({
   setTextInput,
   setTextFontSize,
   setTextFontColor,
+  setTextFontFamily,
   setSelectedElementId,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
@@ -20,10 +21,11 @@ function PresentationText({
         style={{
           // width: "1000px",
           // height: "1000px",
-          width: `${data?.textSizeLength}px`,
-          height: `${data?.textSizeWidth}px`,
+          width: `${data?.textSizeLength}%`,
+          height: `${data?.textSizeWidth}%`,
           color: data?.textFontColor,
           fontSize: `${data?.textFontSize}em`,
+          fontFamily: data?.textFontFamily || 'Quicksand, sans-serif',
           overflow: "hidden",
           cursor: isMoveActive ? "move" : "default",
           position: "relative",
@@ -37,6 +39,7 @@ function PresentationText({
           setTextInput(data.textInput);
           setTextFontSize(data.textFontSize);
           setTextFontColor(data.textFontColor);
+          setTextFontFamily(data.textFontFamily);
           setSelectedElementId(data.id);
           showTextModal();
         }}
