@@ -260,7 +260,19 @@ const DescSlide = ({
                   setSelectedElementId={setSelectedElementId}
                 />
               ); // Use a unique key for each element
-            } 
+            } else if (element.type === "image") {
+              return (
+                <PresentationImage
+                  showImageModal={showImageModal}
+                  key={element.id}
+                  data={element}
+                  setImageSizeLength={setImageSizeLength}
+                  setImageSizeWidth={setImageSizeWidth}
+                  setImageAlt={setImageAlt}
+                  setSelectedElementId={setSelectedElementId}
+                />
+              );
+            }
             return null;
           });
         }
@@ -661,6 +673,59 @@ function PresentationPage() {
               allowClear
               onChange={(temp, _) => {
                 setTextFontColor(temp.toHexString());
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* modal for image input */}
+      <Modal
+        title="Input Image"
+        open={isImageModalOpen}
+        onOk={handleImageOk}
+        onCancel={handleImageCancel}
+      >
+        <Form
+          layout={formLayout}
+          form={form}
+          initialValues={{
+            layout: formLayout,
+          }}
+          onValuesChange={onFormLayoutChange}
+          style={{
+            maxWidth: formLayout === "inline" ? "none" : 600,
+          }}
+        >
+          {/* for image length */}
+          <Form.Item label="Size length">
+            <Input
+              value={imageSizeLength}
+              placeholder="input placeholder"
+              onChange={(e) => {
+                setImageSizeLength(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          {/* for image width */}
+          <Form.Item label="Size width">
+            <Input
+              value={imageSizeWidth}
+              placeholder="input placeholder"
+              onChange={(e) => {
+                setImageSizeWidth(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          {/* for image alt text */}
+          <Form.Item label="alt">
+            <TextArea
+              value={imageAlt}
+              placeholder="input your alt here"
+              onChange={(e) => {
+                setImageAlt(e.target.value);
               }}
             />
           </Form.Item>
