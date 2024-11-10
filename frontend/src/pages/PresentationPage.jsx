@@ -22,6 +22,7 @@ import { useParams } from "react-router-dom";
 import { errorPopUp } from "../../utils/errorPopUp";
 import { showErrorToast } from "../../utils/toastUtils";
 import PresentationText from "../components/presentationItem/PresentationText";
+import PresentationImage from "../components/presentationItem/PresentationImage";
 
 const Tooltips = (
   currentSlides,
@@ -29,9 +30,8 @@ const Tooltips = (
   presentationId,
   selectedSlideId,
   setSelectedSlideId,
-  showModal,
-  handleCancel,
-  isModalOpen
+  showTextModal,
+  showImageModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -45,75 +45,6 @@ const Tooltips = (
       pointAtCenter: true,
     };
   }, [arrow]);
-
-  const handleOk = async () => {
-    console.log(textSizeLength);
-    handleCancel();
-    // save the text to the backend
-    const token = localStorage.getItem("token");
-    const response = await getDetail(token);
-    const { store } = response;
-    const targetIndex = currentSlides.findIndex(
-      (slide) => slide.slideId === selectedSlideId
-    );
-    console.log("targetIndex", targetIndex);
-    console.log("currentSlides", currentSlides);
-    console.log("currentPresentation", store.presentations);
-    console.log(textFontColor);
-
-    // put them into content list and update the currentSlides
-    const newContent = [
-      ...currentSlides[targetIndex].content,
-      {
-        type: "text",
-        textInput: textInput,
-        textSizeLength: textSizeLength,
-        textSizeWidth: textSizeWidth,
-        textFontSize: textFontSize,
-        textFontColor: textFontColor,
-        zIndex: zIndex,
-        id: currentSlides[targetIndex].nextElementId,
-      },
-    ];
-
-    console.log("newContent", newContent);
-
-    setZIndex(zIndex + 1);
-
-    const newSlideList = currentSlides.map((slide) => {
-      if (slide.slideId === selectedSlideId) {
-        slide.content = newContent;
-        slide.nextElementId = slide.nextElementId + 1;
-      }
-      return slide;
-    });
-
-    setCurrentSlides(newSlideList);
-    console.log("newSlideList", newSlideList);
-
-    for (let i = 0; i < store.presentations.length; i++) {
-      if (store.presentations[i].id == presentationId) {
-        store.presentations[i].slides = newSlideList;
-        break;
-      }
-    }
-    await sendDetail(token, store);
-  };
-
-  const [form] = Form.useForm();
-  const [formLayout, setFormLayout] = useState("horizontal");
-  const onFormLayoutChange = ({ layout }) => {
-    setFormLayout(layout);
-  };
-  const { TextArea } = Input;
-
-  // for the text input
-  const [textSizeLength, setTextSizeLength] = useState(0);
-  const [textSizeWidth, setTextSizeWidth] = useState(0);
-  const [textInput, setTextInput] = useState("");
-  const [textFontSize, setTextFontSize] = useState(2);
-  const [textFontColor, setTextFontColor] = useState("#111111");
-  const [zIndex, setZIndex] = useState(0);
 
   return (
     <ConfigProvider
@@ -220,78 +151,9 @@ const Tooltips = (
                 console.log("put text");
               }}
             >
-              <Button onClick={showModal}>
+              <Button onClick={showTextModal}>
                 <FileTextOutlined />
               </Button>
-
-              <Modal
-                title="Input Text"
-                open={isModalOpen}
-                onOk={handleOk}
-                onCancel={handleCancel}
-              >
-                <Form
-                  layout={formLayout}
-                  form={form}
-                  initialValues={{
-                    layout: formLayout,
-                  }}
-                  onValuesChange={onFormLayoutChange}
-                  style={{
-                    maxWidth: formLayout === "inline" ? "none" : 600,
-                  }}
-                >
-                  <Form.Item label="Size length">
-                    <Input
-                      placeholder="input placeholder"
-                      onChange={(e) => {
-                        setTextSizeLength(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item label="Size width">
-                    <Input
-                      placeholder="input placeholder"
-                      onChange={(e) => {
-                        setTextSizeWidth(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item label="Text in the textarea">
-                    <TextArea
-                      placeholder="input your text here"
-                      autoSize={{ minRows: 1, maxRows: 4 }}
-                      onChange={(e) => {
-                        setTextInput(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-                  <Form.Item label="Font size of the text ">
-                    <InputNumber
-                      min={1}
-                      max={100}
-                      defaultValue={3}
-                      addonAfter="em"
-                      changeOnWheel
-                      onChange={(e) => {
-                        setTextFontSize(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-
-                  <Form.Item label="Font color of the text">
-                    <ColorPicker
-                      defaultValue={"#111111"}
-                      allowClear
-                      onChange={(temp, _) => {
-                        setTextFontColor(temp.toHexString());
-                      }}
-                    />
-                  </Form.Item>
-                </Form>
-              </Modal>
             </Tooltip>
 
             <Tooltip
@@ -299,7 +161,7 @@ const Tooltips = (
               title={"put an IMAGE on the slide"}
               arrow={mergedArrow}
             >
-              <Button>
+              <Button onClick={showImageModal}>
                 <FileImageOutlined />
               </Button>
             </Tooltip>
@@ -322,9 +184,10 @@ const DescList = ({
   selectedSlideId,
   setSelectedSlideId,
   presentationId,
-  showModal,
-  handleCancel,
-  isModalOpen,
+  showTextModal,
+  handleTextCancel,
+  isTextModalOpen,
+  showImageModal,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -354,9 +217,10 @@ const DescList = ({
         presentationId,
         selectedSlideId,
         setSelectedSlideId,
-        showModal,
-        handleCancel,
-        isModalOpen
+        showTextModal,
+        showImageModal,
+        handleTextCancel,
+        isTextModalOpen
       )}
     </div>
   </div>
@@ -364,10 +228,18 @@ const DescList = ({
 
 const DescSlide = ({
   currentSlides,
-  setCurrentSlides,
-  presentationId,
   selectedSlideId,
-  showModal,
+  showTextModal,
+  setTextSizeLength,
+  setTextSizeWidth,
+  setTextInput,
+  setTextFontSize,
+  setTextFontColor,
+  setSelectedElementId,
+  showImageModal,
+  setImageSizeLength,
+  setImageSizeWidth,
+  setImageAlt,
 }) => (
   <div className="flex h-full w-full justify-center items-center">
     <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
@@ -377,13 +249,29 @@ const DescSlide = ({
             if (element.type === "text") {
               return (
                 <PresentationText
-                  showModal={showModal}
+                  showTextModal={showTextModal}
                   key={element.id}
                   data={element}
-                  selectedSlideId={selectedSlideId}
-                  presentationId={presentationId}
+                  setTextSizeLength={setTextSizeLength}
+                  setTextSizeWidth={setTextSizeWidth}
+                  setTextInput={setTextInput}
+                  setTextFontSize={setTextFontSize}
+                  setTextFontColor={setTextFontColor}
+                  setSelectedElementId={setSelectedElementId}
                 />
               ); // Use a unique key for each element
+            } else if (element.type === "image") {
+              return (
+                <PresentationImage
+                  showImageModal={showImageModal}
+                  key={element.id}
+                  data={element}
+                  setImageSizeLength={setImageSizeLength}
+                  setImageSizeWidth={setImageSizeWidth}
+                  setImageAlt={setImageAlt}
+                  setSelectedElementId={setSelectedElementId}
+                />
+              );
             }
             return null;
           });
@@ -400,13 +288,44 @@ function PresentationPage() {
   const { presentationId } = useParams();
   const [currentSlides, setCurrentSlides] = React.useState([]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
+  // for the text input
+  const [textSizeLength, setTextSizeLength] = useState(0);
+  const [textSizeWidth, setTextSizeWidth] = useState(0);
+  const [textInput, setTextInput] = useState("");
+  const [textFontSize, setTextFontSize] = useState(2);
+  const [textFontColor, setTextFontColor] = useState("#111111");
+  const [zIndex, setZIndex] = useState(0);
+
+  // for the image input
+  const [imageSizeLength, setImageSizeLength] = useState(0);
+  const [imageSizeWidth, setImageSizeWidth] = useState(0);
+  const [imageAlt, setImageAlt] = useState("");
+
+  const [selectedElementId, setSelectedElementId] = useState(undefined);
+
+  const [form] = Form.useForm();
+  const [formLayout, setFormLayout] = useState("horizontal");
+  const onFormLayoutChange = ({ layout }) => {
+    setFormLayout(layout);
+  };
+  const { TextArea } = Input;
+
+  const [isTextModalOpen, setisTextModalOpen] = useState(false);
+  const [isImageModalOpen, setisImageModalOpen] = useState(false);
+  const showTextModal = () => {
+    setisTextModalOpen(true);
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const showImageModal = () => {
+    setisImageModalOpen(true);
+  };
+
+  const handleTextCancel = () => {
+    setisTextModalOpen(false);
+  };
+
+  const handleImageCancel = () => {
+    setisImageModalOpen(false);
   };
 
   const handleArrowKeyPress = (e) => {
@@ -429,6 +348,142 @@ function PresentationPage() {
         showErrorToast("This is the last slide now");
       }
     }
+  };
+
+  const handleTextOk = async () => {
+    handleTextCancel();
+    // save the text to the backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    // Check if content already exists (edit mode) or is new (add mode)
+    const existingElementIndex = currentSlides[targetIndex].content.findIndex(
+      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
+    );
+    let newContent;
+    if (existingElementIndex !== -1) {
+      // Edit mode
+      // Update existing content
+      newContent = currentSlides[targetIndex].content.map((element, index) =>
+        index === existingElementIndex
+          ? {
+              ...element,
+              textInput: textInput,
+              textSizeLength: textSizeLength,
+              textSizeWidth: textSizeWidth,
+              textFontSize: textFontSize,
+              textFontColor: textFontColor,
+              zIndex: zIndex,
+            }
+          : element
+      );
+    } else {
+      // put them into content list and update the currentSlides
+      newContent = [
+        ...currentSlides[targetIndex].content,
+        {
+          type: "text",
+          textInput: textInput,
+          textSizeLength: textSizeLength,
+          textSizeWidth: textSizeWidth,
+          textFontSize: textFontSize,
+          textFontColor: textFontColor,
+          zIndex: zIndex,
+          id: currentSlides[targetIndex].nextElementId,
+        },
+      ];
+    }
+
+    setZIndex(zIndex + 1);
+
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        slide.content = newContent;
+        slide.nextElementId = slide.nextElementId + 1;
+      }
+      return slide;
+    });
+
+    setCurrentSlides(newSlideList);
+
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlideList;
+        break;
+      }
+    }
+    await sendDetail(token, store);
+  };
+
+  const handleImageOk = async () => {
+    handleImageCancel();
+    // save the text to the backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    // Check if content already exists (edit mode) or is new (add mode)
+    const existingElementIndex = currentSlides[targetIndex].content.findIndex(
+      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
+    );
+    let newContent;
+    if (existingElementIndex !== -1) {
+      // Edit mode
+      // Update existing content
+      newContent = currentSlides[targetIndex].content.map((element, index) =>
+        index === existingElementIndex
+          ? {
+              ...element,
+              imageSizeLength: imageSizeLength,
+              imageSizeWidth: imageSizeWidth,
+              imageAlt: imageAlt,
+              zIndex: zIndex,
+            }
+          : element
+      );
+    } else {
+      // put them into content list and update the currentSlides
+      newContent = [
+        ...currentSlides[targetIndex].content,
+        {
+          type: "image",
+          imageSizeLength: imageSizeLength,
+          imageSizeWidth: imageSizeWidth,
+          imageAlt: imageAlt,
+          id: currentSlides[targetIndex].nextElementId,
+          zIndex: zIndex,
+        },
+      ];
+    }
+
+    setZIndex(zIndex + 1);
+
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        slide.content = newContent;
+        slide.nextElementId = slide.nextElementId + 1;
+      }
+      return slide;
+    });
+
+    console.log("newSlideList", newSlideList);
+
+    setCurrentSlides(newSlideList);
+
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlideList;
+        break;
+      }
+    }
+
+    console.log("store", store);
+    await sendDetail(token, store);
   };
 
   React.useEffect(() => {
@@ -521,9 +576,10 @@ function PresentationPage() {
                   selectedSlideId={selectedSlideId}
                   setSelectedSlideId={setSelectedSlideId}
                   presentationId={presentationId}
-                  showModal={showModal}
-                  handleCancel={handleCancel}
-                  isModalOpen={isModalOpen}
+                  showTextModal={showTextModal}
+                  handleTextCancel={handleTextCancel}
+                  isTextModalOpen={isTextModalOpen}
+                  showImageModal={showImageModal}
                 />
               </div>
             </Splitter.Panel>
@@ -533,13 +589,155 @@ function PresentationPage() {
                 currentSlides={currentSlides}
                 presentationId={presentationId}
                 selectedSlideId={selectedSlideId}
-                showModal={showModal}
+                showTextModal={showTextModal}
+                setTextSizeLength={setTextSizeLength}
+                setTextSizeWidth={setTextSizeWidth}
+                setTextInput={setTextInput}
+                setTextFontSize={setTextFontSize}
+                setTextFontColor={setTextFontColor}
+                setSelectedElementId={setSelectedElementId}
+                showImageModal={showImageModal}
+                setImageSizeLength={setImageSizeLength}
+                setImageSizeWidth={setImageSizeWidth}
+                setImageAlt={setImageAlt}
                 text="Second"
               />
             </Splitter.Panel>
           </Splitter>
         </Content>
       </Layout>
+
+      {/* modal for input text */}
+      <Modal
+        title="Input Text"
+        open={isTextModalOpen}
+        onOk={handleTextOk}
+        onCancel={handleTextCancel}
+      >
+        <Form
+          layout={formLayout}
+          form={form}
+          initialValues={{
+            layout: formLayout,
+          }}
+          onValuesChange={onFormLayoutChange}
+          style={{
+            maxWidth: formLayout === "inline" ? "none" : 600,
+          }}
+        >
+          <Form.Item label="Size length">
+            <Input
+              value={textSizeLength}
+              placeholder="input placeholder"
+              addonAfter="px"
+              onChange={(e) => {
+                setTextSizeLength(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item label="Size width">
+            <Input
+              value={textSizeWidth}
+              placeholder="input placeholder"
+              addonAfter="px"
+              onChange={(e) => {
+                setTextSizeWidth(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item label="Text in the textarea">
+            <TextArea
+              value={textInput}
+              placeholder="input your text here"
+              autoSize={{ minRows: 1, maxRows: 4 }}
+              onChange={(e) => {
+                setTextInput(e.target.value);
+              }}
+            />
+          </Form.Item>
+          <Form.Item label="Font size of the text ">
+            <InputNumber
+              min={1}
+              max={100}
+              defaultValue={3}
+              value={textFontSize}
+              addonAfter="em"
+              changeOnWheel
+              onChange={(e) => {
+                setTextFontSize(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item label="Font color of the text">
+            <ColorPicker
+              value={textFontColor}
+              defaultValue={"#111111"}
+              allowClear
+              onChange={(temp, _) => {
+                setTextFontColor(temp.toHexString());
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* modal for image input */}
+      <Modal
+        title="Input Image"
+        open={isImageModalOpen}
+        onOk={handleImageOk}
+        onCancel={handleImageCancel}
+      >
+        <Form
+          layout={formLayout}
+          form={form}
+          initialValues={{
+            layout: formLayout,
+          }}
+          onValuesChange={onFormLayoutChange}
+          style={{
+            maxWidth: formLayout === "inline" ? "none" : 600,
+          }}
+        >
+          {/* for image length */}
+          <Form.Item label="Size length">
+            <Input
+              value={imageSizeLength}
+              placeholder="input placeholder"
+              addonAfter="px"
+              onChange={(e) => {
+                setImageSizeLength(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          {/* for image width */}
+          <Form.Item label="Size width">
+            <Input
+              value={imageSizeWidth}
+              placeholder="input placeholder"
+              addonAfter="px"
+              onChange={(e) => {
+                setImageSizeWidth(e.target.value);
+              }}
+            />
+          </Form.Item>
+
+          {/* for image alt text */}
+          <Form.Item label="alt">
+            <TextArea
+              value={imageAlt}
+              placeholder="input your alt here"
+              onChange={(e) => {
+                setImageAlt(e.target.value);
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Layout>
   );
 }
