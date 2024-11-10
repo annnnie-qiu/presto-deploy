@@ -34,6 +34,8 @@ const Tooltips = (
   setSelectedSlideId,
   showTextModal,
   showImageModal,
+  handleTextCancel,
+  isTextModalOpen,
   showCodeModal
 ) => {
   const [arrow, setArrow] = useState("Show");
@@ -62,6 +64,7 @@ const Tooltips = (
       <Flex vertical justify="center" align="center" className="demo">
         <Flex justify="space-between" align="center">
           <Flex align="center" vertical>
+            {/* add a new slide */}
             <Tooltip
               placement="rightTop"
               title={"add a new slide"}
@@ -102,6 +105,7 @@ const Tooltips = (
               </Button>
             </Tooltip>
 
+            {/* delete a slide */}
             <Tooltip
               placement="right"
               title={"delete slide"}
@@ -147,18 +151,14 @@ const Tooltips = (
               </Button>
             </Tooltip>
 
-            <Tooltip
-              placement="right"
-              title={"put TEXT on the slide"}
-              onClick={async () => {
-                console.log("put text");
-              }}
-            >
+            {/* put text */}
+            <Tooltip placement="right" title={"put TEXT on the slide"}>
               <Button onClick={showTextModal}>
                 <FileTextOutlined />
               </Button>
             </Tooltip>
 
+            {/* put image */}
             <Tooltip
               placement="right"
               title={"put an IMAGE on the slide"}
@@ -169,24 +169,20 @@ const Tooltips = (
               </Button>
             </Tooltip>
 
+            {/* put video */}
             <Tooltip placement="right" title={"put a VIDEO on the slide"}>
               <Button>
                 <VideoCameraAddOutlined />
               </Button>
             </Tooltip>
 
+            {/* put code */}
             <Tooltip
               placement="right"
               title={"put CODE on the slide"}
-              arrow={mergedArrow}
+              // arrow={mergedArrow}
             >
-              {/* <Button onClick={showCodeModal}>
-                <CodeOutlined />
-              </Button> */}
-              <Button onClick={() => {
-                console.log("Code button clicked"); // Check if this gets logged
-                showCodeModal();
-              }}>
+              <Button onClick={showCodeModal}>
                 <CodeOutlined />
               </Button>
             </Tooltip>
@@ -300,7 +296,7 @@ const DescSlide = ({
               );
             } else if (element.type === "code") {
               return (
-                <PresentationCode 
+                <PresentationCode
                   showCodeModal={showCodeModal}
                   key={element.id}
                   data={element}
@@ -310,7 +306,7 @@ const DescSlide = ({
                   setCodeLanguage={setCodeLanguage}
                   setSelectedElementId={setSelectedElementId}
                 />
-              )
+              );
             }
             return null;
           });
@@ -376,12 +372,11 @@ function PresentationPage() {
 
   const showCodeModal = () => {
     setisCodeModalOpen(true);
-    console.log(isCodeModalOpen);
-  }
+  };
 
   const handleCodeCancel = () => {
     setisCodeModalOpen(false);
-  }
+  };
 
   const handleArrowKeyPress = (e) => {
     if (e.key === "ArrowLeft") {
@@ -579,7 +574,7 @@ function PresentationPage() {
       }
     }
     await sendDetail(token, store);
-  }
+  };
 
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
@@ -843,8 +838,7 @@ function PresentationPage() {
         open={isCodeModalOpen}
         onOk={handleCodeOk}
         onCancel={handleCodeCancel}
-      >
-      </Modal>
+      ></Modal>
     </Layout>
   );
 }
