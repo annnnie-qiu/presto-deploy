@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import HeaherPresent from "../components/HeaherPresent";
-import { Button, Flex, Layout, Modal } from "antd";
+import { Button, Flex, Layout, Modal, Select } from "antd";
 import { Splitter, Form, ColorPicker, Input, InputNumber } from "antd";
 const { Sider, Header, Content } = Layout;
 import {
@@ -15,6 +15,7 @@ import {
   DeleteOutlined,
   PlusCircleOutlined,
   VideoCameraAddOutlined,
+  CodeOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -23,6 +24,7 @@ import { errorPopUp } from "../../utils/errorPopUp";
 import { showErrorToast } from "../../utils/toastUtils";
 import PresentationText from "../components/presentationItem/PresentationText";
 import PresentationImage from "../components/presentationItem/PresentationImage";
+import PresentationCode from "../components/presentationItem/PresentationCode";
 
 const Tooltips = (
   currentSlides,
@@ -31,7 +33,8 @@ const Tooltips = (
   selectedSlideId,
   setSelectedSlideId,
   showTextModal,
-  showImageModal
+  showImageModal,
+  showCodeModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -171,6 +174,22 @@ const Tooltips = (
                 <VideoCameraAddOutlined />
               </Button>
             </Tooltip>
+
+            <Tooltip
+              placement="right"
+              title={"put CODE on the slide"}
+              arrow={mergedArrow}
+            >
+              {/* <Button onClick={showCodeModal}>
+                <CodeOutlined />
+              </Button> */}
+              <Button onClick={() => {
+                console.log("Code button clicked"); // Check if this gets logged
+                showCodeModal();
+              }}>
+                <CodeOutlined />
+              </Button>
+            </Tooltip>
           </Flex>
         </Flex>
       </Flex>
@@ -188,6 +207,7 @@ const DescList = ({
   handleTextCancel,
   isTextModalOpen,
   showImageModal,
+  showCodeModal,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -220,7 +240,8 @@ const DescList = ({
         showTextModal,
         showImageModal,
         handleTextCancel,
-        isTextModalOpen
+        isTextModalOpen,
+        showCodeModal
       )}
     </div>
   </div>
@@ -240,6 +261,11 @@ const DescSlide = ({
   setImageSizeLength,
   setImageSizeWidth,
   setImageAlt,
+  showCodeModal,
+  setCodeBlockSize,
+  setCodeContent,
+  setCodeFontSize,
+  setCodeLanguage,
 }) => (
   <div className="flex h-full w-full justify-center items-center">
     <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
@@ -272,6 +298,19 @@ const DescSlide = ({
                   setSelectedElementId={setSelectedElementId}
                 />
               );
+            } else if (element.type === "code") {
+              return (
+                <PresentationCode 
+                  showCodeModal={showCodeModal}
+                  key={element.id}
+                  data={element}
+                  setCodeBlockSize={setCodeBlockSize}
+                  setCodeContent={setCodeContent}
+                  setCodeFontSize={setCodeFontSize}
+                  setCodeLanguage={setCodeLanguage}
+                  setSelectedElementId={setSelectedElementId}
+                />
+              )
             }
             return null;
           });
@@ -301,6 +340,12 @@ function PresentationPage() {
   const [imageSizeWidth, setImageSizeWidth] = useState(0);
   const [imageAlt, setImageAlt] = useState("");
 
+  // for the code input
+  const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
+  const [codeContent, setCodeContent] = useState("");
+  const [codeFontSize, setCodeFontSize] = useState(1);
+  const [codeLanguage, setCodeLanguage] = useState("Javascript");
+
   const [selectedElementId, setSelectedElementId] = useState(undefined);
 
   const [form] = Form.useForm();
@@ -312,6 +357,7 @@ function PresentationPage() {
 
   const [isTextModalOpen, setisTextModalOpen] = useState(false);
   const [isImageModalOpen, setisImageModalOpen] = useState(false);
+  const [isCodeModalOpen, setisCodeModalOpen] = useState(false);
   const showTextModal = () => {
     setisTextModalOpen(true);
   };
@@ -327,6 +373,15 @@ function PresentationPage() {
   const handleImageCancel = () => {
     setisImageModalOpen(false);
   };
+
+  const showCodeModal = () => {
+    setisCodeModalOpen(true);
+    console.log(isCodeModalOpen);
+  }
+
+  const handleCodeCancel = () => {
+    setisCodeModalOpen(false);
+  }
 
   const handleArrowKeyPress = (e) => {
     if (e.key === "ArrowLeft") {
@@ -486,6 +541,46 @@ function PresentationPage() {
     await sendDetail(token, store);
   };
 
+  const handleCodeOk = async () => {
+    handleCodeCancel();
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+
+    const newContent = [
+      ...currentSlides[targetIndex].content,
+      {
+        type: "code",
+        codeBlockSize,
+        codeContent,
+        codeFontSize,
+        codeLanguage,
+        id: currentSlides[targetIndex].nextElementId,
+      },
+    ];
+
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        slide.content = newContent;
+        slide.nextElementId += 1;
+      }
+      return slide;
+    });
+
+    setCurrentSlides(newSlideList);
+
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlideList;
+        break;
+      }
+    }
+    await sendDetail(token, store);
+  }
+
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
     return () => {
@@ -580,6 +675,8 @@ function PresentationPage() {
                   handleTextCancel={handleTextCancel}
                   isTextModalOpen={isTextModalOpen}
                   showImageModal={showImageModal}
+                  isCodeModalOpen={isCodeModalOpen}
+                  showCodeModal={showCodeModal}
                 />
               </div>
             </Splitter.Panel>
@@ -600,6 +697,7 @@ function PresentationPage() {
                 setImageSizeLength={setImageSizeLength}
                 setImageSizeWidth={setImageSizeWidth}
                 setImageAlt={setImageAlt}
+                showCodeModal={showCodeModal}
                 text="Second"
               />
             </Splitter.Panel>
@@ -737,6 +835,15 @@ function PresentationPage() {
             />
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Modal for code input */}
+      <Modal
+        title="Input Code"
+        open={isCodeModalOpen}
+        onOk={handleCodeOk}
+        onCancel={handleCodeCancel}
+      >
       </Modal>
     </Layout>
   );
