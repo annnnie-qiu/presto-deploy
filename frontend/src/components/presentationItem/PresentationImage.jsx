@@ -13,8 +13,8 @@ function PresentationImage({
     <Draggable>
       <div
         style={{
-          width: `${data?.textSizeLength}px`,
-          height: `${data?.textSizeWidth}px`,
+          width: `${data?.textSizeLength}%`,
+          height: `${data?.textSizeWidth}%`,
         }}
         className=" border border-gray-300 "
         onDoubleClick={async () => {
