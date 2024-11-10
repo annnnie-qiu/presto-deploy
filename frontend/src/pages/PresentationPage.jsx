@@ -707,6 +707,7 @@ function PresentationPage() {
             <Input
               value={imageSizeLength}
               placeholder="input placeholder"
+              addonAfter="px"
               onChange={(e) => {
                 setImageSizeLength(e.target.value);
               }}
@@ -718,6 +719,7 @@ function PresentationPage() {
             <Input
               value={imageSizeWidth}
               placeholder="input placeholder"
+              addonAfter="px"
               onChange={(e) => {
                 setImageSizeWidth(e.target.value);
               }}
