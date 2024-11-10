@@ -22,6 +22,7 @@ import { useParams } from "react-router-dom";
 import { errorPopUp } from "../../utils/errorPopUp";
 import { showErrorToast } from "../../utils/toastUtils";
 import PresentationText from "../components/presentationItem/PresentationText";
+import PresentationImage from "../components/presentationItem/PresentationImage";
 
 const Tooltips = (
   currentSlides,
@@ -29,7 +30,8 @@ const Tooltips = (
   presentationId,
   selectedSlideId,
   setSelectedSlideId,
-  showModal
+  showTextModal,
+  showImageModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -149,10 +151,9 @@ const Tooltips = (
                 console.log("put text");
               }}
             >
-              <Button onClick={showModal}>
+              <Button onClick={showTextModal}>
                 <FileTextOutlined />
               </Button>
-
             </Tooltip>
 
             <Tooltip
@@ -160,7 +161,7 @@ const Tooltips = (
               title={"put an IMAGE on the slide"}
               arrow={mergedArrow}
             >
-              <Button>
+              <Button onClick={showImageModal}>
                 <FileImageOutlined />
               </Button>
             </Tooltip>
@@ -183,9 +184,10 @@ const DescList = ({
   selectedSlideId,
   setSelectedSlideId,
   presentationId,
-  showModal,
-  handleCancel,
-  isModalOpen,
+  showTextModal,
+  handleTextCancel,
+  isTextModalOpen,
+  showImageModal,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -215,9 +217,10 @@ const DescList = ({
         presentationId,
         selectedSlideId,
         setSelectedSlideId,
-        showModal,
-        handleCancel,
-        isModalOpen
+        showTextModal,
+        showImageModal,
+        handleTextCancel,
+        isTextModalOpen
       )}
     </div>
   </div>
@@ -225,15 +228,18 @@ const DescList = ({
 
 const DescSlide = ({
   currentSlides,
-  presentationId,
   selectedSlideId,
-  showModal,
+  showTextModal,
   setTextSizeLength,
   setTextSizeWidth,
   setTextInput,
   setTextFontSize,
   setTextFontColor,
   setSelectedElementId,
+  showImageModal,
+  setImageSizeLength,
+  setImageSizeWidth,
+  setImageAlt,
 }) => (
   <div className="flex h-full w-full justify-center items-center">
     <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
@@ -243,11 +249,9 @@ const DescSlide = ({
             if (element.type === "text") {
               return (
                 <PresentationText
-                  showModal={showModal}
+                  showTextModal={showTextModal}
                   key={element.id}
                   data={element}
-                  selectedSlideId={selectedSlideId}
-                  presentationId={presentationId}
                   setTextSizeLength={setTextSizeLength}
                   setTextSizeWidth={setTextSizeWidth}
                   setTextInput={setTextInput}
@@ -256,7 +260,7 @@ const DescSlide = ({
                   setSelectedElementId={setSelectedElementId}
                 />
               ); // Use a unique key for each element
-            }
+            } 
             return null;
           });
         }
@@ -280,80 +284,12 @@ function PresentationPage() {
   const [textFontColor, setTextFontColor] = useState("#111111");
   const [zIndex, setZIndex] = useState(0);
 
-  //
+  // for the image input
+  const [imageSizeLength, setImageSizeLength] = useState(0);
+  const [imageSizeWidth, setImageSizeWidth] = useState(0);
+  const [imageAlt, setImageAlt] = useState("");
+
   const [selectedElementId, setSelectedElementId] = useState(undefined);
-
-  const handleOk = async () => {
-    handleCancel();
-    // save the text to the backend
-    const token = localStorage.getItem("token");
-    const response = await getDetail(token);
-    const { store } = response;
-    const targetIndex = currentSlides.findIndex(
-      (slide) => slide.slideId === selectedSlideId
-    );
-    // Check if content already exists (edit mode) or is new (add mode)
-    const existingElementIndex = currentSlides[targetIndex].content.findIndex(
-      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
-    );
-    console.log("existingElementIndex", existingElementIndex);
-    let newContent;
-    if (existingElementIndex !== -1) {
-      // Edit mode
-      // Update existing content
-      newContent = currentSlides[targetIndex].content.map((element, index) =>
-        index === existingElementIndex
-          ? {
-            ...element,
-            textInput: textInput,
-            textSizeLength: textSizeLength,
-            textSizeWidth: textSizeWidth,
-            textFontSize: textFontSize,
-            textFontColor: textFontColor,
-            zIndex: zIndex,
-          }
-          : element
-      );
-    } else {
-      // put them into content list and update the currentSlides
-      newContent = [
-        ...currentSlides[targetIndex].content,
-        {
-          type: "text",
-          textInput: textInput,
-          textSizeLength: textSizeLength,
-          textSizeWidth: textSizeWidth,
-          textFontSize: textFontSize,
-          textFontColor: textFontColor,
-          zIndex: zIndex,
-          id: currentSlides[targetIndex].nextElementId,
-        },
-      ];
-    }
-
-    console.log("newContent", newContent);
-
-    setZIndex(zIndex + 1);
-
-    const newSlideList = currentSlides.map((slide) => {
-      if (slide.slideId === selectedSlideId) {
-        slide.content = newContent;
-        slide.nextElementId = slide.nextElementId + 1;
-      }
-      return slide;
-    });
-
-    setCurrentSlides(newSlideList);
-    console.log("newSlideList", newSlideList);
-
-    for (let i = 0; i < store.presentations.length; i++) {
-      if (store.presentations[i].id == presentationId) {
-        store.presentations[i].slides = newSlideList;
-        break;
-      }
-    }
-    await sendDetail(token, store);
-  };
 
   const [form] = Form.useForm();
   const [formLayout, setFormLayout] = useState("horizontal");
@@ -362,13 +298,22 @@ function PresentationPage() {
   };
   const { TextArea } = Input;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
+  const [isTextModalOpen, setisTextModalOpen] = useState(false);
+  const [isImageModalOpen, setisImageModalOpen] = useState(false);
+  const showTextModal = () => {
+    setisTextModalOpen(true);
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const showImageModal = () => {
+    setisImageModalOpen(true);
+  };
+
+  const handleTextCancel = () => {
+    setisTextModalOpen(false);
+  };
+
+  const handleImageCancel = () => {
+    setisImageModalOpen(false);
   };
 
   const handleArrowKeyPress = (e) => {
@@ -391,6 +336,143 @@ function PresentationPage() {
         showErrorToast("This is the last slide now");
       }
     }
+  };
+
+  const handleTextOk = async () => {
+    handleTextCancel();
+    // save the text to the backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    // Check if content already exists (edit mode) or is new (add mode)
+    const existingElementIndex = currentSlides[targetIndex].content.findIndex(
+      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
+    );
+    let newContent;
+    if (existingElementIndex !== -1) {
+      // Edit mode
+      // Update existing content
+      newContent = currentSlides[targetIndex].content.map((element, index) =>
+        index === existingElementIndex
+          ? {
+              ...element,
+              textInput: textInput,
+              textSizeLength: textSizeLength,
+              textSizeWidth: textSizeWidth,
+              textFontSize: textFontSize,
+              textFontColor: textFontColor,
+              zIndex: zIndex,
+            }
+          : element
+      );
+    } else {
+      // put them into content list and update the currentSlides
+      newContent = [
+        ...currentSlides[targetIndex].content,
+        {
+          type: "text",
+          textInput: textInput,
+          textSizeLength: textSizeLength,
+          textSizeWidth: textSizeWidth,
+          textFontSize: textFontSize,
+          textFontColor: textFontColor,
+          zIndex: zIndex,
+          id: currentSlides[targetIndex].nextElementId,
+        },
+      ];
+    }
+
+    setZIndex(zIndex + 1);
+
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        slide.content = newContent;
+        slide.nextElementId = slide.nextElementId + 1;
+      }
+      return slide;
+    });
+
+    setCurrentSlides(newSlideList);
+
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlideList;
+        break;
+      }
+    }
+    await sendDetail(token, store);
+  };
+
+  const handleImageOk = async () => {
+    handleImageCancel();
+    // save the text to the backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    // Check if content already exists (edit mode) or is new (add mode)
+    const existingElementIndex = currentSlides[targetIndex].content.findIndex(
+      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
+    );
+    let newContent;
+    if (existingElementIndex !== -1) {
+      // Edit mode
+      // Update existing content
+      newContent = currentSlides[targetIndex].content.map((element, index) =>
+        index === existingElementIndex
+          ? {
+              ...element,
+              textInput: textInput,
+              textSizeLength: textSizeLength,
+              textSizeWidth: textSizeWidth,
+              textFontSize: textFontSize,
+              textFontColor: textFontColor,
+              zIndex: zIndex,
+            }
+          : element
+      );
+    } else {
+      // put them into content list and update the currentSlides
+      newContent = [
+        ...currentSlides[targetIndex].content,
+        {
+          type: "image",
+          imageSizeLength: imageSizeLength,
+          imageSizeWidth: imageSizeWidth,
+          imageAlt: imageAlt,
+          id: currentSlides[targetIndex].nextElementId,
+        },
+      ];
+    }
+
+    setZIndex(zIndex + 1);
+
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        slide.content = newContent;
+        slide.nextElementId = slide.nextElementId + 1;
+      }
+      return slide;
+    });
+
+    console.log("newSlideList", newSlideList);
+
+    setCurrentSlides(newSlideList);
+
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlideList;
+        break;
+      }
+    }
+
+    console.log("store", store);
+    await sendDetail(token, store);
   };
 
   React.useEffect(() => {
@@ -483,9 +565,10 @@ function PresentationPage() {
                   selectedSlideId={selectedSlideId}
                   setSelectedSlideId={setSelectedSlideId}
                   presentationId={presentationId}
-                  showModal={showModal}
-                  handleCancel={handleCancel}
-                  isModalOpen={isModalOpen}
+                  showTextModal={showTextModal}
+                  handleTextCancel={handleTextCancel}
+                  isTextModalOpen={isTextModalOpen}
+                  showImageModal={showImageModal}
                 />
               </div>
             </Splitter.Panel>
@@ -495,7 +578,7 @@ function PresentationPage() {
                 currentSlides={currentSlides}
                 presentationId={presentationId}
                 selectedSlideId={selectedSlideId}
-                showModal={showModal}
+                showTextModal={showTextModal}
                 setTextSizeLength={setTextSizeLength}
                 setTextSizeWidth={setTextSizeWidth}
                 setTextInput={setTextInput}
@@ -509,11 +592,12 @@ function PresentationPage() {
         </Content>
       </Layout>
 
+      {/* modal for input text */}
       <Modal
         title="Input Text"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
+        open={isTextModalOpen}
+        onOk={handleTextOk}
+        onCancel={handleTextCancel}
       >
         <Form
           layout={formLayout}

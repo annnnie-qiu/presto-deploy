@@ -4,9 +4,7 @@ import { getDetail } from "../../../utils/API/Send_ReceiveDetail/send_receiveDet
 
 function PresentationText({
   data,
-  showModal,
-  presentationId,
-  selectedSlideId,
+  showTextModal,
   setTextSizeLength,
   setTextSizeWidth,
   setTextInput,
@@ -29,8 +27,6 @@ function PresentationText({
         className=" border border-gray-300 "
         onDoubleClick={async () => {
           console.log("double clicked");
-          console.log(data.id);
-          console.log(data);
 
           setTextSizeLength(data.textSizeLength);
           setTextSizeWidth(data.textSizeWidth);
@@ -38,28 +34,7 @@ function PresentationText({
           setTextFontSize(data.textFontSize);
           setTextFontColor(data.textFontColor);
           setSelectedElementId(data.id);
-
-          // find the details of the presentation TODO: change to the current presentation
-          const response = await getDetail(localStorage.getItem("token"));
-          const { store } = response;
-          // loop through the presentations to find the current presentation element using the nextElementId
-          console.log("presentationId: ", presentationId);
-          console.log("store: ", store);
-          const presentation = store.presentations.find(
-            (presentation) => presentation.id == presentationId
-          );
-          console.log("presentation: ", presentation);
-          // find the current slide
-          const currentSlide = presentation.slides.find(
-            (slide) => slide.slideId == selectedSlideId
-          );
-          console.log("currentSlide: ", currentSlide);
-          // find the current element
-          const currentElement = currentSlide.content.find(
-            (element) => element.id == data.id
-          );
-          console.log("currentElement: ", currentElement);
-          showModal();
+          showTextModal();
         }}
       >
         {data ? (
