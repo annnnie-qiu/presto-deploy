@@ -15,6 +15,7 @@ import {
   DeleteOutlined,
   PlusCircleOutlined,
   VideoCameraAddOutlined,
+  CodeOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -24,6 +25,7 @@ import { showErrorToast } from "../../utils/toastUtils";
 import PresentationText from "../components/presentationItem/PresentationText";
 import PresentationImage from "../components/presentationItem/PresentationImage";
 
+
 const Tooltips = (
   currentSlides,
   setCurrentSlides,
@@ -31,7 +33,8 @@ const Tooltips = (
   selectedSlideId,
   setSelectedSlideId,
   showTextModal,
-  showImageModal
+  showImageModal,
+  showCodeModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -171,6 +174,17 @@ const Tooltips = (
                 <VideoCameraAddOutlined />
               </Button>
             </Tooltip>
+
+            <Tooltip
+              placement="right"
+              title={"put CODE on the slide"}
+              arrow={mergedArrow}
+              onClick={showCodeModal}
+            >
+              <Button>
+                <CodeOutlined />
+              </Button>
+            </Tooltip>
           </Flex>
         </Flex>
       </Flex>
@@ -240,6 +254,7 @@ const DescSlide = ({
   setImageSizeLength,
   setImageSizeWidth,
   setImageAlt,
+  showCodeModal,
 }) => (
   <div className="flex h-full w-full justify-center items-center">
     <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
@@ -272,6 +287,10 @@ const DescSlide = ({
                   setSelectedElementId={setSelectedElementId}
                 />
               );
+            } else if (element.type === "code") {
+              return (
+                <
+              )
             }
             return null;
           });
