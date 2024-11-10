@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import HeaherPresent from "../components/HeaherPresent";
-import { Button, Flex, Layout, Modal, Select } from "antd";
+import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
 import { Splitter, Form, ColorPicker, Input, InputNumber } from "antd";
 const { Sider, Header, Content } = Layout;
 import {
@@ -16,6 +16,7 @@ import {
   PlusCircleOutlined,
   VideoCameraAddOutlined,
   CodeOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -257,6 +258,7 @@ const DescSlide = ({
   setImageSizeLength,
   setImageSizeWidth,
   setImageAlt,
+  setUploadImage,
   showCodeModal,
   setCodeBlockSize,
   setCodeContent,
@@ -292,6 +294,7 @@ const DescSlide = ({
                   setImageSizeWidth={setImageSizeWidth}
                   setImageAlt={setImageAlt}
                   setSelectedElementId={setSelectedElementId}
+                  setUploadImage={setUploadImage}
                 />
               );
             } else if (element.type === "code") {
@@ -335,6 +338,17 @@ function PresentationPage() {
   const [imageSizeLength, setImageSizeLength] = useState(0);
   const [imageSizeWidth, setImageSizeWidth] = useState(0);
   const [imageAlt, setImageAlt] = useState("");
+  const [uploadImage, setUploadImage] = useState("");
+
+  const props = {
+    action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
+    onChange({ file, fileList }) {
+      if (file.status !== "uploading") {
+        console.log(file, fileList);
+      }
+    },
+    defaultFileList: [],
+  };
 
   // for the code input
   const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
@@ -479,7 +493,7 @@ function PresentationPage() {
     );
     // Check if content already exists (edit mode) or is new (add mode)
     const existingElementIndex = currentSlides[targetIndex].content.findIndex(
-      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
+      (element) => element.id === selectedElementId
     );
     let newContent;
     if (existingElementIndex !== -1) {
@@ -492,6 +506,7 @@ function PresentationPage() {
               imageSizeLength: imageSizeLength,
               imageSizeWidth: imageSizeWidth,
               imageAlt: imageAlt,
+              uploadImage: uploadImage,
               zIndex: zIndex,
             }
           : element
@@ -505,6 +520,7 @@ function PresentationPage() {
           imageSizeLength: imageSizeLength,
           imageSizeWidth: imageSizeWidth,
           imageAlt: imageAlt,
+          uploadImage: uploadImage,
           id: currentSlides[targetIndex].nextElementId,
           zIndex: zIndex,
         },
@@ -692,6 +708,7 @@ function PresentationPage() {
                 setImageSizeLength={setImageSizeLength}
                 setImageSizeWidth={setImageSizeWidth}
                 setImageAlt={setImageAlt}
+                setUploadImage={setUploadImage}
                 showCodeModal={showCodeModal}
                 text="Second"
               />
@@ -828,6 +845,21 @@ function PresentationPage() {
                 setImageAlt(e.target.value);
               }}
             />
+          </Form.Item>
+
+          {/* for uploading image */}
+          <Form.Item label="upload image">
+            <Upload {...props}>
+              <Button
+                value={uploadImage}
+                onChange={(e) => {
+                  setUploadImage(e.target.value);
+                }}
+                icon={<UploadOutlined />}
+              >
+                Upload
+              </Button>
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>
