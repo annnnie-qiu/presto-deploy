@@ -629,6 +629,7 @@ function PresentationPage() {
             <Input
               value={textSizeLength}
               placeholder="input placeholder"
+              addonAfter="px"
               onChange={(e) => {
                 setTextSizeLength(e.target.value);
               }}
@@ -639,6 +640,7 @@ function PresentationPage() {
             <Input
               value={textSizeWidth}
               placeholder="input placeholder"
+              addonAfter="px"
               onChange={(e) => {
                 setTextSizeWidth(e.target.value);
               }}
