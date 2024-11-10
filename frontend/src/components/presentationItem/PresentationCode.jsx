@@ -1,7 +1,7 @@
 import React from 'react';
 import Draggable from "react-draggable";
 import { Prism as SynataxHighlighter } from "react-syntax-highlighter";
-import { darcula } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 function PresentationCode({
   data,
@@ -20,7 +20,7 @@ function PresentationCode({
           height: `${data?.codeBlockSize?.length}px`,
           fontSize: `${data?.codeFontSize}em`,
         }}
-        className="border border-gray-300 p-2"
+        className="border border-gray-300"
         onDoubleClick={() => {
           setCodeBlockSize(data.codeBlockSize);
           setCodeContent(data.codeContent);
@@ -33,7 +33,15 @@ function PresentationCode({
         {data ? (
           <SynataxHighlighter
             language={data.codeLanguage?.toLowerCase()}
-            style={darcula}
+            style={tomorrow}
+            customStyle={{
+              backgroundColor: 'transparent',
+              margin: 0,
+              padding: 0,
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+            }}
           >
             {data.codeContent}
           </SynataxHighlighter>

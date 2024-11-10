@@ -838,7 +838,48 @@ function PresentationPage() {
         open={isCodeModalOpen}
         onOk={handleCodeOk}
         onCancel={handleCodeCancel}
-      ></Modal>
+      >
+        <Form layout="vertical">
+          <Form.Item label="Block Size Length (px)">
+            <Input
+              value={codeBlockSize.length}
+              onChange={(e) => setCodeBlockSize({ ...codeBlockSize, length: e.target.value })}
+            />
+          </Form.Item>
+          <Form.Item label="Block Size Width (px)">
+            <Input
+              value={codeBlockSize.width}
+              onChange={(e) => setCodeBlockSize({ ...codeBlockSize, width: e.target.value })}
+            />
+          </Form.Item>
+          <Form.Item label="Code Content">
+            <TextArea
+              value={codeContent}
+              onChange={(e) => setCodeContent(e.target.value)}
+              autoSize={{ minRows: 5 }}
+            />
+          </Form.Item>
+          <Form.Item label="Font Size (em)">
+            <InputNumber
+              min={0.5}
+              max={5}
+              step={0.1}
+              value={codeFontSize}
+              onChange={(value) => setCodeFontSize(value)}
+            />
+          </Form.Item>
+          <Form.Item label="Programming Language">
+            <Select
+              value={codeLanguage}
+              onChange={(value) => setCodeLanguage(value)}
+            >
+              <Select.Option value="Javascript">Javascript</Select.Option>
+              <Select.Option value="Python">Python</Select.Option>
+              <Select.Option value="C">C</Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
     </Layout>
   );
 }
