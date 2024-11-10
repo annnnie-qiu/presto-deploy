@@ -719,10 +719,21 @@ function PresentationPage() {
           }}
         >
           <Form.Item label="Size length">
-            <Input
+            {/* <Input
               value={textSizeLength}
               placeholder="input placeholder"
               addonAfter="px"
+              onChange={(e) => {
+                setTextSizeLength(e.target.value);
+              }}
+            /> */}
+            <Input
+              value={textSizeLength}
+              placeholder="Please enter the length (0-100)"
+              addonAfter="%"
+              type="number"
+              min={0}
+              max={100}
               onChange={(e) => {
                 setTextSizeLength(e.target.value);
               }}
@@ -730,10 +741,21 @@ function PresentationPage() {
           </Form.Item>
 
           <Form.Item label="Size width">
-            <Input
+            {/* <Input
               value={textSizeWidth}
               placeholder="input placeholder"
               addonAfter="px"
+              onChange={(e) => {
+                setTextSizeWidth(e.target.value);
+              }}
+            /> */}
+            <Input
+              value={textSizeWidth}
+              placeholder="Please enter the width (0-100)"
+              addonAfter="%"
+              type="number"
+              min={0}
+              max={100}
               onChange={(e) => {
                 setTextSizeWidth(e.target.value);
               }}
@@ -799,8 +821,10 @@ function PresentationPage() {
           <Form.Item label="Size length">
             <Input
               value={imageSizeLength}
-              placeholder="input placeholder"
-              addonAfter="px"
+              type="number"
+              placeholder="Please enter the length (0-100)"
+              // addonAfter="px"
+              addonAfter="%"
               onChange={(e) => {
                 setImageSizeLength(e.target.value);
               }}
@@ -811,8 +835,10 @@ function PresentationPage() {
           <Form.Item label="Size width">
             <Input
               value={imageSizeWidth}
-              placeholder="input placeholder"
-              addonAfter="px"
+              type="number"
+              placeholder="Please enter the width (0-100)"
+              // addonAfter="px"
+              addonAfter="%"
               onChange={(e) => {
                 setImageSizeWidth(e.target.value);
               }}
@@ -823,7 +849,7 @@ function PresentationPage() {
           <Form.Item label="alt">
             <TextArea
               value={imageAlt}
-              placeholder="input your alt here"
+              placeholder="Input your alt here"
               onChange={(e) => {
                 setImageAlt(e.target.value);
               }}
@@ -840,14 +866,22 @@ function PresentationPage() {
         onCancel={handleCodeCancel}
       >
         <Form layout="vertical">
-          <Form.Item label="Block Size Length (px)">
+          <Form.Item label="Block Size Length (%)">
             <Input
+              placeholder="Please enter the length (0-100)"
+              type="number"
+              min={0}
+              max={100}
               value={codeBlockSize.length}
               onChange={(e) => setCodeBlockSize({ ...codeBlockSize, length: e.target.value })}
             />
           </Form.Item>
-          <Form.Item label="Block Size Width (px)">
+          <Form.Item label="Block Size Width (%)">
             <Input
+              placeholder="Please enter the width (0-100)"
+              type="number"
+              min={0}
+              max={100}
               value={codeBlockSize.width}
               onChange={(e) => setCodeBlockSize({ ...codeBlockSize, width: e.target.value })}
             />
@@ -861,6 +895,8 @@ function PresentationPage() {
           </Form.Item>
           <Form.Item label="Font Size (em)">
             <InputNumber
+              placeholder="Number"
+              type="number"
               min={0.5}
               max={5}
               step={0.1}

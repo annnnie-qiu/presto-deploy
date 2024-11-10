@@ -14,14 +14,13 @@ function PresentationCode({
 }) {
   const codeRef = useRef(null);
 
-  // Helper function to escape HTML using Handlebars
+  // escape HTML using Handlebars
   const escapeHtml = (unsafeHtml) => {
     return Handlebars.Utils.escapeExpression(unsafeHtml);
   };
 
   useEffect(() => {
     if (codeRef.current) {
-      // Remove previously set highlighted state to avoid re-highlighting warnings
       codeRef.current.removeAttribute('data-highlighted');
       codeRef.current.classList.remove(...Array.from(codeRef.current.classList).filter(cls => cls.startsWith('hljs')));
 
@@ -37,8 +36,8 @@ function PresentationCode({
     <Draggable>
       <div
         style={{
-          width: `${data?.codeBlockSize?.width}px`,
-          height: `${data?.codeBlockSize?.length}px`,
+          width: `${data?.codeBlockSize?.width}%`,
+          height: `${data?.codeBlockSize?.length}%`,
           fontSize: `${data?.codeFontSize}em`,
           overflow: 'hidden',
           margin: '0px',

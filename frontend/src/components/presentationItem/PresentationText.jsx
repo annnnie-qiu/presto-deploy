@@ -18,8 +18,8 @@ function PresentationText({
         style={{
           // width: "1000px",
           // height: "1000px",
-          width: `${data?.textSizeLength}px`,
-          height: `${data?.textSizeWidth}px`,
+          width: `${data?.textSizeLength}%`,
+          height: `${data?.textSizeWidth}%`,
           color: data?.textFontColor,
           fontSize: `${data?.textFontSize}em`,
           overflow: "hidden",
