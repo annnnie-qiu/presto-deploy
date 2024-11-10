@@ -439,11 +439,9 @@ function PresentationPage() {
         index === existingElementIndex
           ? {
               ...element,
-              textInput: textInput,
-              textSizeLength: textSizeLength,
-              textSizeWidth: textSizeWidth,
-              textFontSize: textFontSize,
-              textFontColor: textFontColor,
+              imageSizeLength: imageSizeLength,
+              imageSizeWidth: imageSizeWidth,
+              imageAlt: imageAlt,
               zIndex: zIndex,
             }
           : element
@@ -458,6 +456,7 @@ function PresentationPage() {
           imageSizeWidth: imageSizeWidth,
           imageAlt: imageAlt,
           id: currentSlides[targetIndex].nextElementId,
+          zIndex: zIndex,
         },
       ];
     }
@@ -597,6 +596,10 @@ function PresentationPage() {
                 setTextFontSize={setTextFontSize}
                 setTextFontColor={setTextFontColor}
                 setSelectedElementId={setSelectedElementId}
+                showImageModal={showImageModal}
+                setImageSizeLength={setImageSizeLength}
+                setImageSizeWidth={setImageSizeWidth}
+                setImageAlt={setImageAlt}
                 text="Second"
               />
             </Splitter.Panel>
