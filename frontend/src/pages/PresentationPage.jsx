@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import HeaherPresent from "../components/HeaherPresent";
-import { Button, Flex, Layout, Modal, Select } from "antd";
+import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
 import { Splitter, Form, ColorPicker, Input, InputNumber } from "antd";
 const { Sider, Header, Content } = Layout;
 import {
@@ -16,7 +16,7 @@ import {
   PlusCircleOutlined,
   VideoCameraAddOutlined,
   CodeOutlined,
-  SwitcherOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -273,6 +273,7 @@ const DescSlide = ({
   setImageSizeLength,
   setImageSizeWidth,
   setImageAlt,
+  setUploadImage,
   showCodeModal,
   setCodeBlockSize,
   setCodeContent,
@@ -308,6 +309,7 @@ const DescSlide = ({
                   setImageSizeWidth={setImageSizeWidth}
                   setImageAlt={setImageAlt}
                   setSelectedElementId={setSelectedElementId}
+                  setUploadImage={setUploadImage}
                 />
               );
             } else if (element.type === "code") {
@@ -354,6 +356,7 @@ function PresentationPage() {
   const [imageSizeLength, setImageSizeLength] = useState(0);
   const [imageSizeWidth, setImageSizeWidth] = useState(0);
   const [imageAlt, setImageAlt] = useState("");
+  const [uploadImage, setUploadImage] = useState("");
 
   // for the code input
   const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
@@ -549,7 +552,7 @@ function PresentationPage() {
     );
     // Check if content already exists (edit mode) or is new (add mode)
     const existingElementIndex = currentSlides[targetIndex].content.findIndex(
-      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
+      (element) => element.id === selectedElementId
     );
     let newContent;
     if (existingElementIndex !== -1) {
@@ -558,12 +561,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-            ...element,
-            imageSizeLength: imageSizeLength,
-            imageSizeWidth: imageSizeWidth,
-            imageAlt: imageAlt,
-            zIndex: zIndex,
-          }
+              ...element,
+              imageSizeLength: imageSizeLength,
+              imageSizeWidth: imageSizeWidth,
+              imageAlt: imageAlt,
+              uploadImage: uploadImage,
+              zIndex: zIndex,
+            }
           : element
       );
     } else {
@@ -575,6 +579,7 @@ function PresentationPage() {
           imageSizeLength: imageSizeLength,
           imageSizeWidth: imageSizeWidth,
           imageAlt: imageAlt,
+          uploadImage: uploadImage,
           id: currentSlides[targetIndex].nextElementId,
           zIndex: zIndex,
         },
@@ -646,6 +651,23 @@ function PresentationPage() {
     await sendDetail(token, store);
   };
 
+  const handleImageUplod = (file) => {
+    // Create a FileReader to read the file
+    const reader = new FileReader();
+
+    // Once the file is read, get the Base64 string
+    reader.onload = (e) => {
+      setUploadImage(e.target.result);
+      console.log("Base64 of uploaded image:", e.target.result);
+    };
+
+    // Read the file as a Data URL (Base64)
+    reader.readAsDataURL(file);
+    // Prevent actual upload by returning false
+    return false;
+  };
+
+  // TODO: need to be changed
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
     return () => {
@@ -764,6 +786,7 @@ function PresentationPage() {
                 setImageSizeLength={setImageSizeLength}
                 setImageSizeWidth={setImageSizeWidth}
                 setImageAlt={setImageAlt}
+                setUploadImage={setUploadImage}
                 showCodeModal={showCodeModal}
                 text="Second"
               />
@@ -926,6 +949,21 @@ function PresentationPage() {
                 setImageAlt(e.target.value);
               }}
             />
+          </Form.Item>
+
+          {/* for uploading image */}
+          <Form.Item label="upload image">
+            <Upload beforeUpload={handleImageUplod}>
+              <Button
+                value={uploadImage}
+                onChange={(e) => {
+                  setUploadImage(e.target.value);
+                }}
+                icon={<UploadOutlined />}
+              >
+                Upload
+              </Button>
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>

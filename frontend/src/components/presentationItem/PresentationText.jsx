@@ -13,6 +13,8 @@ function PresentationText({
   setTextFontFamily,
   setSelectedElementId,
 }) {
+  const [isMoveActive, setIsMoveActive] = useState(false);
+
   return (
     <Draggable>
       <div
@@ -25,6 +27,8 @@ function PresentationText({
           fontSize: `${data?.textFontSize}em`,
           fontFamily: data?.textFontFamily || 'Quicksand, sans-serif',
           overflow: "hidden",
+          cursor: isMoveActive ? "move" : "default",
+          position: "relative",
         }}
         className=" border border-gray-300 "
         onDoubleClick={async () => {
@@ -39,6 +43,10 @@ function PresentationText({
           setSelectedElementId(data.id);
           showTextModal();
         }}
+        onClick={() => {
+          console.log("clicked");
+          setIsMoveActive(!isMoveActive);
+        }}
       >
         {data ? (
           <span>
@@ -50,6 +58,52 @@ function PresentationText({
             ))}
           </span>
         ) : null}
+
+        {/* Corner Handles */}
+        {isMoveActive && (
+          <>
+            <div
+              style={{
+                position: "absolute",
+                width: "5px",
+                height: "5px",
+                backgroundColor: "black",
+                top: "-2.5px",
+                left: "-2.5px",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                width: "5px",
+                height: "5px",
+                backgroundColor: "black",
+                top: "-2.5px",
+                right: "-2.5px",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                width: "5px",
+                height: "5px",
+                backgroundColor: "black",
+                bottom: "-2.5px",
+                left: "-2.5px",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                width: "5px",
+                height: "5px",
+                backgroundColor: "black",
+                bottom: "-2.5px",
+                right: "-2.5px",
+              }}
+            />
+          </>
+        )}
       </div>
     </Draggable>
   );
