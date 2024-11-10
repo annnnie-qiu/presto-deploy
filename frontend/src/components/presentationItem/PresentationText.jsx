@@ -10,6 +10,7 @@ function PresentationText({
   setTextInput,
   setTextFontSize,
   setTextFontColor,
+  setTextFontFamily,
   setSelectedElementId,
 }) {
   return (
@@ -22,6 +23,7 @@ function PresentationText({
           height: `${data?.textSizeWidth}%`,
           color: data?.textFontColor,
           fontSize: `${data?.textFontSize}em`,
+          fontFamily: data?.textFontFamily || 'Quicksand, sans-serif',
           overflow: "hidden",
         }}
         className=" border border-gray-300 "
@@ -33,6 +35,7 @@ function PresentationText({
           setTextInput(data.textInput);
           setTextFontSize(data.textFontSize);
           setTextFontColor(data.textFontColor);
+          setTextFontFamily(data.textFontFamily);
           setSelectedElementId(data.id);
           showTextModal();
         }}

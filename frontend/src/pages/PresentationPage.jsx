@@ -16,6 +16,7 @@ import {
   PlusCircleOutlined,
   VideoCameraAddOutlined,
   CodeOutlined,
+  SwitcherOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -36,7 +37,10 @@ const Tooltips = (
   showImageModal,
   handleTextCancel,
   isTextModalOpen,
-  showCodeModal
+  showCodeModal,
+  handleFontCancel,
+  isFontModalOpen,
+  showFontModal,
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -186,6 +190,16 @@ const Tooltips = (
                 <CodeOutlined />
               </Button>
             </Tooltip>
+
+            {/* put font change */}
+            <Tooltip
+              placement="right" 
+              title={"Change Font for All Text Boxes"}
+            >
+              <Button onClick={showFontModal}>
+                <SwitcherOutlined />
+              </Button>
+            </Tooltip>
           </Flex>
         </Flex>
       </Flex>
@@ -204,6 +218,7 @@ const DescList = ({
   isTextModalOpen,
   showImageModal,
   showCodeModal,
+  showFontModal,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -237,7 +252,8 @@ const DescList = ({
         showImageModal,
         handleTextCancel,
         isTextModalOpen,
-        showCodeModal
+        showCodeModal,
+        showFontModal,
       )}
     </div>
   </div>
@@ -331,6 +347,9 @@ function PresentationPage() {
   const [textFontColor, setTextFontColor] = useState("#111111");
   const [zIndex, setZIndex] = useState(0);
 
+  const [isFontModalOpen, setIsFontModalOpen] = useState(false);
+  const [textFontFamily, setTextFontFamily] = useState("Quicksand, sans-serif");
+
   // for the image input
   const [imageSizeLength, setImageSizeLength] = useState(0);
   const [imageSizeWidth, setImageSizeWidth] = useState(0);
@@ -340,7 +359,7 @@ function PresentationPage() {
   const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
   const [codeContent, setCodeContent] = useState("");
   const [codeFontSize, setCodeFontSize] = useState(1);
-  const [codeLanguage, setCodeLanguage] = useState("Javascript");
+  // const [codeLanguage, setCodeLanguage] = useState("Javascript");
 
   const [selectedElementId, setSelectedElementId] = useState(undefined);
 
@@ -377,6 +396,14 @@ function PresentationPage() {
   const handleCodeCancel = () => {
     setisCodeModalOpen(false);
   };
+
+  const showFontModal = () => {
+    setIsFontModalOpen(true);
+  }
+
+  const handleFontCancel = () => {
+    setIsFontModalOpen(false);
+  }
 
   const handleArrowKeyPress = (e) => {
     if (e.key === "ArrowLeft") {
@@ -420,14 +447,14 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              textInput: textInput,
-              textSizeLength: textSizeLength,
-              textSizeWidth: textSizeWidth,
-              textFontSize: textFontSize,
-              textFontColor: textFontColor,
-              zIndex: zIndex,
-            }
+            ...element,
+            textInput: textInput,
+            textSizeLength: textSizeLength,
+            textSizeWidth: textSizeWidth,
+            textFontSize: textFontSize,
+            textFontColor: textFontColor,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -468,6 +495,49 @@ function PresentationPage() {
     await sendDetail(token, store);
   };
 
+  const handleFontOk = async () => {
+    handleFontCancel(false);
+  
+    // Save the font family to the backend or update the state accordingly
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+  
+    // Find the index of the current slide that is selected
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+  
+    // Update the font family for all text elements on the selected slide
+    const newContent = currentSlides[targetIndex].content.map((element) => {
+      if (element.type === "text") {
+        // Update font family of all text elements
+        return { ...element, textFontFamily };
+      }
+      return element;
+    });
+  
+    // Update the current slide with new content
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        return { ...slide, content: newContent };
+      }
+      return slide;
+    });
+  
+    // Update the state to reflect changes
+    setCurrentSlides(newSlideList);
+  
+    // Update the backend store to save the changes
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlideList;
+        break;
+      }
+    }
+    await sendDetail(token, store);
+  };  
+
   const handleImageOk = async () => {
     handleImageCancel();
     // save the text to the backend
@@ -488,12 +558,12 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              imageSizeLength: imageSizeLength,
-              imageSizeWidth: imageSizeWidth,
-              imageAlt: imageAlt,
-              zIndex: zIndex,
-            }
+            ...element,
+            imageSizeLength: imageSizeLength,
+            imageSizeWidth: imageSizeWidth,
+            imageAlt: imageAlt,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -672,6 +742,8 @@ function PresentationPage() {
                   showImageModal={showImageModal}
                   isCodeModalOpen={isCodeModalOpen}
                   showCodeModal={showCodeModal}
+                  isFontModalOpen={isFontModalOpen}
+                  showFontModal={showFontModal}
                 />
               </div>
             </Splitter.Panel>
@@ -914,6 +986,26 @@ function PresentationPage() {
               <Select.Option value="C">C</Select.Option>
             </Select>
           </Form.Item> */}
+        </Form>
+      </Modal>
+      {/* Modal for font change inside the text box */}
+      <Modal
+        title="Select Font Family"
+        open={isFontModalOpen}
+        onOk={handleFontOk}
+        onCancel={handleFontCancel}
+      >
+        <Form layout="vertical">
+          <Form.Item label="Font Family">
+            <Select
+              value={textFontFamily}
+              onChange={(value) => setTextFontFamily(value)}
+            >
+              <Select.Option value="Quicksand, sans-serif">Quicksand</Select.Option>
+              <Select.Option value="Arial, sans-serif">Arial</Select.Option>
+              <Select.Option value="Courier New, monospace">Courier New</Select.Option>
+            </Select>
+          </Form.Item>
         </Form>
       </Modal>
     </Layout>
