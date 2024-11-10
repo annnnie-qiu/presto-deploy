@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Draggable from "react-draggable";
-import { Prism as SynataxHighlighter } from "react-syntax-highlighter";
-import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
+import Handlebars from 'handlebars';
 
 function PresentationCode({
   data,
@@ -9,9 +10,29 @@ function PresentationCode({
   setCodeBlockSize,
   setCodeContent,
   setCodeFontSize,
-  setCodeLanguage,
   setSelectedElementId,
 }) {
+  const codeRef = useRef(null);
+
+  // Helper function to escape HTML using Handlebars
+  const escapeHtml = (unsafeHtml) => {
+    return Handlebars.Utils.escapeExpression(unsafeHtml);
+  };
+
+  useEffect(() => {
+    if (codeRef.current) {
+      // Remove previously set highlighted state to avoid re-highlighting warnings
+      codeRef.current.removeAttribute('data-highlighted');
+      codeRef.current.classList.remove(...Array.from(codeRef.current.classList).filter(cls => cls.startsWith('hljs')));
+
+      // Set the escaped content to the code element
+      codeRef.current.innerHTML = escapeHtml(data.codeContent);
+      
+      // Highlight the element
+      hljs.highlightElement(codeRef.current);
+    }
+  }, [data.codeContent]);
+
   return (
     <Draggable>
       <div
@@ -19,36 +40,43 @@ function PresentationCode({
           width: `${data?.codeBlockSize?.width}px`,
           height: `${data?.codeBlockSize?.length}px`,
           fontSize: `${data?.codeFontSize}em`,
+          overflow: 'hidden',
+          margin: '0px',
+          padding: '0px',
+          backgroundColor: 'transparent',
         }}
         className="border border-gray-300"
         onDoubleClick={() => {
           setCodeBlockSize(data.codeBlockSize);
           setCodeContent(data.codeContent);
           setCodeFontSize(data.codeFontSize);
-          setCodeLanguage(data.codeLanguage);
           setSelectedElementId(data.id);
           showCodeModal();
         }}
       >
-        {data ? (
-          <SynataxHighlighter
-            language={data.codeLanguage?.toLowerCase()}
-            style={tomorrow}
-            customStyle={{
-              backgroundColor: 'transparent',
-              margin: 0,
-              padding: 0,
-              width: '100%',
-              height: '100%',
-              overflow: 'hidden',
+        <pre
+          style={{
+            margin: '0',
+            padding: '0',
+            textAlign: 'left',
+            overflow: 'auto',
+            height: '100%',
+            width: '100%',
+          }}
+        >
+          <code
+            ref={codeRef}
+            style={{
+              margin: '0',
+              padding: '0',
+              textAlign: 'left',
+              display: 'block',
             }}
-          >
-            {data.codeContent}
-          </SynataxHighlighter>
-        ) : null}
+          ></code>
+        </pre>
       </div>
     </Draggable>
-  )
+  );
 }
 
-export default PresentationCode
+export default PresentationCode;

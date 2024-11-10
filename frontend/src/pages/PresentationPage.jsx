@@ -552,7 +552,7 @@ function PresentationPage() {
         codeBlockSize,
         codeContent,
         codeFontSize,
-        codeLanguage,
+        // codeLanguage,
         id: currentSlides[targetIndex].nextElementId,
       },
     ];
@@ -868,7 +868,7 @@ function PresentationPage() {
               onChange={(value) => setCodeFontSize(value)}
             />
           </Form.Item>
-          <Form.Item label="Programming Language">
+          {/* <Form.Item label="Programming Language">
             <Select
               value={codeLanguage}
               onChange={(value) => setCodeLanguage(value)}
@@ -877,7 +877,7 @@ function PresentationPage() {
               <Select.Option value="Python">Python</Select.Option>
               <Select.Option value="C">C</Select.Option>
             </Select>
-          </Form.Item>
+          </Form.Item> */}
         </Form>
       </Modal>
     </Layout>
