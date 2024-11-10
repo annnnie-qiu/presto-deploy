@@ -340,16 +340,6 @@ function PresentationPage() {
   const [imageAlt, setImageAlt] = useState("");
   const [uploadImage, setUploadImage] = useState("");
 
-  const props = {
-    action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
-    onChange({ file, fileList }) {
-      if (file.status !== "uploading") {
-        console.log(file, fileList);
-      }
-    },
-    defaultFileList: [],
-  };
-
   // for the code input
   const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
   const [codeContent, setCodeContent] = useState("");
@@ -592,6 +582,23 @@ function PresentationPage() {
     await sendDetail(token, store);
   };
 
+  const handleImageUplod = (file) => {
+    // Create a FileReader to read the file
+    const reader = new FileReader();
+
+    // Once the file is read, get the Base64 string
+    reader.onload = (e) => {
+      setUploadImage(e.target.result);
+      console.log("Base64 of uploaded image:", e.target.result);
+    };
+
+    // Read the file as a Data URL (Base64)
+    reader.readAsDataURL(file);
+    // Prevent actual upload by returning false
+    return false;
+  };
+
+  // TODO: need to be changed
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
     return () => {
@@ -849,7 +856,7 @@ function PresentationPage() {
 
           {/* for uploading image */}
           <Form.Item label="upload image">
-            <Upload {...props}>
+            <Upload beforeUpload={handleImageUplod}>
               <Button
                 value={uploadImage}
                 onChange={(e) => {
