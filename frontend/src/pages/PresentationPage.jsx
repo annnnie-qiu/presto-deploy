@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import HeaherPresent from "../components/HeaherPresent";
 import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
 import { Splitter, Form, ColorPicker, Input, InputNumber } from "antd";
@@ -284,9 +284,10 @@ const DescSlide = ({
   setCodeContent,
   setCodeFontSize,
   setCodeLanguage,
-}) => (
-  <div className="flex h-full w-full justify-center items-center">
-    <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
+}) => {
+  const boundsRef = useRef(null);
+  return (<div className="flex h-full w-full justify-center items-center">
+    <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit" style={{position: "relative"}} ref={boundsRef}>
       {currentSlides?.map((slide) => {
         if (slide.slideId === selectedSlideId) {
           return slide.content?.map((element) => {
@@ -302,6 +303,7 @@ const DescSlide = ({
                   setTextFontSize={setTextFontSize}
                   setTextFontColor={setTextFontColor}
                   setSelectedElementId={setSelectedElementId}
+                  boundsRef={boundsRef}
                 />
               ); // Use a unique key for each element
             } else if (element.type === "image") {
@@ -337,8 +339,8 @@ const DescSlide = ({
         return null;
       })}
     </div>
-  </div>
-);
+  </div>);
+};
 
 function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);

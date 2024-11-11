@@ -13,13 +13,15 @@ function PresentationText({
   setTextFontColor,
   setTextFontFamily,
   setSelectedElementId,
+  boundsRef,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
 
   return (
     <Rnd
       className="border border-gray-300"
-      bounds="window"
+      bounds={boundsRef.current}
+      // bounds="window"
       style={{
         width: `${data?.textSizeLength}%`,
         height: `${data?.textSizeWidth}%`,
@@ -28,7 +30,7 @@ function PresentationText({
         fontFamily: data?.textFontFamily || "Quicksand, sans-serif",
         overflow: "hidden",
         cursor: isMoveActive ? "move" : "default",
-        position: "relative",
+        position: "window",
       }}
       onDoubleClick={async () => {
         console.log("double clicked");
