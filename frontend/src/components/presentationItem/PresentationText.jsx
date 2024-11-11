@@ -1,8 +1,8 @@
-import Draggable from "react-draggable";
 import React, { useState } from "react";
-import { getDetail } from "../../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { Rnd } from "react-rnd";
-import sendDetail  from "../../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
+import PresentationSlideMove from "./PresentationSlideMove";
+import { CodepenSquareFilled } from "@ant-design/icons";
 
 function PresentationText({
   data,
@@ -21,7 +21,8 @@ function PresentationText({
   presentationId,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
-  const [position, setPosition] = useState({ x: 150, y: 205 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
   const handleDragStop = async (e, position) => {
     console.log("drag stopped", position);
@@ -44,42 +45,84 @@ function PresentationText({
         : element
     );
     console.log("newContent", newContent);
-    // get detail from backend
-    const token = localStorage.getItem("token");
-    const detail = await getDetail(token);
-    const { store } = detail;
-    console.log("store", store);
-    console.log("presentationId", presentationId);
-    // find the current presentation
-    const presentation = store.presentations.find(
-      (presentation) => presentation.id == presentationId
+    getUpdateDetail(
+      presentationId,
+      selectedSlideId,
+      newContent,
+      currentSlides,
+      setCurrentSlides
     );
-    console.log("presentation", presentation);
-    // find the current slide
-
-    // Update the current slide with new content
-    const newSlideList = currentSlides.map((slide) => {
-      if (slide.slideId === selectedSlideId) {
-        return { ...slide, content: newContent };
-      }
-      return slide;
-    });
-
-    // Update the state to reflect changes
-    setCurrentSlides(newSlideList);
-
-    // Update the backend store to save the changes
-    for (let i = 0; i < store.presentations.length; i++) {
-      if (store.presentations[i].id == presentationId) {
-        store.presentations[i].slides = newSlideList;
-        break;
-      }
-    }
-    await sendDetail(token, store);
   };
 
-  console.log("data", data);
+  const handleResizeStop = (e, direction, ref, delta, position) => {
+    setSize({
+      width: ref.style.width,
+      height: ref.style.height,
+    });
+    setPosition({
+      x: position.x,
+      y: position.y,
+    });
+    // save the text to the backend
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    console.log("targetIndex", targetIndex);
+    console.log("currentSlides", currentSlides);
+    console.log("data", data);
+    // Edit mode
+    // Update existing content
+    const newContent = currentSlides[targetIndex].content.map((element) =>
+      element.id === data.id
+        ? {
+            ...element,
+            position: { x: position.x, y: position.y },
+            textSizeLength: size.height,
+            textSizeWidth: size.width,
+          }
+        : element
+    );
+    console.log("newContent", newContent);
+    getUpdateDetail(
+      presentationId,
+      selectedSlideId,
+      newContent,
+      currentSlides,
+      setCurrentSlides
+    );
+  };
 
+  const [lastClickTime, setLastClickTime] = useState(0);
+  const handleClick = () => {
+    // console.log("click event", e);
+    // if (e.type === "click") {
+    //   console.log("left click");
+    // } else if (e.type === "contextmenu") {
+    //   console.log("Right click");
+    // }
+    const now = Date.now();
+    // check if the click is a double click
+    if (now - lastClickTime <= 500) {
+      onDoubleClick(); // double click if in 0.5s
+    }
+    // update the last click time
+    setLastClickTime(now);
+  };
+
+  const onDoubleClick = async () => {
+    console.log("double clicked");
+
+    setTextSizeLength(data.textSizeLength);
+    setTextSizeWidth(data.textSizeWidth);
+    setTextInput(data.textInput);
+    setTextFontSize(data.textFontSize);
+    setTextFontColor(data.textFontColor);
+    // setTextFontFamily(data.textFontFamily);
+    setSelectedElementId(data.id);
+    showTextModal();
+  };
+
+  console.log("textSizeLength", data?.textSizeLength);
   return (
     <Rnd
       default={{
@@ -88,10 +131,9 @@ function PresentationText({
       }}
       className="border border-gray-300"
       bounds={boundsRef.current}
-      // bounds="window"
       style={{
-        width: `${data?.textSizeLength}%`,
-        height: `${data?.textSizeWidth}%`,
+        width: `${data?.textSizeWidth}`,
+        height: `${data?.textSizeLength}`,
         color: data?.textFontColor,
         fontSize: `${data?.textFontSize}em`,
         fontFamily: data?.textFontFamily || "Quicksand, sans-serif",
@@ -99,25 +141,20 @@ function PresentationText({
         cursor: isMoveActive ? "move" : "default",
         position: "window",
       }}
-      onDoubleClick={async () => {
-        console.log("double clicked");
-
-        setTextSizeLength(data.textSizeLength);
-        setTextSizeWidth(data.textSizeWidth);
-        setTextInput(data.textInput);
-        setTextFontSize(data.textFontSize);
-        setTextFontColor(data.textFontColor);
-        // setTextFontFamily(data.textFontFamily);
-        setSelectedElementId(data.id);
-        showTextModal();
-      }}
-      onClick={() => {
-        console.log("clicked");
+      onClick={(e) => {
+        console.log("click event111", e);
         setIsMoveActive(!isMoveActive);
+        handleClick();
       }}
       onDragStop={handleDragStop}
+      onResizeStop={handleResizeStop}
     >
-      <div>
+      <div
+        style={{
+          width: `${data?.textSizeWidth}`,
+          height: `${data?.textSizeLength}`,
+        }}
+      >
         {data ? (
           <span>
             {data.textInput.split("\n").map((line, index) => (
@@ -130,50 +167,7 @@ function PresentationText({
         ) : null}
 
         {/* Corner Handles */}
-        {isMoveActive && (
-          <>
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                top: "-2.5px",
-                left: "-2.5px",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                top: "-2.5px",
-                right: "-2.5px",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                bottom: "-2.5px",
-                left: "-2.5px",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                bottom: "-2.5px",
-                right: "-2.5px",
-              }}
-            />
-          </>
-        )}
+        {isMoveActive && PresentationSlideMove}
       </div>
     </Rnd>
   );
