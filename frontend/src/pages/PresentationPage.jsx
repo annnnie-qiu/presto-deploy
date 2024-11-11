@@ -17,6 +17,7 @@ import {
   VideoCameraAddOutlined,
   CodeOutlined,
   UploadOutlined,
+  SwitcherOutlined
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -217,8 +218,11 @@ const DescList = ({
   handleTextCancel,
   isTextModalOpen,
   showImageModal,
+  isCodeModalOpen,
   showCodeModal,
+  isFontModalOpen,
   showFontModal,
+  handleFontCancel
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -253,6 +257,8 @@ const DescList = ({
         handleTextCancel,
         isTextModalOpen,
         showCodeModal,
+        handleFontCancel,
+        isFontModalOpen,
         showFontModal,
       )}
     </div>
@@ -766,6 +772,7 @@ function PresentationPage() {
                   showCodeModal={showCodeModal}
                   isFontModalOpen={isFontModalOpen}
                   showFontModal={showFontModal}
+                  handleFontCancel={handleFontCancel}
                 />
               </div>
             </Splitter.Panel>
