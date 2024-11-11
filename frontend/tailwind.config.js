@@ -8,6 +8,8 @@ export default {
     extend: {
       fontFamily: {
         quickSand: ["Quicksand", "sans-serif"],
+        eduAU: ["Edu AU VIC WA NT Pre", "cursive"],
+        kode: ["Kode Mono", "monospace"],
       },
     },
   },
