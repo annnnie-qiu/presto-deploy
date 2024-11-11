@@ -266,6 +266,7 @@ const DescList = ({
 
 const DescSlide = ({
   currentSlides,
+  presentationId,
   selectedSlideId,
   showTextModal,
   setTextSizeLength,
@@ -284,6 +285,7 @@ const DescSlide = ({
   setCodeContent,
   setCodeFontSize,
   setCodeLanguage,
+  setCurrentSlides,
 }) => {
   const boundsRef = useRef(null);
   return (<div className="flex h-full w-full justify-center items-center">
@@ -304,6 +306,10 @@ const DescSlide = ({
                   setTextFontColor={setTextFontColor}
                   setSelectedElementId={setSelectedElementId}
                   boundsRef={boundsRef}
+                  currentSlides={currentSlides}
+                  selectedSlideId={selectedSlideId}
+                  setCurrentSlides={setCurrentSlides}
+                  presentationId={presentationId}
                 />
               ); // Use a unique key for each element
             } else if (element.type === "image") {
@@ -482,6 +488,7 @@ function PresentationPage() {
           textFontColor: textFontColor,
           zIndex: zIndex,
           id: currentSlides[targetIndex].nextElementId,
+          position: { x: 0, y: 0}
         },
       ];
     }
@@ -798,6 +805,7 @@ function PresentationPage() {
                 setImageAlt={setImageAlt}
                 setUploadImage={setUploadImage}
                 showCodeModal={showCodeModal}
+                setCurrentSlides={setCurrentSlides}
                 text="Second"
               />
             </Splitter.Panel>
