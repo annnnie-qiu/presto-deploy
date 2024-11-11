@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import HeaherPresent from "../components/HeaherPresent";
 import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
 import { Splitter, Form, ColorPicker, Input, InputNumber } from "antd";
@@ -276,6 +276,7 @@ const DescList = ({
 
 const DescSlide = ({
   currentSlides,
+  presentationId,
   selectedSlideId,
   showTextModal,
   setTextSizeLength,
@@ -294,14 +295,11 @@ const DescSlide = ({
   setCodeContent,
   setCodeFontSize,
   setCodeLanguage,
-  showVideoModal,
-  setVideoSizeLength,
-  setVideoSizeWidth,
-  setVideoUrl,
-  setVideoAutoplay,
-}) => (
-  <div className="flex h-full w-full justify-center items-center">
-    <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
+  setCurrentSlides,
+}) => {
+  const boundsRef = useRef(null);
+  return (<div className="flex h-full w-full justify-center items-center">
+    <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit" style={{position: "relative"}} ref={boundsRef}>
       {currentSlides?.map((slide) => {
         if (slide.slideId === selectedSlideId) {
           return slide.content?.map((element) => {
@@ -317,6 +315,11 @@ const DescSlide = ({
                   setTextFontSize={setTextFontSize}
                   setTextFontColor={setTextFontColor}
                   setSelectedElementId={setSelectedElementId}
+                  boundsRef={boundsRef}
+                  currentSlides={currentSlides}
+                  selectedSlideId={selectedSlideId}
+                  setCurrentSlides={setCurrentSlides}
+                  presentationId={presentationId}
                 />
               ); // Use a unique key for each element
             } else if (element.type === "image") {
@@ -365,8 +368,8 @@ const DescSlide = ({
         return null;
       })}
     </div>
-  </div>
-);
+  </div>);
+};
 
 function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
@@ -523,6 +526,7 @@ function PresentationPage() {
           textFontColor: textFontColor,
           zIndex: zIndex,
           id: currentSlides[targetIndex].nextElementId,
+          position: { x: 0, y: 0}
         },
       ];
     }
@@ -885,6 +889,7 @@ function PresentationPage() {
                 setImageAlt={setImageAlt}
                 setUploadImage={setUploadImage}
                 showCodeModal={showCodeModal}
+                setCurrentSlides={setCurrentSlides}
                 text="Second"
               />
             </Splitter.Panel>
