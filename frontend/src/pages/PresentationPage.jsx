@@ -783,7 +783,6 @@ function PresentationPage() {
     return false;
   };
 
-  // TODO: need to be changed
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
     return () => {
