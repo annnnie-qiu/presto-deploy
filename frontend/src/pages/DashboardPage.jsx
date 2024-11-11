@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Flex, Layout, Modal, Input } from "antd";
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+import { Button, Flex, Layout, Modal, Input, Upload } from "antd";
+import { MenuUnfoldOutlined, MenuFoldOutlined, UploadOutlined } from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import CustomHeader from "../components/Header";
 import DashboardMainContent from "../components/DashboardMainContent";
@@ -20,19 +20,13 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [collapsed, setCollapsed] = React.useState(false);
-  // const [presentations, setPresentations] = React.useState([
-  //   {
-  //     id: 1,
-  //     name: "Presentation 1",
-  //     thumbnail: "",
-  //     description: "This is the description",
-  //     numSlides: 1,
-  //   },
-  // ]);
+
   const [presentations, setPresentations] = React.useState([]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newPresentationName, setNewPresentationName] = useState("");
+  const [newPresentationDescription, setNewPresentationDescription] = useState("");
+  const [newPresentationThumbnail, setNewPresentationThumbnail] = useState("");
 
   // Function to refetch presentations
   const refetchPresentations = React.useCallback(async () => {
@@ -97,6 +91,8 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
   const handleCancel = () => {
     setIsModalVisible(false);
     setNewPresentationName("");
+    setNewPresentationDescription("");
+    setNewPresentationThumbnail("");
   };
 
   const debounceTimeout = useRef(null);
@@ -116,17 +112,32 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
     }
   };
 
+  const handleThumbnailUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setNewPresentationThumbnail(e.target.result);
+    };
+    reader.readAsDataURL(file);
+    return false; // Prevent default upload behavior
+  };
+
   const handleCreateNewPresentation = async () => {
     if (newPresentationName.trim() === "") {
       showErrorToast("Please provide a name for your new presentation.");
       return;
     }
 
+    let newThumbnailReference = "";
+    if (newPresentationThumbnail) {
+      newThumbnailReference = `thumbnail-${presentations.length + 1}`;
+      localStorage.setItem(newThumbnailReference, newPresentationThumbnail);
+    }
+
     const newPresentation = {
       id: presentations.length + 1,
       name: newPresentationName,
-      thumbnail: "",
-      description: "",
+      thumbnail: newThumbnailReference,
+      description: newPresentationDescription,
       numSlides: 1,
       nextSlideId: 2,
       slides: [
@@ -137,6 +148,11 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
         },
       ],
     };
+
+    // Conditionally add the thumbnail property if there's a valid thumbnail
+    if (newThumbnailReference) {
+      newPresentation.thumbnail = newThumbnailReference;
+    }
 
     try {
       // Get the current store details
@@ -160,8 +176,12 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       showErrorToast("Failed to create the presentation.");
     }
 
+    // Reset input
     setIsModalVisible(false);
-    setNewPresentationName(""); // Reset input
+    setNewPresentationName("");
+    setNewPresentationDescription("");
+    setNewPresentationThumbnail("");
+    document.querySelector('.ant-upload-list-item')?.remove(); // try to remove the scr list?
   };
 
   return (
@@ -208,12 +228,43 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
         onCancel={handleCancel}
         okText="Create"
       >
-        <Input
+        {/* <Input
           placeholder="Enter presentation name"
           value={newPresentationName}
           onChange={(e) => setNewPresentationName(e.target.value)}
           onKeyDown={handleEnterKeyPress}
-        />
+        /> */}
+        <div style={{ marginBottom: "10px" }}>
+          <Input
+            name="name"
+            placeholder="Enter presentation name"
+            value={newPresentationName}
+            onChange={(e) => setNewPresentationName(e.target.value)}
+            onKeyDown={handleEnterKeyPress}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <Input.TextArea
+            name="description"
+            placeholder="Enter presentation description"
+            value={newPresentationDescription}
+            onChange={(e) => setNewPresentationDescription(e.target.value)}
+            rows={4}
+            // onKeyDown={handleEnterKeyPress}
+          />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          <Upload beforeUpload={handleThumbnailUpload} accept="image/*">
+            <Button icon={<UploadOutlined />}>Upload Thumbnail</Button>
+          </Upload>
+          {/* {newPresentationThumbnail && (
+            <img
+              src={newPresentationThumbnail}
+              alt="Thumbnail Preview"
+              style={{ width: "100%", marginTop: 10 }}
+            />
+          )} */}
+        </div>
       </Modal>
 
       {/* Include ToastNotification to handle toast notifications */}
