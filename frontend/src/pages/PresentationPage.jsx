@@ -27,6 +27,7 @@ import { showErrorToast } from "../../utils/toastUtils";
 import PresentationText from "../components/presentationItem/PresentationText";
 import PresentationImage from "../components/presentationItem/PresentationImage";
 import PresentationCode from "../components/presentationItem/PresentationCode";
+import PresentationVideo from "../components/presentationItem/PresentationVideo";
 
 const Tooltips = (
   currentSlides,
@@ -42,7 +43,10 @@ const Tooltips = (
   isCodeModalOpen,
   handleFontCancel,
   isFontModalOpen,
-  showFontModal
+  showFontModal,
+  handleVideoCancel,
+  isVideoModalOpen,
+  showVideoModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -177,7 +181,7 @@ const Tooltips = (
 
             {/* put video */}
             <Tooltip placement="right" title={"put a VIDEO on the slide"}>
-              <Button>
+              <Button onClick={showVideoModal}>
                 <VideoCameraAddOutlined />
               </Button>
             </Tooltip>
@@ -221,6 +225,9 @@ const DescList = ({
   isFontModalOpen,
   showFontModal,
   handleFontCancel,
+  isVideoModalOpen,
+  showVideoModal,
+  handleVideoCancel,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -258,7 +265,10 @@ const DescList = ({
         isCodeModalOpen,
         handleFontCancel,
         isFontModalOpen,
-        showFontModal
+        showFontModal,
+        handleVideoCancel,
+        isVideoModalOpen,
+        showVideoModal
       )}
     </div>
   </div>
@@ -284,6 +294,11 @@ const DescSlide = ({
   setCodeContent,
   setCodeFontSize,
   setCodeLanguage,
+  showVideoModal,
+  setVideoSizeLength,
+  setVideoSizeWidth,
+  setVideoUrl,
+  setVideoAutoplay,
 }) => (
   <div className="flex h-full w-full justify-center items-center">
     <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
@@ -330,6 +345,19 @@ const DescSlide = ({
                   setSelectedElementId={setSelectedElementId}
                 />
               );
+            } else if (element.type === 'video') {
+              return (
+                <PresentationVideo
+                  showVideoModal={showVideoModal}
+                  key={element.id}
+                  data={element}
+                  setSelectedElementId={setSelectedElementId}
+                  setVideoUrl={setVideoUrl}
+                  setVideoSizeLength={setVideoSizeLength}
+                  setVideoSizeWidth={setVideoSizeWidth}
+                  setVideoAutoplay={setVideoAutoplay}
+                />
+              )
             }
             return null;
           });
@@ -362,6 +390,13 @@ function PresentationPage() {
   const [imageSizeWidth, setImageSizeWidth] = useState(0);
   const [imageAlt, setImageAlt] = useState("");
   const [uploadImage, setUploadImage] = useState("");
+
+  // for the video input
+  const [isVideoModalOpen, setisVideoModalOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoSizeLength, setVideoSizeLength] = useState(0);
+  const [videoSizeWidth, setVideoSizeWidth] = useState(0);
+  const [videoAutoplay, setVideoAutoplay] = useState(false);
 
   // for the code input
   const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
@@ -412,6 +447,14 @@ function PresentationPage() {
   const handleFontCancel = () => {
     setIsFontModalOpen(false);
   };
+
+  const showVideoModal = () => {
+    setisVideoModalOpen(true);
+  }
+
+  const handleVideoCancel = () => {
+    setisVideoModalOpen(false);
+  }
 
   const handleArrowKeyPress = (e) => {
     if (e.key === "ArrowLeft") {
@@ -658,6 +701,49 @@ function PresentationPage() {
     await sendDetail(token, store);
   };
 
+  const handleVideoOk = async () => {
+    handleVideoCancel();
+    // Save video details to backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+  
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+  
+    const newContent = [
+      ...currentSlides[targetIndex].content,
+      {
+        type: "video",
+        videoUrl,
+        videoSizeLength,
+        videoSizeWidth,
+        videoAutoplay,
+        id: currentSlides[targetIndex].nextElementId,
+        zIndex: zIndex,
+      },
+    ];
+  
+    const newSlideList = currentSlides.map((slide) => {
+      if (slide.slideId === selectedSlideId) {
+        slide.content = newContent;
+        slide.nextElementId += 1;
+      }
+      return slide;
+    });
+  
+    setCurrentSlides(newSlideList);
+  
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlideList;
+        break;
+      }
+    }
+    await sendDetail(token, store);
+  };
+
   const handleImageUplod = (file) => {
     // Create a FileReader to read the file
     const reader = new FileReader();
@@ -774,6 +860,9 @@ function PresentationPage() {
                   isFontModalOpen={isFontModalOpen}
                   showFontModal={showFontModal}
                   handleFontCancel={handleFontCancel}
+                  isVideoModalOpen={isVideoModalOpen}
+                  showVideoModal={showVideoModal}
+                  handleVideoCancel={handleVideoCancel}
                 />
               </div>
             </Splitter.Panel>
@@ -972,6 +1061,53 @@ function PresentationPage() {
                 Upload
               </Button>
             </Upload>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Modal for video input */}
+      <Modal
+        title="Input Video"
+        open={isVideoModalOpen}
+        onOk={handleVideoOk}
+        onCancel={handleVideoCancel}
+      >
+        <Form layout="vertical">
+          <Form.Item label="Size Length (%)">
+            <Input
+              placeholder="Please enter the length (0-100)"
+              type="number"
+              min={0}
+              max={100}
+              value={videoSizeLength}
+              onChange={(e) => setVideoSizeLength(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Size Width (%)">
+            <Input
+              placeholder="Please enter the width (0-100)"
+              type="number"
+              min={0}
+              max={100}
+              value={videoSizeWidth}
+              onChange={(e) => setVideoSizeWidth(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Video URL (YouTube Embed)">
+            <Input
+              placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ?si=ZVLBiX_k2dqcfdBt"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Autoplay">
+            <Select
+              value={videoAutoplay}
+              onChange={(value) => setVideoAutoplay(value)}
+            >
+              <Select.Option value={false}>No</Select.Option>
+              <Select.Option value={true}>Yes</Select.Option>
+            </Select>
           </Form.Item>
         </Form>
       </Modal>
