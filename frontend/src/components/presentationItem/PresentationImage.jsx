@@ -27,10 +27,6 @@ function PresentationImage({
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-    console.log("targetIndex", targetIndex);
-    console.log("currentSlides", currentSlides);
-    console.log("data", data);
-    // Edit mode
     // Update existing content
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Rnd } from "react-rnd";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
 import PresentationSlideMove from "./PresentationSlideMove";
+import { CodepenSquareFilled } from "@ant-design/icons";
 
 function PresentationText({
   data,
@@ -21,6 +22,7 @@ function PresentationText({
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
   const handleDragStop = async (e, position) => {
     console.log("drag stopped", position);
@@ -52,6 +54,46 @@ function PresentationText({
     );
   };
 
+  const handleResizeStop = (e, direction, ref, delta, position) => {
+    setSize({
+      width: ref.style.width,
+      height: ref.style.height,
+    });
+    setPosition({
+      x: position.x,
+      y: position.y,
+    });
+    // save the text to the backend
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    console.log("targetIndex", targetIndex);
+    console.log("currentSlides", currentSlides);
+    console.log("data", data);
+    // Edit mode
+    // Update existing content
+    const newContent = currentSlides[targetIndex].content.map((element) =>
+      element.id === data.id
+        ? {
+            ...element,
+            position: { x: position.x, y: position.y },
+            textSizeLength: size.height,
+            textSizeWidth: size.width,
+          }
+        : element
+    );
+    console.log("newContent", newContent);
+    getUpdateDetail(
+      presentationId,
+      selectedSlideId,
+      newContent,
+      currentSlides,
+      setCurrentSlides
+    );
+
+  };
+
+  console.log("textSizeLength", data?.textSizeLength);
   return (
     <Rnd
       default={{
@@ -61,8 +103,8 @@ function PresentationText({
       className="border border-gray-300"
       bounds={boundsRef.current}
       style={{
-        width: `${data?.textSizeWidth}%`,
-        height: `${data?.textSizeLength}%`,
+        width: `${data?.textSizeWidth}`,
+        height: `${data?.textSizeLength}`,
         color: data?.textFontColor,
         fontSize: `${data?.textFontSize}em`,
         fontFamily: data?.textFontFamily || "Quicksand, sans-serif",
@@ -86,6 +128,7 @@ function PresentationText({
         setIsMoveActive(!isMoveActive);
       }}
       onDragStop={handleDragStop}
+      onResizeStop={handleResizeStop}
     >
       <div>
         {data ? (
