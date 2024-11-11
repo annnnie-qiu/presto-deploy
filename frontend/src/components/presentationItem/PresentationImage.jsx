@@ -1,5 +1,6 @@
 import React from "react";
 import Draggable from "react-draggable";
+import { Rnd } from "react-rnd";
 
 function PresentationImage({
   data,
@@ -31,8 +32,6 @@ function PresentationImage({
       >
         {data ? (
           <span>
-            {/* {data.uploadImage}
-             */}
             <img
               src={`${data.uploadImage}`}
               alt= {`${data.imageAlt}`}

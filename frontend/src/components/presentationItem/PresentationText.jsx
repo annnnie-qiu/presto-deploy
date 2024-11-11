@@ -4,6 +4,8 @@ import { getDetail } from "../../../utils/API/Send_ReceiveDetail/send_receiveDet
 import { Rnd } from "react-rnd";
 import sendDetail  from "../../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
+import PresentationSlideMove from "./PresentationSlideMove";
+
 
 function PresentationText({
   data,
@@ -22,7 +24,7 @@ function PresentationText({
   presentationId,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
-  const [position, setPosition] = useState({ x: 150, y: 205 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const handleDragStop = async (e, position) => {
     console.log("drag stopped", position);
@@ -101,48 +103,7 @@ function PresentationText({
 
         {/* Corner Handles */}
         {isMoveActive && (
-          <>
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                top: "-2.5px",
-                left: "-2.5px",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                top: "-2.5px",
-                right: "-2.5px",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                bottom: "-2.5px",
-                left: "-2.5px",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                bottom: "-2.5px",
-                right: "-2.5px",
-              }}
-            />
-          </>
+          PresentationSlideMove
         )}
       </div>
     </Rnd>
