@@ -17,7 +17,7 @@ import {
   VideoCameraAddOutlined,
   CodeOutlined,
   UploadOutlined,
-  SwitcherOutlined
+  FontSizeOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -198,7 +198,7 @@ const Tooltips = (
               title={"Change Font for All Text Boxes"}
             >
               <Button onClick={showFontModal}>
-                <SwitcherOutlined />
+                <FontSizeOutlined />
               </Button>
             </Tooltip>
           </Flex>
@@ -257,6 +257,7 @@ const DescList = ({
         handleTextCancel,
         isTextModalOpen,
         showCodeModal,
+        isCodeModalOpen,
         handleFontCancel,
         isFontModalOpen,
         showFontModal,
@@ -567,13 +568,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              imageSizeLength: imageSizeLength,
-              imageSizeWidth: imageSizeWidth,
-              imageAlt: imageAlt,
-              uploadImage: uploadImage,
-              zIndex: zIndex,
-            }
+            ...element,
+            imageSizeLength: imageSizeLength,
+            imageSizeWidth: imageSizeWidth,
+            imageAlt: imageAlt,
+            uploadImage: uploadImage,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -1047,8 +1048,9 @@ function PresentationPage() {
               onChange={(value) => setTextFontFamily(value)}
             >
               <Select.Option value="Quicksand, sans-serif">Quicksand</Select.Option>
-              <Select.Option value="Arial, sans-serif">Arial</Select.Option>
+              <Select.Option value="Edu AU VIC WA NT Pre, cursive">Edu AU VIC WA NT Pre</Select.Option>
               <Select.Option value="Courier New, monospace">Courier New</Select.Option>
+              <Select.Option value="Kode Mono, monospace">Kode Mono</Select.Option>
             </Select>
           </Form.Item>
         </Form>
