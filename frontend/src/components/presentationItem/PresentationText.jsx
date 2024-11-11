@@ -90,7 +90,30 @@ function PresentationText({
       currentSlides,
       setCurrentSlides
     );
+  };
 
+  const [lastClickTime, setLastClickTime] = useState(0);
+  const handleClick = () => {
+    const now = Date.now();
+    // check if the click is a double click
+    if (now - lastClickTime <= 500) {
+      onDoubleClick(); // double click if in 0.5s
+    }
+    // update the last click time
+    setLastClickTime(now);
+  };
+
+  const onDoubleClick = async () => {
+    console.log("double clicked");
+
+    setTextSizeLength(data.textSizeLength);
+    setTextSizeWidth(data.textSizeWidth);
+    setTextInput(data.textInput);
+    setTextFontSize(data.textFontSize);
+    setTextFontColor(data.textFontColor);
+    // setTextFontFamily(data.textFontFamily);
+    setSelectedElementId(data.id);
+    showTextModal();
   };
 
   console.log("textSizeLength", data?.textSizeLength);
@@ -112,20 +135,9 @@ function PresentationText({
         cursor: isMoveActive ? "move" : "default",
         position: "window",
       }}
-      onDoubleClick={async () => {
-        console.log("double clicked");
-
-        setTextSizeLength(data.textSizeLength);
-        setTextSizeWidth(data.textSizeWidth);
-        setTextInput(data.textInput);
-        setTextFontSize(data.textFontSize);
-        setTextFontColor(data.textFontColor);
-        // setTextFontFamily(data.textFontFamily);
-        setSelectedElementId(data.id);
-        showTextModal();
-      }}
       onClick={() => {
         setIsMoveActive(!isMoveActive);
+        handleClick();
       }}
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
