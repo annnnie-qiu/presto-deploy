@@ -296,6 +296,11 @@ const DescSlide = ({
   setCodeFontSize,
   setCodeLanguage,
   setCurrentSlides,
+  showVideoModal,
+  setVideoUrl,
+  setVideoSizeLength,
+  setVideoSizeWidth,
+  setVideoAutoplay,
 }) => {
   const boundsRef = useRef(null);
   return (<div className="flex h-full w-full justify-center items-center">
@@ -890,6 +895,11 @@ function PresentationPage() {
                 setUploadImage={setUploadImage}
                 showCodeModal={showCodeModal}
                 setCurrentSlides={setCurrentSlides}
+                showVideoModal={showVideoModal}
+                setVideoUrl={setVideoUrl}
+                setVideoSizeLength={setVideoSizeLength}
+                setVideoSizeWidth={setVideoSizeWidth}
+                setVideoAutoplay={setVideoAutoplay}
                 text="Second"
               />
             </Splitter.Panel>
