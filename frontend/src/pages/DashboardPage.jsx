@@ -127,8 +127,9 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       return;
     }
 
-    const newThumbnailReference = `thumbnail-${presentations.length + 1}`;
+    let newThumbnailReference = "";
     if (newPresentationThumbnail) {
+      newThumbnailReference = `thumbnail-${presentations.length + 1}`;
       localStorage.setItem(newThumbnailReference, newPresentationThumbnail);
     }
 
@@ -147,6 +148,11 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
         },
       ],
     };
+
+    // Conditionally add the thumbnail property if there's a valid thumbnail
+    if (newThumbnailReference) {
+      newPresentation.thumbnail = newThumbnailReference;
+    }
 
     try {
       // Get the current store details
@@ -251,13 +257,13 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
           <Upload beforeUpload={handleThumbnailUpload} accept="image/*">
             <Button icon={<UploadOutlined />}>Upload Thumbnail</Button>
           </Upload>
-          {newPresentationThumbnail && (
+          {/* {newPresentationThumbnail && (
             <img
               src={newPresentationThumbnail}
               alt="Thumbnail Preview"
               style={{ width: "100%", marginTop: 10 }}
             />
-          )}
+          )} */}
         </div>
       </Modal>
 
