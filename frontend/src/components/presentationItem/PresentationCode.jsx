@@ -39,10 +39,10 @@ function PresentationCode({
           width: `${data?.codeBlockSize?.width}%`,
           height: `${data?.codeBlockSize?.length}%`,
           fontSize: `${data?.codeFontSize}em`,
-          overflow: 'hidden',
-          margin: '0px',
-          padding: '0px',
-          backgroundColor: 'transparent',
+          overflow: "hidden",
+          margin: "0px",
+          padding: "0px",
+          backgroundColor: "transparent",
         }}
         className="border border-gray-300"
         onDoubleClick={() => {
@@ -55,12 +55,12 @@ function PresentationCode({
       >
         <pre
           style={{
-            margin: '0',
-            padding: '0',
-            textAlign: 'left',
-            overflow: 'auto',
-            height: '100%',
-            width: '100%',
+            margin: "0",
+            padding: "0",
+            textAlign: "left",
+            overflow: "auto",
+            height: "100%",
+            width: "100%",
           }}
         >
           <code
