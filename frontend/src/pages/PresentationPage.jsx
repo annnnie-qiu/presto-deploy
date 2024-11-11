@@ -338,6 +338,11 @@ const DescSlide = ({
                   setImageAlt={setImageAlt}
                   setSelectedElementId={setSelectedElementId}
                   setUploadImage={setUploadImage}
+                  boundsRef={boundsRef}
+                  currentSlides={currentSlides}
+                  selectedSlideId={selectedSlideId}
+                  setCurrentSlides={setCurrentSlides}
+                  presentationId={presentationId}
                 />
               );
             } else if (element.type === "code") {
@@ -641,6 +646,7 @@ function PresentationPage() {
           uploadImage: uploadImage,
           id: currentSlides[targetIndex].nextElementId,
           zIndex: zIndex,
+          position: { x: 0, y: 0}
         },
       ];
     }

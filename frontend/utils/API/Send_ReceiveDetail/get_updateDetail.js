@@ -1,4 +1,4 @@
-import { getDetail } from "./get_sendDetail";
+import { getDetail } from "./send_receiveDetail";
 import sendDetail from "./send_receiveDetail";
 
 export async function getUpdateDetail(presentationId, selectedSlideId, newContent, currentSlides, setCurrentSlides) {

@@ -1,11 +1,7 @@
-import Draggable from "react-draggable";
 import React, { useState } from "react";
-import { getDetail } from "../../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { Rnd } from "react-rnd";
-import sendDetail  from "../../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
 import PresentationSlideMove from "./PresentationSlideMove";
-
 
 function PresentationText({
   data,
@@ -47,10 +43,14 @@ function PresentationText({
         : element
     );
     console.log("newContent", newContent);
-    getUpdateDetail(presentationId, selectedSlideId, newContent, currentSlides, setCurrentSlides);
+    getUpdateDetail(
+      presentationId,
+      selectedSlideId,
+      newContent,
+      currentSlides,
+      setCurrentSlides
+    );
   };
-
-  console.log("data", data);
 
   return (
     <Rnd
@@ -60,10 +60,9 @@ function PresentationText({
       }}
       className="border border-gray-300"
       bounds={boundsRef.current}
-      // bounds="window"
       style={{
-        width: `${data?.textSizeLength}%`,
-        height: `${data?.textSizeWidth}%`,
+        width: `${data?.textSizeWidth}%`,
+        height: `${data?.textSizeLength}%`,
         color: data?.textFontColor,
         fontSize: `${data?.textFontSize}em`,
         fontFamily: data?.textFontFamily || "Quicksand, sans-serif",
@@ -84,7 +83,6 @@ function PresentationText({
         showTextModal();
       }}
       onClick={() => {
-        console.log("clicked");
         setIsMoveActive(!isMoveActive);
       }}
       onDragStop={handleDragStop}
@@ -102,9 +100,7 @@ function PresentationText({
         ) : null}
 
         {/* Corner Handles */}
-        {isMoveActive && (
-          PresentationSlideMove
-        )}
+        {isMoveActive && PresentationSlideMove}
       </div>
     </Rnd>
   );
