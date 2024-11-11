@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import HeaherPresent from "../components/HeaherPresent";
 import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
 import { Splitter, Form, ColorPicker, Input, InputNumber } from "antd";
@@ -276,6 +276,7 @@ const DescList = ({
 
 const DescSlide = ({
   currentSlides,
+  presentationId,
   selectedSlideId,
   showTextModal,
   setTextSizeLength,
@@ -294,79 +295,107 @@ const DescSlide = ({
   setCodeContent,
   setCodeFontSize,
   setCodeLanguage,
+  setCurrentSlides,
   showVideoModal,
+  setVideoUrl,
   setVideoSizeLength,
   setVideoSizeWidth,
-  setVideoUrl,
   setVideoAutoplay,
-}) => (
-  <div className="flex h-full w-full justify-center items-center">
-    <div className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit">
-      {currentSlides?.map((slide) => {
-        if (slide.slideId === selectedSlideId) {
-          return slide.content?.map((element) => {
-            if (element.type === "text") {
-              return (
-                <PresentationText
-                  showTextModal={showTextModal}
-                  key={element.id}
-                  data={element}
-                  setTextSizeLength={setTextSizeLength}
-                  setTextSizeWidth={setTextSizeWidth}
-                  setTextInput={setTextInput}
-                  setTextFontSize={setTextFontSize}
-                  setTextFontColor={setTextFontColor}
-                  setSelectedElementId={setSelectedElementId}
-                />
-              ); // Use a unique key for each element
-            } else if (element.type === "image") {
-              return (
-                <PresentationImage
-                  showImageModal={showImageModal}
-                  key={element.id}
-                  data={element}
-                  setImageSizeLength={setImageSizeLength}
-                  setImageSizeWidth={setImageSizeWidth}
-                  setImageAlt={setImageAlt}
-                  setSelectedElementId={setSelectedElementId}
-                  setUploadImage={setUploadImage}
-                />
-              );
-            } else if (element.type === "code") {
-              return (
-                <PresentationCode
-                  showCodeModal={showCodeModal}
-                  key={element.id}
-                  data={element}
-                  setCodeBlockSize={setCodeBlockSize}
-                  setCodeContent={setCodeContent}
-                  setCodeFontSize={setCodeFontSize}
-                  setCodeLanguage={setCodeLanguage}
-                  setSelectedElementId={setSelectedElementId}
-                />
-              );
-            } else if (element.type === 'video') {
-              return (
-                <PresentationVideo
-                  showVideoModal={showVideoModal}
-                  key={element.id}
-                  data={element}
-                  setSelectedElementId={setSelectedElementId}
-                  setVideoUrl={setVideoUrl}
-                  setVideoSizeLength={setVideoSizeLength}
-                  setVideoSizeWidth={setVideoSizeWidth}
-                  setVideoAutoplay={setVideoAutoplay}
-                />
-              )
-            }
-            return null;
-          });
-        }
-        return null;
-      })}
+}) => {
+  const boundsRef = useRef(null);
+  return (
+    <div className="flex h-full w-full justify-center items-center">
+      <div
+        className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
+        style={{ position: "relative" }}
+        ref={boundsRef}
+      >
+        {currentSlides?.map((slide) => {
+          if (slide.slideId === selectedSlideId) {
+            return slide.content?.map((element) => {
+              if (element.type === "text") {
+                return (
+                  <PresentationText
+                    showTextModal={showTextModal}
+                    key={element.id}
+                    data={element}
+                    setTextSizeLength={setTextSizeLength}
+                    setTextSizeWidth={setTextSizeWidth}
+                    setTextInput={setTextInput}
+                    setTextFontSize={setTextFontSize}
+                    setTextFontColor={setTextFontColor}
+                    setSelectedElementId={setSelectedElementId}
+                    boundsRef={boundsRef}
+                    currentSlides={currentSlides}
+                    selectedSlideId={selectedSlideId}
+                    setCurrentSlides={setCurrentSlides}
+                    presentationId={presentationId}
+                  />
+                ); // Use a unique key for each element
+              } else if (element.type === "image") {
+                return (
+                  <PresentationImage
+                    showImageModal={showImageModal}
+                    key={element.id}
+                    data={element}
+                    setImageSizeLength={setImageSizeLength}
+                    setImageSizeWidth={setImageSizeWidth}
+                    setImageAlt={setImageAlt}
+                    setSelectedElementId={setSelectedElementId}
+                    setUploadImage={setUploadImage}
+                    boundsRef={boundsRef}
+                    currentSlides={currentSlides}
+                    selectedSlideId={selectedSlideId}
+                    setCurrentSlides={setCurrentSlides}
+                    presentationId={presentationId}
+                  />
+                );
+              } else if (element.type === "code") {
+                return (
+                  <PresentationCode
+                    showCodeModal={showCodeModal}
+                    key={element.id}
+                    data={element}
+                    setCodeBlockSize={setCodeBlockSize}
+                    setCodeContent={setCodeContent}
+                    setCodeFontSize={setCodeFontSize}
+                    setCodeLanguage={setCodeLanguage}
+                    setSelectedElementId={setSelectedElementId}
+                    boundsRef={boundsRef}
+                    currentSlides={currentSlides}
+                    selectedSlideId={selectedSlideId}
+                    setCurrentSlides={setCurrentSlides}
+                    presentationId={presentationId}
+                  />
+                );
+              } else if (element.type === "video") {
+                return (
+                  <PresentationVideo
+                    showVideoModal={showVideoModal}
+                    key={element.id}
+                    data={element}
+                    setSelectedElementId={setSelectedElementId}
+                    setVideoUrl={setVideoUrl}
+                    setVideoSizeLength={setVideoSizeLength}
+                    setVideoSizeWidth={setVideoSizeWidth}
+                    setVideoAutoplay={setVideoAutoplay}
+                    boundsRef={boundsRef}
+                    currentSlides={currentSlides}
+                    selectedSlideId={selectedSlideId}
+                    setCurrentSlides={setCurrentSlides}
+                    presentationId={presentationId}
+                  />
+                );
+              }
+              return null;
+            });
+          }
+          return null;
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
@@ -450,30 +479,32 @@ function PresentationPage() {
 
   const showVideoModal = () => {
     setisVideoModalOpen(true);
-  }
+  };
 
   const handleVideoCancel = () => {
     setisVideoModalOpen(false);
-  }
+  };
 
   const handleArrowKeyPress = (e) => {
-    if (e.key === "ArrowLeft") {
-      const targetIndex = currentSlides.findIndex(
-        (slide) => slide.slideId === selectedSlideId
-      );
-      if (targetIndex > 0) {
-        setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
-      } else {
-        showErrorToast("This is the first slide now");
-      }
-    } else if (e.key === "ArrowRight") {
-      const targetIndex = currentSlides.findIndex(
-        (slide) => slide.slideId === selectedSlideId
-      );
-      if (targetIndex < currentSlides.length - 1) {
-        setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
-      } else {
-        showErrorToast("This is the last slide now");
+    if (document.activeElement === document.body) {
+      if (e.key === "ArrowLeft") {
+        const targetIndex = currentSlides.findIndex(
+          (slide) => slide.slideId === selectedSlideId
+        );
+        if (targetIndex > 0) {
+          setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+        } else {
+          showErrorToast("This is the first slide now");
+        }
+      } else if (e.key === "ArrowRight") {
+        const targetIndex = currentSlides.findIndex(
+          (slide) => slide.slideId === selectedSlideId
+        );
+        if (targetIndex < currentSlides.length - 1) {
+          setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+        } else {
+          showErrorToast("This is the last slide now");
+        }
       }
     }
   };
@@ -523,6 +554,7 @@ function PresentationPage() {
           textFontColor: textFontColor,
           zIndex: zIndex,
           id: currentSlides[targetIndex].nextElementId,
+          position: { x: 0, y: 0 },
         },
       ];
     }
@@ -632,6 +664,7 @@ function PresentationPage() {
           uploadImage: uploadImage,
           id: currentSlides[targetIndex].nextElementId,
           zIndex: zIndex,
+          position: { x: 0, y: 0 },
         },
       ];
     }
@@ -679,8 +712,10 @@ function PresentationPage() {
         codeFontSize,
         // codeLanguage,
         id: currentSlides[targetIndex].nextElementId,
+        position: { x: 0, y: 0 },
       },
     ];
+    console.log("newContent", newContent);
 
     const newSlideList = currentSlides.map((slide) => {
       if (slide.slideId === selectedSlideId) {
@@ -707,11 +742,11 @@ function PresentationPage() {
     const token = localStorage.getItem("token");
     const response = await getDetail(token);
     const { store } = response;
-  
+
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-  
+
     const newContent = [
       ...currentSlides[targetIndex].content,
       {
@@ -721,10 +756,11 @@ function PresentationPage() {
         videoSizeWidth,
         videoAutoplay,
         id: currentSlides[targetIndex].nextElementId,
+        position: { x: 0, y: 0 },
         zIndex: zIndex,
       },
     ];
-  
+
     const newSlideList = currentSlides.map((slide) => {
       if (slide.slideId === selectedSlideId) {
         slide.content = newContent;
@@ -732,9 +768,9 @@ function PresentationPage() {
       }
       return slide;
     });
-  
+
     setCurrentSlides(newSlideList);
-  
+
     for (let i = 0; i < store.presentations.length; i++) {
       if (store.presentations[i].id == presentationId) {
         store.presentations[i].slides = newSlideList;
@@ -760,7 +796,6 @@ function PresentationPage() {
     return false;
   };
 
-  // TODO: need to be changed
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
     return () => {
@@ -885,6 +920,12 @@ function PresentationPage() {
                 setImageAlt={setImageAlt}
                 setUploadImage={setUploadImage}
                 showCodeModal={showCodeModal}
+                setCurrentSlides={setCurrentSlides}
+                showVideoModal={showVideoModal}
+                setVideoUrl={setVideoUrl}
+                setVideoSizeLength={setVideoSizeLength}
+                setVideoSizeWidth={setVideoSizeWidth}
+                setVideoAutoplay={setVideoAutoplay}
                 text="Second"
               />
             </Splitter.Panel>
