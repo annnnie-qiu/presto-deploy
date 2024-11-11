@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { getDetail } from "../../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { Rnd } from "react-rnd";
 import sendDetail  from "../../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
 
 function PresentationText({
   data,
@@ -44,38 +45,7 @@ function PresentationText({
         : element
     );
     console.log("newContent", newContent);
-    // get detail from backend
-    const token = localStorage.getItem("token");
-    const detail = await getDetail(token);
-    const { store } = detail;
-    console.log("store", store);
-    console.log("presentationId", presentationId);
-    // find the current presentation
-    const presentation = store.presentations.find(
-      (presentation) => presentation.id == presentationId
-    );
-    console.log("presentation", presentation);
-    // find the current slide
-
-    // Update the current slide with new content
-    const newSlideList = currentSlides.map((slide) => {
-      if (slide.slideId === selectedSlideId) {
-        return { ...slide, content: newContent };
-      }
-      return slide;
-    });
-
-    // Update the state to reflect changes
-    setCurrentSlides(newSlideList);
-
-    // Update the backend store to save the changes
-    for (let i = 0; i < store.presentations.length; i++) {
-      if (store.presentations[i].id == presentationId) {
-        store.presentations[i].slides = newSlideList;
-        break;
-      }
-    }
-    await sendDetail(token, store);
+    getUpdateDetail(presentationId, selectedSlideId, newContent, currentSlides, setCurrentSlides);
   };
 
   console.log("data", data);
