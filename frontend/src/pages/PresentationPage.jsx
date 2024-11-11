@@ -39,9 +39,10 @@ const Tooltips = (
   handleTextCancel,
   isTextModalOpen,
   showCodeModal,
+  isCodeModalOpen,
   handleFontCancel,
   isFontModalOpen,
-  showFontModal,
+  showFontModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -193,10 +194,7 @@ const Tooltips = (
             </Tooltip>
 
             {/* put font change */}
-            <Tooltip
-              placement="right" 
-              title={"Change Font for All Text Boxes"}
-            >
+            <Tooltip placement="right" title={"Change Font for All Text Boxes"}>
               <Button onClick={showFontModal}>
                 <FontSizeOutlined />
               </Button>
@@ -222,7 +220,7 @@ const DescList = ({
   showCodeModal,
   isFontModalOpen,
   showFontModal,
-  handleFontCancel
+  handleFontCancel,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -260,7 +258,7 @@ const DescList = ({
         isCodeModalOpen,
         handleFontCancel,
         isFontModalOpen,
-        showFontModal,
+        showFontModal
       )}
     </div>
   </div>
@@ -409,11 +407,11 @@ function PresentationPage() {
 
   const showFontModal = () => {
     setIsFontModalOpen(true);
-  }
+  };
 
   const handleFontCancel = () => {
     setIsFontModalOpen(false);
-  }
+  };
 
   const handleArrowKeyPress = (e) => {
     if (e.key === "ArrowLeft") {
@@ -452,22 +450,24 @@ function PresentationPage() {
     );
     let newContent;
     if (existingElementIndex !== -1) {
+      console.log("existing", currentSlides);
       // Edit mode
       // Update existing content
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-            ...element,
-            textInput: textInput,
-            textSizeLength: textSizeLength,
-            textSizeWidth: textSizeWidth,
-            textFontSize: textFontSize,
-            textFontColor: textFontColor,
-            zIndex: zIndex,
-          }
+              ...element,
+              textInput: textInput,
+              textSizeLength: textSizeLength,
+              textSizeWidth: textSizeWidth,
+              textFontSize: textFontSize,
+              textFontColor: textFontColor,
+              zIndex: zIndex,
+            }
           : element
       );
     } else {
+      console.log("new", currentSlides);
       // put them into content list and update the currentSlides
       newContent = [
         ...currentSlides[targetIndex].content,
@@ -507,17 +507,17 @@ function PresentationPage() {
 
   const handleFontOk = async () => {
     handleFontCancel(false);
-  
+
     // Save the font family to the backend or update the state accordingly
     const token = localStorage.getItem("token");
     const response = await getDetail(token);
     const { store } = response;
-  
+
     // Find the index of the current slide that is selected
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-  
+
     // Update the font family for all text elements on the selected slide
     const newContent = currentSlides[targetIndex].content.map((element) => {
       if (element.type === "text") {
@@ -526,7 +526,7 @@ function PresentationPage() {
       }
       return element;
     });
-  
+
     // Update the current slide with new content
     const newSlideList = currentSlides.map((slide) => {
       if (slide.slideId === selectedSlideId) {
@@ -534,10 +534,10 @@ function PresentationPage() {
       }
       return slide;
     });
-  
+
     // Update the state to reflect changes
     setCurrentSlides(newSlideList);
-  
+
     // Update the backend store to save the changes
     for (let i = 0; i < store.presentations.length; i++) {
       if (store.presentations[i].id == presentationId) {
@@ -546,7 +546,7 @@ function PresentationPage() {
       }
     }
     await sendDetail(token, store);
-  };  
+  };
 
   const handleImageOk = async () => {
     handleImageCancel();
@@ -568,13 +568,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-            ...element,
-            imageSizeLength: imageSizeLength,
-            imageSizeWidth: imageSizeWidth,
-            imageAlt: imageAlt,
-            uploadImage: uploadImage,
-            zIndex: zIndex,
-          }
+              ...element,
+              imageSizeLength: imageSizeLength,
+              imageSizeWidth: imageSizeWidth,
+              imageAlt: imageAlt,
+              uploadImage: uploadImage,
+              zIndex: zIndex,
+            }
           : element
       );
     } else {
@@ -991,7 +991,9 @@ function PresentationPage() {
               min={0}
               max={100}
               value={codeBlockSize.length}
-              onChange={(e) => setCodeBlockSize({ ...codeBlockSize, length: e.target.value })}
+              onChange={(e) =>
+                setCodeBlockSize({ ...codeBlockSize, length: e.target.value })
+              }
             />
           </Form.Item>
           <Form.Item label="Block Size Width (%)">
@@ -1001,7 +1003,9 @@ function PresentationPage() {
               min={0}
               max={100}
               value={codeBlockSize.width}
-              onChange={(e) => setCodeBlockSize({ ...codeBlockSize, width: e.target.value })}
+              onChange={(e) =>
+                setCodeBlockSize({ ...codeBlockSize, width: e.target.value })
+              }
             />
           </Form.Item>
           <Form.Item label="Code Content">
@@ -1047,10 +1051,18 @@ function PresentationPage() {
               value={textFontFamily}
               onChange={(value) => setTextFontFamily(value)}
             >
-              <Select.Option value="Quicksand, sans-serif">Quicksand</Select.Option>
-              <Select.Option value="Edu AU VIC WA NT Pre, cursive">Edu AU VIC WA NT Pre</Select.Option>
-              <Select.Option value="Courier New, monospace">Courier New</Select.Option>
-              <Select.Option value="Kode Mono, monospace">Kode Mono</Select.Option>
+              <Select.Option value="Quicksand, sans-serif">
+                Quicksand
+              </Select.Option>
+              <Select.Option value="Edu AU VIC WA NT Pre, cursive">
+                Edu AU VIC WA NT Pre
+              </Select.Option>
+              <Select.Option value="Courier New, monospace">
+                Courier New
+              </Select.Option>
+              <Select.Option value="Kode Mono, monospace">
+                Kode Mono
+              </Select.Option>
             </Select>
           </Form.Item>
         </Form>
