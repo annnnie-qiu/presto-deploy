@@ -25,7 +25,7 @@ function PresentationText({
           height: `${data?.textSizeWidth}%`,
           color: data?.textFontColor,
           fontSize: `${data?.textFontSize}em`,
-          fontFamily: data?.textFontFamily || 'Quicksand, sans-serif',
+          fontFamily: data?.textFontFamily || "Quicksand, sans-serif",
           overflow: "hidden",
           cursor: isMoveActive ? "move" : "default",
           position: "relative",
