@@ -17,7 +17,7 @@ import {
   VideoCameraAddOutlined,
   CodeOutlined,
   UploadOutlined,
-  SwitcherOutlined
+  FontSizeOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -198,7 +198,7 @@ const Tooltips = (
               title={"Change Font for All Text Boxes"}
             >
               <Button onClick={showFontModal}>
-                <SwitcherOutlined />
+                <FontSizeOutlined />
               </Button>
             </Tooltip>
           </Flex>
@@ -257,6 +257,7 @@ const DescList = ({
         handleTextCancel,
         isTextModalOpen,
         showCodeModal,
+        isCodeModalOpen,
         handleFontCancel,
         isFontModalOpen,
         showFontModal,
