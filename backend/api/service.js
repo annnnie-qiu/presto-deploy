@@ -64,6 +64,9 @@ export const reset = () => {
 
 try {
   if (USE_VERCEL_KV) {
+    // Setup default admin object in KV DB
+    save();
+
     // Read from Vercel KV
     fetch(`${KV_REST_API_URL}/get/admins`, {
       headers: {
@@ -72,7 +75,7 @@ try {
     })
       .then((response) => response.json())
       .then((data) => {
-        admins = data.value;
+        admins = JSON.parse(data.result)["admins"];
       });
   } else {
     // Read from local file
