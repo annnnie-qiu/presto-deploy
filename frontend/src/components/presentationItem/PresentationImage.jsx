@@ -8,6 +8,7 @@ function PresentationImage({
   setImageSizeWidth,
   setImageAlt,
   setSelectedElementId,
+  setUploadImage,
 }) {
   return (
     <Draggable>
@@ -24,12 +25,20 @@ function PresentationImage({
           setImageSizeWidth(data.imageSizeWidth);
           setImageAlt(data.imageAlt);
           setSelectedElementId(data.id);
+          setUploadImage(data.uploadImage);
           showImageModal();
         }}
       >
         {data ? (
           <span>
-            {data.imageAlt}
+            {/* {data.uploadImage}
+             */}
+            <img
+              src={`${data.uploadImage}`}
+              alt= {`${data.imageAlt}`}
+              width="100%"
+              height="100%"
+            />
           </span>
         ) : null}
       </div>

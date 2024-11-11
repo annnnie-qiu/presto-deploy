@@ -883,7 +883,7 @@ function PresentationPage() {
               addonAfter="em"
               changeOnWheel
               onChange={(e) => {
-                setTextFontSize(e.target.value);
+                setTextFontSize(e);
               }}
             />
           </Form.Item>
