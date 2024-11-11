@@ -379,6 +379,11 @@ const DescSlide = ({
                     setVideoSizeLength={setVideoSizeLength}
                     setVideoSizeWidth={setVideoSizeWidth}
                     setVideoAutoplay={setVideoAutoplay}
+                    boundsRef={boundsRef}
+                    currentSlides={currentSlides}
+                    selectedSlideId={selectedSlideId}
+                    setCurrentSlides={setCurrentSlides}
+                    presentationId={presentationId}
                   />
                 );
               }
@@ -751,6 +756,7 @@ function PresentationPage() {
         videoSizeWidth,
         videoAutoplay,
         id: currentSlides[targetIndex].nextElementId,
+        position: { x: 0, y: 0 },
         zIndex: zIndex,
       },
     ];
