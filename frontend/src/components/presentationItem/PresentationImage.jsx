@@ -36,6 +36,7 @@ function PresentationImage({
           }
         : element
     );
+    
     console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
@@ -44,6 +45,27 @@ function PresentationImage({
       currentSlides,
       setCurrentSlides
     );
+  };
+
+  const [lastClickTime, setLastClickTime] = useState(0);
+  const handleClick = () => {
+    const now = Date.now();
+    // check if the click is a double click
+    if (now - lastClickTime <= 500) {
+      onDoubleClick(); // double click if in 0.5s
+    }
+    // update the last click time
+    setLastClickTime(now);
+  };
+
+  const onDoubleClick = async () => {
+    console.log("double clicked");
+    setImageSizeLength(data.imageSizeLength);
+    setImageSizeWidth(data.imageSizeWidth);
+    setImageAlt(data.imageAlt);
+    setSelectedElementId(data.id);
+    setUploadImage(data.uploadImage);
+    showImageModal();
   };
   console.log("data", data);
   console.log("boundsRef", boundsRef);
@@ -65,16 +87,7 @@ function PresentationImage({
       }}
       onClick={() => {
         setIsMoveActive(!isMoveActive);
-      }}
-      onDoubleClick={async () => {
-        console.log("double clicked");
-
-        setImageSizeLength(data.imageSizeLength);
-        setImageSizeWidth(data.imageSizeWidth);
-        setImageAlt(data.imageAlt);
-        setSelectedElementId(data.id);
-        setUploadImage(data.uploadImage);
-        showImageModal();
+        handleClick();
       }}
       onDragStop={handleDragStop}
     >

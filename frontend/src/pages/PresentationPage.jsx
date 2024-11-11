@@ -361,6 +361,11 @@ const DescSlide = ({
                     setCodeFontSize={setCodeFontSize}
                     setCodeLanguage={setCodeLanguage}
                     setSelectedElementId={setSelectedElementId}
+                    boundsRef={boundsRef}
+                    currentSlides={currentSlides}
+                    selectedSlideId={selectedSlideId}
+                    setCurrentSlides={setCurrentSlides}
+                    presentationId={presentationId}
                   />
                 );
               } else if (element.type === "video") {
@@ -702,8 +707,10 @@ function PresentationPage() {
         codeFontSize,
         // codeLanguage,
         id: currentSlides[targetIndex].nextElementId,
+        position: { x: 0, y: 0 },
       },
     ];
+    console.log("newContent", newContent);
 
     const newSlideList = currentSlides.map((slide) => {
       if (slide.slideId === selectedSlideId) {

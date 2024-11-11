@@ -94,6 +94,12 @@ function PresentationText({
 
   const [lastClickTime, setLastClickTime] = useState(0);
   const handleClick = () => {
+    // console.log("click event", e);
+    // if (e.type === "click") {
+    //   console.log("left click");
+    // } else if (e.type === "contextmenu") {
+    //   console.log("Right click");
+    // }
     const now = Date.now();
     // check if the click is a double click
     if (now - lastClickTime <= 500) {
@@ -135,14 +141,20 @@ function PresentationText({
         cursor: isMoveActive ? "move" : "default",
         position: "window",
       }}
-      onClick={() => {
+      onClick={(e) => {
+        console.log("click event111", e);
         setIsMoveActive(!isMoveActive);
         handleClick();
       }}
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
     >
-      <div>
+      <div
+        style={{
+          width: `${data?.textSizeWidth}`,
+          height: `${data?.textSizeLength}`,
+        }}
+      >
         {data ? (
           <span>
             {data.textInput.split("\n").map((line, index) => (
