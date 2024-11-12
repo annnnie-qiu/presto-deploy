@@ -826,19 +826,47 @@ function PresentationPage() {
       (slide) => slide.slideId === selectedSlideId
     );
 
-    const newContent = [
-      ...currentSlides[targetIndex].content,
-      {
-        type: "video",
-        videoUrl,
-        videoSizeLength,
-        videoSizeWidth,
-        videoAutoplay,
-        id: currentSlides[targetIndex].nextElementId,
-        position: { x: 0, y: 0 },
-        zIndex: zIndex,
-      },
-    ];
+    // Check if content already exists (edit modal) or is new (add modal)
+    const existingElementIndex = currentSlides[targetIndex].content.findIndex(
+      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
+    );
+
+    let newContent;
+
+    if (existingElementIndex !== -1) {
+      // Edit mode
+      // Update existing content
+      newContent = currentSlides[targetIndex].content.map((element, index) =>
+        index === existingElementIndex
+          ? {
+              ...element,
+              videoUrl: videoUrl,
+              videoSizeLength: videoSizeLength,
+              videoSizeWidth: videoSizeWidth,
+              videoAutoplay: videoAutoplay,
+              zIndex: zIndex,
+            }
+          : element
+      );
+    } else {
+      // Add mode
+      // Add new content to the slide
+      newContent = [
+        ...currentSlides[targetIndex].content,
+        {
+          type: "video",
+          videoUrl,
+          videoSizeLength,
+          videoSizeWidth,
+          videoAutoplay,
+          id: currentSlides[targetIndex].nextElementId,
+          position: { x: 0, y: 0 },
+          zIndex: zIndex,
+        },
+      ];
+    }
+
+    setZIndex(zIndex + 1);
 
     const newSlideList = currentSlides.map((slide) => {
       if (slide.slideId === selectedSlideId) {
