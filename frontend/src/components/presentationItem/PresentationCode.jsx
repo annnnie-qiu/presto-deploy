@@ -9,8 +9,8 @@ import PresentationSlideMove from "./PresentationSlideMove";
 import { Modal } from "antd";
 
 function PresentationCode({
-  data,
   showCodeModal,
+  data,
   setCodeBlockSize,
   setCodeContent,
   setCodeFontSize,
@@ -120,6 +120,16 @@ function PresentationCode({
     );
   };
 
+  const onDoubleClick = async () => {
+    console.log("double clicked");
+
+    setSelectedElementId(data.id);
+    setCodeBlockSize(data.codeBlockSize);
+    setCodeContent(data.codeContent);
+    setCodeFontSize(data.codeFontSize);
+    showCodeModal();
+  };
+
   const [lastClickTime, setLastClickTime] = useState(0);
   const handleClick = () => {
     const now = Date.now();
@@ -129,15 +139,6 @@ function PresentationCode({
     }
     // update the last click time
     setLastClickTime(now);
-  };
-  const onDoubleClick = async () => {
-    console.log("double clicked");
-
-    setCodeBlockSize(data.codeBlockSize);
-    setCodeContent(data.codeContent);
-    setCodeFontSize(data.codeFontSize);
-    setSelectedElementId(data.id);
-    showCodeModal();
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -202,6 +203,7 @@ function PresentationCode({
         setIsMoveActive(!isMoveActive);
         handleClick();
       }}
+      
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
       onContextMenu={handleContextMenu}
