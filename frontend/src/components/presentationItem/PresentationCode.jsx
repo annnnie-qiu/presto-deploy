@@ -11,7 +11,9 @@ import { Modal } from "antd";
 function PresentationCode({
   showCodeModal,
   data,
-  setCodeBlockSize,
+  // setCodeBlockSize,
+  setCodeLeight,
+  setCodeWidth,
   setCodeContent,
   setCodeFontSize,
   setSelectedElementId,
@@ -22,6 +24,7 @@ function PresentationCode({
   presentationId,
 }) {
   const codeRef = useRef(null);
+  console.log("data", data);
 
   // escape HTML using Handlebars
   const escapeHtml = (unsafeHtml) => {
@@ -102,11 +105,13 @@ function PresentationCode({
         ? {
             ...element,
             position: { x: position.x, y: position.y },
-            codeBlockSize: {
-              // Add codeBlockSize
-              width: parseFloat(size.width),
-              length: parseFloat(size.height),
-            },
+            // codeBlockSize: {
+            //   // Add codeBlockSize
+            //   width: parseFloat(size.width),
+            //   length: parseFloat(size.height),
+            // },
+            codeWidth: ref.style.width,
+            codeLeight: ref.style.height,
           }
         : element
     );
@@ -124,7 +129,9 @@ function PresentationCode({
     console.log("double clicked");
 
     setSelectedElementId(data.id);
-    setCodeBlockSize(data.codeBlockSize);
+    // setCodeBlockSize(data.codeBlockSize);
+    setCodeLeight(data.codeLeight);
+    setCodeWidth(data.codeWidth);
     setCodeContent(data.codeContent);
     setCodeFontSize(data.codeFontSize);
     showCodeModal();
@@ -132,9 +139,12 @@ function PresentationCode({
 
   const [lastClickTime, setLastClickTime] = useState(0);
   const handleClick = () => {
+    console.log("click event", isMoveActive);
+    console.log("yessssssssssss");
     const now = Date.now();
     // check if the click is a double click
     if (now - lastClickTime <= 500) {
+      console.log("double clicked");
       onDoubleClick(); // double click if in 0.5s
     }
     // update the last click time
@@ -190,8 +200,8 @@ function PresentationCode({
       className="border border-gray-300"
       bounds={boundsRef.current}
       style={{
-        width: `${data?.codeBlockSize?.width}%`,
-        height: `${data?.codeBlockSize?.length}%`,
+        // width: `${data?.codeBlockSize?.width}%`,
+        // height: `${data?.codeBlockSize?.length}%`,
         fontSize: `${data?.codeFontSize}em`,
         overflow: "hidden",
         margin: "0px",
@@ -203,15 +213,14 @@ function PresentationCode({
         setIsMoveActive(!isMoveActive);
         handleClick();
       }}
-      
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
       onContextMenu={handleContextMenu}
     >
       <div
         style={{
-          width: `${data?.codeBlockSize?.width}%`,
-          height: `${data?.codeBlockSize?.length}%`,
+          width: `${data?.codeWidth}%`,
+          height: `${data?.codeLeight}%`,
         }}
       >
         <pre

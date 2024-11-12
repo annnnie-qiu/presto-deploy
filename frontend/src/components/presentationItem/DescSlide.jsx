@@ -21,7 +21,9 @@ const DescSlide = ({
   setImageAlt,
   setUploadImage,
   showCodeModal,
-  setCodeBlockSize,
+  //   setCodeBlockSize,
+  setCodeLeight,
+  setCodeWidth,
   setCodeContent,
   setCodeFontSize,
   setCodeLanguage,
@@ -111,7 +113,9 @@ const DescSlide = ({
                     showCodeModal={showCodeModal}
                     key={element.id}
                     data={element}
-                    setCodeBlockSize={setCodeBlockSize}
+                    // setCodeBlockSize={setCodeBlockSize}
+                    setCodeLeight={setCodeLeight}
+                    setCodeWidth={setCodeWidth}
                     setCodeContent={setCodeContent}
                     setCodeFontSize={setCodeFontSize}
                     setCodeLanguage={setCodeLanguage}
