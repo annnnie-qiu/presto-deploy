@@ -64,7 +64,11 @@ const DescSlide = ({
     <div className="flex h-full w-full justify-center items-center">
       <div
         className="h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
-        style={{ position: "relative", ...backgroundStyle }}
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          ...backgroundStyle,
+        }}
         ref={boundsRef}
       >
         {currentSlides?.map((slide) => {
