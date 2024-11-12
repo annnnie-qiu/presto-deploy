@@ -6,14 +6,6 @@ export async function getUpdateDetail(presentationId, selectedSlideId, newConten
   const token = localStorage.getItem("token");
   const detail = await getDetail(token);
   const { store } = detail;
-  console.log("store", store);
-  console.log("presentationId", presentationId);
-  // find the current presentation
-  const presentation = store.presentations.find(
-    (presentation) => presentation.id == presentationId
-  );
-  console.log("presentation", presentation);
-  // find the current slide
 
   // Update the current slide with new content
   const newSlideList = currentSlides.map((slide) => {

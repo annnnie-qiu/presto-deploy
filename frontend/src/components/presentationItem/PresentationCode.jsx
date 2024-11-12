@@ -6,6 +6,7 @@ import Handlebars from "handlebars";
 import { Rnd } from "react-rnd";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
 import PresentationSlideMove from "./PresentationSlideMove";
+import { Modal } from "antd";
 
 function PresentationCode({
   data,
@@ -121,12 +122,6 @@ function PresentationCode({
 
   const [lastClickTime, setLastClickTime] = useState(0);
   const handleClick = () => {
-    // console.log("click event", e);
-    // if (e.type === "click") {
-    //   console.log("left click");
-    // } else if (e.type === "contextmenu") {
-    //   console.log("Right click");
-    // }
     const now = Date.now();
     // check if the click is a double click
     if (now - lastClickTime <= 500) {
@@ -143,6 +138,46 @@ function PresentationCode({
     setCodeFontSize(data.codeFontSize);
     setSelectedElementId(data.id);
     showCodeModal();
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    showModal();
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+    // delete the presentation from the backend and navigate to the dashboard
+    console.log("delete the text");
+    console.log("currentSlides", currentSlides);
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    console.log("targetIndex", targetIndex);
+    console.log("data.id", data.id);
+    console.log(
+      "currentSlides[targetIndex].content",
+      currentSlides[targetIndex].content
+    );
+    const newContent = currentSlides[targetIndex].content.filter(
+      (element) => element.id !== data.id // Exclude the element with the matching id
+    );
+    console.log("newContent", newContent);
+    getUpdateDetail(
+      presentationId,
+      selectedSlideId,
+      newContent,
+      currentSlides,
+      setCurrentSlides
+    );
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -169,6 +204,7 @@ function PresentationCode({
       }}
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
+      onContextMenu={handleContextMenu}
     >
       <div
         style={{
@@ -197,6 +233,17 @@ function PresentationCode({
           ></code>
         </pre>
       </div>
+
+      <Modal
+        title="Delete this"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Yes"
+        cancelText="No"
+      >
+        <p>Are you sure?</p>
+      </Modal>
     </Rnd>
   );
 }
