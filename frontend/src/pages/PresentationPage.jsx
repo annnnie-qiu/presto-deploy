@@ -968,6 +968,43 @@ function PresentationPage() {
 
   return (
     <>
+      <Layout>
+        {isHidden && (
+          <DescSlide
+            currentSlides={currentSlides}
+            presentationId={presentationId}
+            selectedSlideId={selectedSlideId}
+            showTextModal={showTextModal}
+            setTextSizeLength={setTextSizeLength}
+            setTextSizeWidth={setTextSizeWidth}
+            setTextInput={setTextInput}
+            setTextFontSize={setTextFontSize}
+            setTextFontColor={setTextFontColor}
+            setSelectedElementId={setSelectedElementId}
+            showImageModal={showImageModal}
+            setImageSizeLength={setImageSizeLength}
+            setImageSizeWidth={setImageSizeWidth}
+            setImageAlt={setImageAlt}
+            setUploadImage={setUploadImage}
+            showCodeModal={showCodeModal}
+            // setCodeBlockSize={setCodeBlockSize}
+            setCodeLeight={setCodeLeight}
+            setCodeWidth={setCodeWidth}
+            setCurrentSlides={setCurrentSlides}
+            showVideoModal={showVideoModal}
+            setVideoUrl={setVideoUrl}
+            setVideoSizeLength={setVideoSizeLength}
+            setVideoSizeWidth={setVideoSizeWidth}
+            setVideoAutoplay={setVideoAutoplay}
+            showBackgroundModal={showBackgroundModal}
+            setBackgroundColor={setBackgroundColor}
+            setBackgroundGradient={setBackgroundGradient}
+            setBackgroundImage={setBackgroundImage}
+            setBackgroundType={setBackgroundType}
+            text="Second"
+          />
+        )}
+      </Layout>
 
     </>
   );
