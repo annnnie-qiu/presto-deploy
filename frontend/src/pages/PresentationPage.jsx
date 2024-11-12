@@ -54,7 +54,7 @@ const Tooltips = (
   setIsHidden,
   isBackgroundModalOpen,
   handleBackgroundCancel,
-  showBackgroungModal
+  showBackgroundModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -214,7 +214,7 @@ const Tooltips = (
 
             {/* Set Slide Background */}
             <Tooltip placement="right" title={"Set slide background"}>
-              <Button onClick={showBackgroungModal}>
+              <Button onClick={showBackgroundModal}>
                 <BgColorsOutlined />
               </Button>
             </Tooltip>
@@ -273,7 +273,9 @@ const DescList = ({
   showVideoModal,
   handleVideoCancel,
   setIsHidden,
-  setIsBackgroundModalOpen,
+  isBackgroundModalOpen,
+  handleBackgroundCancel,
+  showBackgroundModal
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -316,7 +318,9 @@ const DescList = ({
         isVideoModalOpen,
         showVideoModal,
         setIsHidden,
-        setIsBackgroundModalOpen
+        isBackgroundModalOpen,
+        handleBackgroundCancel,
+        showBackgroundModal,
       )}
     </div>
   </div>
@@ -546,7 +550,7 @@ function PresentationPage() {
     setisVideoModalOpen(false);
   };
 
-  const showBackgroungModal = () => {
+  const showBackgroundModal = () => {
     setIsBackgroundModalOpen(true);
   };
 
@@ -1035,6 +1039,11 @@ function PresentationPage() {
           setVideoSizeLength={setVideoSizeLength}
           setVideoSizeWidth={setVideoSizeWidth}
           setVideoAutoplay={setVideoAutoplay}
+          showBackgroundModal={showBackgroundModal}
+          setBackgroundColor={setBackgroundColor}
+          setBackgroundGradient={setBackgroundGradient}
+          setBackgroundImage={setBackgroundImage}
+          setBackgroundType={setBackgroundType}
           text="Second"
         />
       )}
@@ -1096,6 +1105,9 @@ function PresentationPage() {
                       isVideoModalOpen={isVideoModalOpen}
                       showVideoModal={showVideoModal}
                       handleVideoCancel={handleVideoCancel}
+                      showBackgroundModal={showBackgroundModal}
+                      isBackgroundModalOpen={isBackgroundModalOpen}
+                      handleBackgroundCancel={handleBackgroundCancel}
                       setIsHidden={setIsHidden}
                     />
                   </div>
@@ -1127,6 +1139,11 @@ function PresentationPage() {
                     setVideoSizeLength={setVideoSizeLength}
                     setVideoSizeWidth={setVideoSizeWidth}
                     setVideoAutoplay={setVideoAutoplay}
+                    showBackgroundModal={showBackgroundModal}
+                    setBackgroundColor={setBackgroundColor}
+                    setBackgroundGradient={setBackgroundGradient}
+                    setBackgroundImage={setBackgroundImage}
+                    setBackgroundType={setBackgroundType}
                     text="Second"
                   />
                 </Splitter.Panel>
@@ -1157,6 +1174,11 @@ function PresentationPage() {
                 setVideoSizeLength={setVideoSizeLength}
                 setVideoSizeWidth={setVideoSizeWidth}
                 setVideoAutoplay={setVideoAutoplay}
+                showBackgroundModal={showBackgroundModal}
+                setBackgroundColor={setBackgroundColor}
+                setBackgroundGradient={setBackgroundGradient}
+                setBackgroundImage={setBackgroundImage}
+                setBackgroundType={setBackgroundType}
                 text="Second"
               />
             )}
@@ -1473,6 +1495,95 @@ function PresentationPage() {
               </Select.Option>
             </Select>
           </Form.Item>
+        </Form>
+      </Modal>
+      {/* Modal for setting slide background */}
+      <Modal
+        title="Set Slide Background"
+        open={isBackgroundModalOpen}
+        onOk={handleBackground}
+        onCancel={handleBackgroundCancel}
+      >
+        <Form layout="vertical">
+          <Form.Item label="Background Type">
+            <Select
+              value={backgroundType}
+              onChange={(value) => setBackgroundType(value)}
+            >
+              <Select.Option value="solid">Solid Colour</Select.Option>
+              <Select.Option value="gradient">Gradient</Select.Option>
+              <Select.Option value="image">Image</Select.Option>
+            </Select>
+          </Form.Item>
+
+          {backgroundType === "solid" && (
+            <Form.Item label="Background Colour">
+              <ColorPicker
+                value={backgroundColor}
+                defaultValue={"#ffffff"}
+                allowClear
+                onChange={(temp, _) => {
+                  setBackgroundColor(temp.toHexString());
+                }}
+              />
+            </Form.Item>
+          )}
+
+          {backgroundType === "gradient" && (
+            <>
+              <Form.Item label="Gradient Start Colour">
+                <ColorPicker
+                  value={backgroundGradient.start}
+                  defaultValue={"#ffffff"}
+                  allowClear
+                  onChange={(temp, _) => {
+                    setBackgroundGradient((prev) => ({
+                      ...prev,
+                      start: temp.toHexString(),
+                    }));
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Gradient End Colour">
+                <ColorPicker
+                  value={backgroundGradient.end}
+                  defaultValue={"#000000"}
+                  allowClear
+                  onChange={(temp, _) => {
+                    setBackgroundGradient((prev) => ({
+                      ...prev,
+                      end: temp.toHexString(),
+                    }));
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Gradient Direction">
+                <Select
+                  value={backgroundGradient.direction}
+                  onChange={(value) =>
+                    setBackgroundGradient((prev) => ({
+                      ...prev,
+                      direction: value,
+                    }))
+                  }
+                >
+                  <Select.Option value="to bottom">Top to Bottom</Select.Option>
+                  <Select.Option value="to right">Left to Right</Select.Option>
+                  <Select.Option value="to bottom right">
+                    Top Left to Bottom Right
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+            </>
+          )}
+
+          {backgroundType === "image" && (
+            <Form.Item label="Upload Background Image">
+              <Upload beforeUpload={handleImageUplod}>
+                <Button icon={<UploadOutlined />}>Upload Image</Button>
+              </Upload>
+            </Form.Item>
+          )}
         </Form>
       </Modal>
     </Layout>
