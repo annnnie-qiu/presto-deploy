@@ -50,6 +50,7 @@ const Tooltips = (
   handleVideoCancel,
   isVideoModalOpen,
   showVideoModal,
+  navigate,
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -296,25 +297,6 @@ const DescList = ({
         handleVideoCancel,
         isVideoModalOpen,
         showVideoModal,
-        navigate,
-        setTextSizeLength,
-        setTextSizeWidth,
-        setTextInput,
-        setTextFontSize,
-        setTextFontColor,
-        setSelectedElementId,
-        setImageSizeLength,
-        setImageSizeWidth,
-        setImageAlt,
-        setUploadImage,
-        setCodeBlockSize,
-        setCodeContent,
-        setCodeFontSize,
-        setCodeLanguage,
-        setVideoUrl,
-        setVideoSizeLength,
-        setVideoSizeWidth,
-        setVideoAutoplay
       )}
     </div>
   </div>
