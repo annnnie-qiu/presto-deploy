@@ -1311,6 +1311,142 @@ function PresentationPage() {
           </Form>
         </Modal>
 
+        {/* Modal for video input */}
+        <Modal
+          title="Input Video"
+          open={isVideoModalOpen}
+          onOk={handleVideoOk}
+          onCancel={handleVideoCancel}
+        >
+          <Form layout="vertical">
+            <Form.Item label="Size Length (%)">
+              <Input
+                placeholder="Please enter the length (0-100)"
+                type="number"
+                min={0}
+                max={100}
+                value={videoSizeLength}
+                onChange={(e) => setVideoSizeLength(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Size Width (%)">
+              <Input
+                placeholder="Please enter the width (0-100)"
+                type="number"
+                min={0}
+                max={100}
+                value={videoSizeWidth}
+                onChange={(e) => setVideoSizeWidth(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Video URL (YouTube Embed)">
+              <Input
+                placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ?si=ZVLBiX_k2dqcfdBt"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Autoplay">
+              <Select
+                value={videoAutoplay}
+                onChange={(value) => setVideoAutoplay(value)}
+              >
+                <Select.Option value={false}>No</Select.Option>
+                <Select.Option value={true}>Yes</Select.Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Modal for code input */}
+        <Modal
+          title="Input Code"
+          open={isCodeModalOpen}
+          onOk={handleCodeOk}
+          onCancel={handleCodeCancel}
+        >
+          <Form layout="vertical">
+            <Form.Item label="Block Size Length (%)">
+              <Input
+                placeholder="Please enter the length (0-100)"
+                type="number"
+                min={0}
+                max={100}
+                value={codeLeight}
+                // value={codeBlockSize.length}
+                onChange={(e) =>
+                  // setCodeBlockSize({ ...codeBlockSize, length: e.target.value })
+                  setCodeLeight(e.target.value)
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Block Size Width (%)">
+              <Input
+                placeholder="Please enter the width (0-100)"
+                type="number"
+                min={0}
+                max={100}
+                // value={codeBlockSize.width}
+                value={codeWidth}
+                onChange={(e) =>
+                  // setCodeBlockSize({
+                  //   ...codeBlockSize,
+
+                  //   width: e.target.value,
+                  // })
+                  setCodeWidth(e.target.value)
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Code Content">
+              <TextArea
+                value={codeContent}
+                onChange={(e) => setCodeContent(e.target.value)}
+                autoSize={{ minRows: 5 }}
+              />
+            </Form.Item>
+            <Form.Item label="Font Size (em)">
+              <InputNumber
+                placeholder="Number"
+                type="number"
+                min={0.5}
+                max={5}
+                step={0.1}
+                value={codeFontSize}
+                onChange={(value) => setCodeFontSize(value)}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
+        {/* Modal for font change inside the text box */}
+        <Modal
+          title="Select Font Family"
+          open={isFontModalOpen}
+          onOk={handleFontOk}
+          onCancel={handleFontCancel}
+        >
+          <Form layout="vertical">
+            <Form.Item label="Font Family">
+              <Select
+                value={textFontFamily}
+                onChange={(value) => setTextFontFamily(value)}
+              >
+                <Select.Option value="Quicksand, sans-serif">
+                  Quicksand
+                </Select.Option>
+                <Select.Option value="Edu AU VIC WA NT Pre, cursive">
+                  Edu AU VIC WA NT Pre
+                </Select.Option>
+                <Select.Option value="Courier New, monospace">
+                  Courier New
+                </Select.Option>
+                <Select.Option value="Kode Mono, monospace">
+                  Kode Mono
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
  
       </Layout>
     </>
