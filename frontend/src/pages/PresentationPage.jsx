@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import HeaherPresent from "../components/HeaherPresent";
 import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
 import { Splitter, Form, ColorPicker, Input, InputNumber } from "antd";
@@ -18,6 +19,7 @@ import {
   CodeOutlined,
   UploadOutlined,
   FontSizeOutlined,
+  FullscreenOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -28,6 +30,7 @@ import PresentationText from "../components/presentationItem/PresentationText";
 import PresentationImage from "../components/presentationItem/PresentationImage";
 import PresentationCode from "../components/presentationItem/PresentationCode";
 import PresentationVideo from "../components/presentationItem/PresentationVideo";
+import DescSlide from "../components/presentationItem/DescSlide";
 
 const Tooltips = (
   currentSlides,
@@ -46,7 +49,7 @@ const Tooltips = (
   showFontModal,
   handleVideoCancel,
   isVideoModalOpen,
-  showVideoModal
+  showVideoModal,
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -203,6 +206,30 @@ const Tooltips = (
                 <FontSizeOutlined />
               </Button>
             </Tooltip>
+
+            {/* Preview viewing */}
+            <Tooltip
+              placement="right"
+              title={"Click for Preview viewing your current presentation"}
+            >
+              <Button
+                onClick={() => {
+                  try {
+                    console.log("presentationId", presentationId);
+                    console.log("selectedSlideId", selectedSlideId);
+                    window.history.pushState({}, "", `/presentation/${presentationId}/${selectedSlideId}`);
+                  } catch (error) {
+                    console.log(error);
+                    errorPopUp(
+                      "Error",
+                      "An error occurred while navigating to the preview page"
+                    );
+                  }
+                }}
+              >
+                <FullscreenOutlined />
+              </Button>
+            </Tooltip>
           </Flex>
         </Flex>
       </Flex>
@@ -268,134 +295,153 @@ const DescList = ({
         showFontModal,
         handleVideoCancel,
         isVideoModalOpen,
-        showVideoModal
+        showVideoModal,
+        navigate,
+        setTextSizeLength,
+        setTextSizeWidth,
+        setTextInput,
+        setTextFontSize,
+        setTextFontColor,
+        setSelectedElementId,
+        setImageSizeLength,
+        setImageSizeWidth,
+        setImageAlt,
+        setUploadImage,
+        setCodeBlockSize,
+        setCodeContent,
+        setCodeFontSize,
+        setCodeLanguage,
+        setVideoUrl,
+        setVideoSizeLength,
+        setVideoSizeWidth,
+        setVideoAutoplay
       )}
     </div>
   </div>
 );
 
-const DescSlide = ({
-  currentSlides,
-  presentationId,
-  selectedSlideId,
-  showTextModal,
-  setTextSizeLength,
-  setTextSizeWidth,
-  setTextInput,
-  setTextFontSize,
-  setTextFontColor,
-  setSelectedElementId,
-  showImageModal,
-  setImageSizeLength,
-  setImageSizeWidth,
-  setImageAlt,
-  setUploadImage,
-  showCodeModal,
-  setCodeBlockSize,
-  setCodeContent,
-  setCodeFontSize,
-  setCodeLanguage,
-  setCurrentSlides,
-  showVideoModal,
-  setVideoUrl,
-  setVideoSizeLength,
-  setVideoSizeWidth,
-  setVideoAutoplay,
-}) => {
-  const boundsRef = useRef(null);
-  return (
-    <div className="flex h-full w-full justify-center items-center">
-      <div
-        className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
-        style={{ position: "relative" }}
-        ref={boundsRef}
-      >
-        {currentSlides?.map((slide) => {
-          if (slide.slideId === selectedSlideId) {
-            return slide.content?.map((element) => {
-              if (element.type === "text") {
-                return (
-                  <PresentationText
-                    showTextModal={showTextModal}
-                    key={element.id}
-                    data={element}
-                    setTextSizeLength={setTextSizeLength}
-                    setTextSizeWidth={setTextSizeWidth}
-                    setTextInput={setTextInput}
-                    setTextFontSize={setTextFontSize}
-                    setTextFontColor={setTextFontColor}
-                    setSelectedElementId={setSelectedElementId}
-                    boundsRef={boundsRef}
-                    currentSlides={currentSlides}
-                    selectedSlideId={selectedSlideId}
-                    setCurrentSlides={setCurrentSlides}
-                    presentationId={presentationId}
-                  />
-                ); // Use a unique key for each element
-              } else if (element.type === "image") {
-                return (
-                  <PresentationImage
-                    showImageModal={showImageModal}
-                    key={element.id}
-                    data={element}
-                    setImageSizeLength={setImageSizeLength}
-                    setImageSizeWidth={setImageSizeWidth}
-                    setImageAlt={setImageAlt}
-                    setSelectedElementId={setSelectedElementId}
-                    setUploadImage={setUploadImage}
-                    boundsRef={boundsRef}
-                    currentSlides={currentSlides}
-                    selectedSlideId={selectedSlideId}
-                    setCurrentSlides={setCurrentSlides}
-                    presentationId={presentationId}
-                  />
-                );
-              } else if (element.type === "code") {
-                return (
-                  <PresentationCode
-                    showCodeModal={showCodeModal}
-                    key={element.id}
-                    data={element}
-                    setCodeBlockSize={setCodeBlockSize}
-                    setCodeContent={setCodeContent}
-                    setCodeFontSize={setCodeFontSize}
-                    setCodeLanguage={setCodeLanguage}
-                    setSelectedElementId={setSelectedElementId}
-                    boundsRef={boundsRef}
-                    currentSlides={currentSlides}
-                    selectedSlideId={selectedSlideId}
-                    setCurrentSlides={setCurrentSlides}
-                    presentationId={presentationId}
-                  />
-                );
-              } else if (element.type === "video") {
-                return (
-                  <PresentationVideo
-                    showVideoModal={showVideoModal}
-                    key={element.id}
-                    data={element}
-                    setSelectedElementId={setSelectedElementId}
-                    setVideoUrl={setVideoUrl}
-                    setVideoSizeLength={setVideoSizeLength}
-                    setVideoSizeWidth={setVideoSizeWidth}
-                    setVideoAutoplay={setVideoAutoplay}
-                    boundsRef={boundsRef}
-                    currentSlides={currentSlides}
-                    selectedSlideId={selectedSlideId}
-                    setCurrentSlides={setCurrentSlides}
-                    presentationId={presentationId}
-                  />
-                );
-              }
-              return null;
-            });
-          }
-          return null;
-        })}
-      </div>
-    </div>
-  );
-};
+// const DescSlide = ({
+//   currentSlides,
+//   presentationId,
+//   selectedSlideId,
+//   showTextModal,
+//   setTextSizeLength,
+//   setTextSizeWidth,
+//   setTextInput,
+//   setTextFontSize,
+//   setTextFontColor,
+//   setSelectedElementId,
+//   showImageModal,
+//   setImageSizeLength,
+//   setImageSizeWidth,
+//   setImageAlt,
+//   setUploadImage,
+//   showCodeModal,
+//   setCodeBlockSize,
+//   setCodeContent,
+//   setCodeFontSize,
+//   setCodeLanguage,
+//   setCurrentSlides,
+//   showVideoModal,
+//   setVideoUrl,
+//   setVideoSizeLength,
+//   setVideoSizeWidth,
+//   setVideoAutoplay,
+// }) => {
+//   const boundsRef = useRef(null);
+//   return (
+//     <div className="flex h-full w-full justify-center items-center">
+//       <div
+//         className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
+//         style={{ position: "relative" }}
+//         ref={boundsRef}
+//       >
+//         {currentSlides?.map((slide) => {
+//           if (slide.slideId === selectedSlideId) {
+//             return slide.content?.map((element) => {
+//               if (element.type === "text") {
+//                 return (
+//                   <PresentationText
+//                     showTextModal={showTextModal}
+//                     key={element.id}
+//                     data={element}
+//                     setTextSizeLength={setTextSizeLength}
+//                     setTextSizeWidth={setTextSizeWidth}
+//                     setTextInput={setTextInput}
+//                     setTextFontSize={setTextFontSize}
+//                     setTextFontColor={setTextFontColor}
+//                     setSelectedElementId={setSelectedElementId}
+//                     boundsRef={boundsRef}
+//                     currentSlides={currentSlides}
+//                     selectedSlideId={selectedSlideId}
+//                     setCurrentSlides={setCurrentSlides}
+//                     presentationId={presentationId}
+//                   />
+//                 ); // Use a unique key for each element
+//               } else if (element.type === "image") {
+//                 return (
+//                   <PresentationImage
+//                     showImageModal={showImageModal}
+//                     key={element.id}
+//                     data={element}
+//                     setImageSizeLength={setImageSizeLength}
+//                     setImageSizeWidth={setImageSizeWidth}
+//                     setImageAlt={setImageAlt}
+//                     setSelectedElementId={setSelectedElementId}
+//                     setUploadImage={setUploadImage}
+//                     boundsRef={boundsRef}
+//                     currentSlides={currentSlides}
+//                     selectedSlideId={selectedSlideId}
+//                     setCurrentSlides={setCurrentSlides}
+//                     presentationId={presentationId}
+//                   />
+//                 );
+//               } else if (element.type === "code") {
+//                 return (
+//                   <PresentationCode
+//                     showCodeModal={showCodeModal}
+//                     key={element.id}
+//                     data={element}
+//                     setCodeBlockSize={setCodeBlockSize}
+//                     setCodeContent={setCodeContent}
+//                     setCodeFontSize={setCodeFontSize}
+//                     setCodeLanguage={setCodeLanguage}
+//                     setSelectedElementId={setSelectedElementId}
+//                     boundsRef={boundsRef}
+//                     currentSlides={currentSlides}
+//                     selectedSlideId={selectedSlideId}
+//                     setCurrentSlides={setCurrentSlides}
+//                     presentationId={presentationId}
+//                   />
+//                 );
+//               } else if (element.type === "video") {
+//                 return (
+//                   <PresentationVideo
+//                     showVideoModal={showVideoModal}
+//                     key={element.id}
+//                     data={element}
+//                     setSelectedElementId={setSelectedElementId}
+//                     setVideoUrl={setVideoUrl}
+//                     setVideoSizeLength={setVideoSizeLength}
+//                     setVideoSizeWidth={setVideoSizeWidth}
+//                     setVideoAutoplay={setVideoAutoplay}
+//                     boundsRef={boundsRef}
+//                     currentSlides={currentSlides}
+//                     selectedSlideId={selectedSlideId}
+//                     setCurrentSlides={setCurrentSlides}
+//                     presentationId={presentationId}
+//                   />
+//                 );
+//               }
+//               return null;
+//             });
+//           }
+//           return null;
+//         })}
+//       </div>
+//     </div>
+//   );
+// };
 
 function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
@@ -431,9 +477,12 @@ function PresentationPage() {
   const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
   const [codeContent, setCodeContent] = useState("");
   const [codeFontSize, setCodeFontSize] = useState(1);
-  // const [codeLanguage, setCodeLanguage] = useState("Javascript");
+  //TODO:
+  const [codeLanguage, setCodeLanguage] = useState("Javascript");
 
   const [selectedElementId, setSelectedElementId] = useState(undefined);
+
+  const navigate = useNavigate();
 
   const [form] = Form.useForm();
   const [formLayout, setFormLayout] = useState("horizontal");

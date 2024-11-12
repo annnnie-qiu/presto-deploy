@@ -121,6 +121,8 @@ function PresentationText({
     setSelectedElementId(data.id);
     showTextModal();
   };
+  console.log("data?.position.x", data?.position.x);
+  console.log("data?.position.y", data?.position.y);
 
   console.log("textSizeLength", data?.textSizeLength);
   return (
