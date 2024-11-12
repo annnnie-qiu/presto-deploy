@@ -8,8 +8,8 @@ import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updat
 import PresentationSlideMove from "./PresentationSlideMove";
 
 function PresentationCode({
-  data,
   showCodeModal,
+  data,
   setCodeBlockSize,
   setCodeContent,
   setCodeFontSize,
@@ -119,14 +119,18 @@ function PresentationCode({
     );
   };
 
+  const onDoubleClick = async () => {
+    console.log("double clicked");
+
+    setSelectedElementId(data.id);
+    setCodeBlockSize(data.codeBlockSize);
+    setCodeContent(data.codeContent);
+    setCodeFontSize(data.codeFontSize);
+    showCodeModal();
+  };
+
   const [lastClickTime, setLastClickTime] = useState(0);
   const handleClick = () => {
-    // console.log("click event", e);
-    // if (e.type === "click") {
-    //   console.log("left click");
-    // } else if (e.type === "contextmenu") {
-    //   console.log("Right click");
-    // }
     const now = Date.now();
     // check if the click is a double click
     if (now - lastClickTime <= 500) {
@@ -134,15 +138,6 @@ function PresentationCode({
     }
     // update the last click time
     setLastClickTime(now);
-  };
-  const onDoubleClick = async () => {
-    console.log("double clicked");
-
-    setCodeBlockSize(data.codeBlockSize);
-    setCodeContent(data.codeContent);
-    setCodeFontSize(data.codeFontSize);
-    setSelectedElementId(data.id);
-    showCodeModal();
   };
 
   return (
@@ -167,6 +162,7 @@ function PresentationCode({
         setIsMoveActive(!isMoveActive);
         handleClick();
       }}
+      
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
     >

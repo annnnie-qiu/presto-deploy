@@ -19,6 +19,7 @@ import {
   CodeOutlined,
   UploadOutlined,
   FontSizeOutlined,
+  BgColorsOutlined,
   FullscreenOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -50,7 +51,10 @@ const Tooltips = (
   handleVideoCancel,
   isVideoModalOpen,
   showVideoModal,
-  setIsHidden
+  setIsHidden,
+  isBackgroundModalOpen,
+  handleBackgroundCancel,
+  showBackgroungModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -208,6 +212,13 @@ const Tooltips = (
               </Button>
             </Tooltip>
 
+            {/* Set Slide Background */}
+            <Tooltip placement="right" title={"Set slide background"}>
+              <Button onClick={showBackgroungModal}>
+                <BgColorsOutlined />
+              </Button>
+            </Tooltip>
+
             {/* Preview viewing */}
             <Tooltip
               placement="right"
@@ -262,6 +273,7 @@ const DescList = ({
   showVideoModal,
   handleVideoCancel,
   setIsHidden,
+  setIsBackgroundModalOpen,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -303,7 +315,8 @@ const DescList = ({
         handleVideoCancel,
         isVideoModalOpen,
         showVideoModal,
-        setIsHidden
+        setIsHidden,
+        setIsBackgroundModalOpen
       )}
     </div>
   </div>
@@ -466,36 +479,22 @@ function PresentationPage() {
   const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
   const [codeContent, setCodeContent] = useState("");
   const [codeFontSize, setCodeFontSize] = useState(1);
-  //TODO:
-  // const [codeLanguage, setCodeLanguage] = useState("Javascript");
+
+
+  // New states for managing background settings
+  const [isBackgroundModalOpen, setIsBackgroundModalOpen] = useState(false);
+  const [backgroundType, setBackgroundType] = useState("solid");
+  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [backgroundGradient, setBackgroundGradient] = useState({
+    start: "#ffffff",
+    end: "#000000",
+    direction: "to bottom",
+  });
+  const [backgroundImage, setBackgroundImage] = useState("");
 
   const [selectedElementId, setSelectedElementId] = useState(undefined);
 
   const [isHidden, setIsHidden] = useState(false);
-
-  // useEffect(() => {
-  //   const checkUrl = () => {
-  //     const pathname = window.location.pathname;
-  //     const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
-
-  //     if (hasTwoSlashes) {
-  //       setIsHidden(true); // 隐藏内容
-  //     } else {
-  //       setIsHidden(false); // 显示内容
-  //     }
-  //   };
-
-  //   // intial check
-  //   checkUrl();
-
-  //   // 添加事件监听器
-  //   window.addEventListener("popstate", checkUrl);
-
-  //   // 清理事件监听器
-  //   return () => {
-  //     window.removeEventListener("popstate", checkUrl);
-  //   };
-  // }, []);
 
   const [form] = Form.useForm();
   const [formLayout, setFormLayout] = useState("horizontal");
@@ -546,6 +545,14 @@ function PresentationPage() {
   const handleVideoCancel = () => {
     setisVideoModalOpen(false);
   };
+
+  const showBackgroungModal = () => {
+    setIsBackgroundModalOpen(true);
+  };
+
+  const handleBackgroundCancel = () => {
+    setIsBackgroundModalOpen(false);
+  }
 
   const handleArrowKeyPress = (e) => {
     console.log("key pressed", e.key);
@@ -902,6 +909,55 @@ function PresentationPage() {
     // Prevent actual upload by returning false
     return false;
   };
+
+  const handleBackground = async () => {
+    setIsBackgroundModalOpen(false);
+    // Update the selected slide's background
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+  
+    let newBackground = {};
+    if (backgroundType === "solid") {
+      newBackground = { type: "solid", color: backgroundColor };
+    } else if (backgroundType === "gradient") {
+      newBackground = {
+        type: "gradient",
+        gradient: {
+          start: backgroundGradient.start,
+          end: backgroundGradient.end,
+          direction: backgroundGradient.direction,
+        },
+      };
+    } else if (backgroundType === "image") {
+      newBackground = { type: "image", imageUrl: backgroundImage };
+    }
+  
+    const newSlides = currentSlides.map((slide, index) =>
+      index === targetIndex
+        ? {
+            ...slide,
+            background: newBackground,
+          }
+        : slide
+    );
+  
+    setCurrentSlides(newSlides);
+  
+    // Save the background change to the backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+  
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlides;
+        break;
+      }
+    }
+    await sendDetail(token, store);
+  };
+  
 
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
