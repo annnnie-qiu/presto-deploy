@@ -50,6 +50,7 @@ const Tooltips = (
   handleVideoCancel,
   isVideoModalOpen,
   showVideoModal,
+  setIsHidden
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -215,9 +216,14 @@ const Tooltips = (
               <Button
                 onClick={() => {
                   try {
+                    setIsHidden(true);
                     console.log("presentationId", presentationId);
                     console.log("selectedSlideId", selectedSlideId);
-                    window.history.pushState({}, "", `/presentation/${presentationId}/${selectedSlideId}`);
+                    window.history.pushState(
+                      {},
+                      "",
+                      `/presentation/${presentationId}/${selectedSlideId}`
+                    );
                   } catch (error) {
                     console.log(error);
                     errorPopUp(
@@ -255,6 +261,7 @@ const DescList = ({
   isVideoModalOpen,
   showVideoModal,
   handleVideoCancel,
+  setIsHidden,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -296,6 +303,7 @@ const DescList = ({
         handleVideoCancel,
         isVideoModalOpen,
         showVideoModal,
+        setIsHidden
       )}
     </div>
   </div>
@@ -465,17 +473,29 @@ function PresentationPage() {
 
   const [isHidden, setIsHidden] = useState(false);
 
-  useEffect(() => {
-    // check if the pathname has two slashes
-    const pathname = location.pathname;
-    const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
+  // useEffect(() => {
+  //   const checkUrl = () => {
+  //     const pathname = window.location.pathname;
+  //     const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
 
-    if (hasTwoSlashes) {
-      setIsHidden(true); // hide content
-    } else {
-      setIsHidden(false); // show content
-    }
-  }, [location.pathname]); // check when pathname changes
+  //     if (hasTwoSlashes) {
+  //       setIsHidden(true); // 隐藏内容
+  //     } else {
+  //       setIsHidden(false); // 显示内容
+  //     }
+  //   };
+
+  //   // intial check
+  //   checkUrl();
+
+  //   // 添加事件监听器
+  //   window.addEventListener("popstate", checkUrl);
+
+  //   // 清理事件监听器
+  //   return () => {
+  //     window.removeEventListener("popstate", checkUrl);
+  //   };
+  // }, []);
 
   const [form] = Form.useForm();
   const [formLayout, setFormLayout] = useState("horizontal");
@@ -528,26 +548,43 @@ function PresentationPage() {
   };
 
   const handleArrowKeyPress = (e) => {
-    if (document.activeElement === document.body) {
-      if (e.key === "ArrowLeft") {
-        const targetIndex = currentSlides.findIndex(
-          (slide) => slide.slideId === selectedSlideId
-        );
-        if (targetIndex > 0) {
-          setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
-        } else {
-          showErrorToast("This is the first slide now");
-        }
-      } else if (e.key === "ArrowRight") {
-        const targetIndex = currentSlides.findIndex(
-          (slide) => slide.slideId === selectedSlideId
-        );
-        if (targetIndex < currentSlides.length - 1) {
-          setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
-        } else {
-          showErrorToast("This is the last slide now");
-        }
+    console.log("key pressed", e.key);
+    console.log("active element", document.activeElement);
+    console.log("body", document.body);
+    const pathname = window.location.pathname;
+    const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
+    // if (document.activeElement === document.body) {
+    if (e.key === "ArrowLeft") {
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId
+      );
+      if (targetIndex > 0) {
+        setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+      } else {
+        showErrorToast("This is the first slide now");
       }
+
+      if (hasTwoSlashes) {
+        window.history.pushState({}, "", `/presentation/${presentationId}/${selectedSlideId}`);
+      }
+    } else if (e.key === "ArrowRight") {
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId
+      );
+      if (targetIndex < currentSlides.length - 1) {
+        setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+      } else {
+        showErrorToast("This is the last slide now");
+      }
+      if (hasTwoSlashes) {
+        window.history.pushState({}, "", `/presentation/${presentationId}/${selectedSlideId}`);
+      }
+    }
+    // }
+
+    if (e.key === "Escape") {
+      setIsHidden(false);
+      window.history.pushState({}, "", `/presentation/${presentationId}`);
     }
   };
 
@@ -886,65 +923,133 @@ function PresentationPage() {
     },
   };
 
+  console.log("isHidden", isHidden);
+
   return (
     <Layout>
-      <Sider
-        theme="light"
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        style={styles.sider}
-      >
-        <Sidebar />
-
-        <Button
-          type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={() => setCollapsed(!collapsed)}
-          style={styles.trigerbtn}
+      {isHidden && (
+        <DescSlide
+          currentSlides={currentSlides}
+          presentationId={presentationId}
+          selectedSlideId={selectedSlideId}
+          showTextModal={showTextModal}
+          setTextSizeLength={setTextSizeLength}
+          setTextSizeWidth={setTextSizeWidth}
+          setTextInput={setTextInput}
+          setTextFontSize={setTextFontSize}
+          setTextFontColor={setTextFontColor}
+          setSelectedElementId={setSelectedElementId}
+          showImageModal={showImageModal}
+          setImageSizeLength={setImageSizeLength}
+          setImageSizeWidth={setImageSizeWidth}
+          setImageAlt={setImageAlt}
+          setUploadImage={setUploadImage}
+          showCodeModal={showCodeModal}
+          setCurrentSlides={setCurrentSlides}
+          showVideoModal={showVideoModal}
+          setVideoUrl={setVideoUrl}
+          setVideoSizeLength={setVideoSizeLength}
+          setVideoSizeWidth={setVideoSizeWidth}
+          setVideoAutoplay={setVideoAutoplay}
+          text="Second"
         />
-      </Sider>
+      )}
+      {!isHidden && (
+        <Sider
+          theme="light"
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+          style={styles.sider}
+        >
+          <Sidebar />
+
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={styles.trigerbtn}
+          />
+        </Sider>
+      )}
       <Layout>
-        <Header style={styles.header}>
-          <HeaherPresent />
-        </Header>
+        {!isHidden && (
+          <Header style={styles.header}>
+            <HeaherPresent />
+          </Header>
+        )}
 
-        <Content style={styles.content}>
-          <Splitter
-            style={{
-              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <Splitter.Panel
-              defaultSize="20%"
-              min="20%"
-              max="70%"
-              className="max-h-screen overflow-y-auto"
+        {!isHidden && (
+          <Content style={styles.content}>
+            <Splitter
+              style={{
+                boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+              }}
             >
-              <div className="h-full">
-                <DescList
-                  currentSlides={currentSlides}
-                  setCurrentSlides={setCurrentSlides}
-                  selectedSlideId={selectedSlideId}
-                  setSelectedSlideId={setSelectedSlideId}
-                  presentationId={presentationId}
-                  showTextModal={showTextModal}
-                  handleTextCancel={handleTextCancel}
-                  isTextModalOpen={isTextModalOpen}
-                  showImageModal={showImageModal}
-                  isCodeModalOpen={isCodeModalOpen}
-                  showCodeModal={showCodeModal}
-                  isFontModalOpen={isFontModalOpen}
-                  showFontModal={showFontModal}
-                  handleFontCancel={handleFontCancel}
-                  isVideoModalOpen={isVideoModalOpen}
-                  showVideoModal={showVideoModal}
-                  handleVideoCancel={handleVideoCancel}
-                />
-              </div>
-            </Splitter.Panel>
+              {!isHidden && (
+                <Splitter.Panel
+                  defaultSize="20%"
+                  min="20%"
+                  max="70%"
+                  className="max-h-screen overflow-y-auto"
+                >
+                  <div className="h-full">
+                    <DescList
+                      currentSlides={currentSlides}
+                      setCurrentSlides={setCurrentSlides}
+                      selectedSlideId={selectedSlideId}
+                      setSelectedSlideId={setSelectedSlideId}
+                      presentationId={presentationId}
+                      showTextModal={showTextModal}
+                      handleTextCancel={handleTextCancel}
+                      isTextModalOpen={isTextModalOpen}
+                      showImageModal={showImageModal}
+                      isCodeModalOpen={isCodeModalOpen}
+                      showCodeModal={showCodeModal}
+                      isFontModalOpen={isFontModalOpen}
+                      showFontModal={showFontModal}
+                      handleFontCancel={handleFontCancel}
+                      isVideoModalOpen={isVideoModalOpen}
+                      showVideoModal={showVideoModal}
+                      handleVideoCancel={handleVideoCancel}
+                      setIsHidden={setIsHidden}
+                    />
+                  </div>
+                </Splitter.Panel>
+              )}
 
-            <Splitter.Panel>
+              {!isHidden && (
+                <Splitter.Panel>
+                  <DescSlide
+                    currentSlides={currentSlides}
+                    presentationId={presentationId}
+                    selectedSlideId={selectedSlideId}
+                    showTextModal={showTextModal}
+                    setTextSizeLength={setTextSizeLength}
+                    setTextSizeWidth={setTextSizeWidth}
+                    setTextInput={setTextInput}
+                    setTextFontSize={setTextFontSize}
+                    setTextFontColor={setTextFontColor}
+                    setSelectedElementId={setSelectedElementId}
+                    showImageModal={showImageModal}
+                    setImageSizeLength={setImageSizeLength}
+                    setImageSizeWidth={setImageSizeWidth}
+                    setImageAlt={setImageAlt}
+                    setUploadImage={setUploadImage}
+                    showCodeModal={showCodeModal}
+                    setCurrentSlides={setCurrentSlides}
+                    showVideoModal={showVideoModal}
+                    setVideoUrl={setVideoUrl}
+                    setVideoSizeLength={setVideoSizeLength}
+                    setVideoSizeWidth={setVideoSizeWidth}
+                    setVideoAutoplay={setVideoAutoplay}
+                    text="Second"
+                  />
+                </Splitter.Panel>
+              )}
+            </Splitter>
+
+            {isHidden && (
               <DescSlide
                 currentSlides={currentSlides}
                 presentationId={presentationId}
@@ -970,9 +1075,9 @@ function PresentationPage() {
                 setVideoAutoplay={setVideoAutoplay}
                 text="Second"
               />
-            </Splitter.Panel>
-          </Splitter>
-        </Content>
+            )}
+          </Content>
+        )}
       </Layout>
 
       {/* modal for input text */}
