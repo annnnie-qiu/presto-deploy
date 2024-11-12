@@ -1447,7 +1447,99 @@ function PresentationPage() {
             </Form.Item>
           </Form>
         </Modal>
- 
+        {/* Modal for setting slide background */}
+        <Modal
+          title="Set Slide Background"
+          open={isBackgroundModalOpen}
+          onOk={handleBackground}
+          onCancel={handleBackgroundCancel}
+        >
+          <Form layout="vertical">
+            <Form.Item label="Background Type">
+              <Select
+                value={backgroundType}
+                onChange={(value) => setBackgroundType(value)}
+              >
+                <Select.Option value="solid">Solid Colour</Select.Option>
+                <Select.Option value="gradient">Gradient</Select.Option>
+                <Select.Option value="image">Image</Select.Option>
+              </Select>
+            </Form.Item>
+
+            {backgroundType === "solid" && (
+              <Form.Item label="Background Colour">
+                <ColorPicker
+                  value={backgroundColor}
+                  defaultValue={"#ffffff"}
+                  allowClear
+                  onChange={(temp, _) => {
+                    setBackgroundColor(temp.toHexString());
+                  }}
+                />
+              </Form.Item>
+            )}
+
+            {backgroundType === "gradient" && (
+              <>
+                <Form.Item label="Gradient Start Colour">
+                  <ColorPicker
+                    value={backgroundGradient.start}
+                    defaultValue={"#ffffff"}
+                    allowClear
+                    onChange={(temp, _) => {
+                      setBackgroundGradient((prev) => ({
+                        ...prev,
+                        start: temp.toHexString(),
+                      }));
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item label="Gradient End Colour">
+                  <ColorPicker
+                    value={backgroundGradient.end}
+                    defaultValue={"#000000"}
+                    allowClear
+                    onChange={(temp, _) => {
+                      setBackgroundGradient((prev) => ({
+                        ...prev,
+                        end: temp.toHexString(),
+                      }));
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item label="Gradient Direction">
+                  <Select
+                    value={backgroundGradient.direction}
+                    onChange={(value) =>
+                      setBackgroundGradient((prev) => ({
+                        ...prev,
+                        direction: value,
+                      }))
+                    }
+                  >
+                    <Select.Option value="to bottom">
+                      Top to Bottom
+                    </Select.Option>
+                    <Select.Option value="to right">
+                      Left to Right
+                    </Select.Option>
+                    <Select.Option value="to bottom right">
+                      Top Left to Bottom Right
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+              </>
+            )}
+
+            {backgroundType === "image" && (
+              <Form.Item label="Upload Background Image">
+                <Upload beforeUpload={handleImageUplod}>
+                  <Button icon={<UploadOutlined />}>Upload Image</Button>
+                </Upload>
+              </Form.Item>
+            )}
+          </Form>
+        </Modal>
       </Layout>
     </>
   );
