@@ -9,6 +9,7 @@ import { errorPopUp } from "../../utils/errorPopUp";
 import { GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import jwt_decode from "jwt-decode";
+import ReCAPTCHA from 'react-google-recaptcha'
 
 function LoginPage() {
   const [email, setEmail] = React.useState("");
@@ -186,6 +187,8 @@ function LoginPage() {
             {/* Your app components go here */}
             <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
           </GoogleOAuthProvider>
+
+          {/* <ReCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY} /> */}
         </div>
       </div>
     </div>
