@@ -1006,6 +1006,140 @@ function PresentationPage() {
         )}
       </Layout>
 
+      <Layout>
+        {!isHidden && (
+          <Sider
+            theme="light"
+            trigger={null}
+            collapsible
+            collapsed={collapsed}
+            style={styles.sider}
+          >
+            <Sidebar />
+
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={styles.trigerbtn}
+            />
+          </Sider>
+        )}
+        {!isHidden && (
+          <Layout>
+            <Header style={styles.header}>
+              <HeaherPresent />
+            </Header>
+
+            <Content style={styles.content}>
+              <Splitter
+                style={{
+                  boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Splitter.Panel
+                  defaultSize="20%"
+                  min="20%"
+                  max="70%"
+                  className="max-h-screen overflow-y-auto"
+                >
+                  <div className="h-full">
+                    <DescList
+                      currentSlides={currentSlides}
+                      setCurrentSlides={setCurrentSlides}
+                      selectedSlideId={selectedSlideId}
+                      setSelectedSlideId={setSelectedSlideId}
+                      presentationId={presentationId}
+                      showTextModal={showTextModal}
+                      handleTextCancel={handleTextCancel}
+                      isTextModalOpen={isTextModalOpen}
+                      showImageModal={showImageModal}
+                      isCodeModalOpen={isCodeModalOpen}
+                      showCodeModal={showCodeModal}
+                      isFontModalOpen={isFontModalOpen}
+                      showFontModal={showFontModal}
+                      handleFontCancel={handleFontCancel}
+                      isVideoModalOpen={isVideoModalOpen}
+                      showVideoModal={showVideoModal}
+                      handleVideoCancel={handleVideoCancel}
+                      showBackgroundModal={showBackgroundModal}
+                      isBackgroundModalOpen={isBackgroundModalOpen}
+                      handleBackgroundCancel={handleBackgroundCancel}
+                      setIsHidden={setIsHidden}
+                      handleLeftRightKeyPress={handleLeftRightKeyPress}
+                    />
+                  </div>
+                </Splitter.Panel>
+                <Splitter.Panel>
+                  <DescSlide
+                    currentSlides={currentSlides}
+                    presentationId={presentationId}
+                    selectedSlideId={selectedSlideId}
+                    showTextModal={showTextModal}
+                    setTextSizeLength={setTextSizeLength}
+                    setTextSizeWidth={setTextSizeWidth}
+                    setTextInput={setTextInput}
+                    setTextFontSize={setTextFontSize}
+                    setTextFontColor={setTextFontColor}
+                    setSelectedElementId={setSelectedElementId}
+                    showImageModal={showImageModal}
+                    setImageSizeLength={setImageSizeLength}
+                    setImageSizeWidth={setImageSizeWidth}
+                    setImageAlt={setImageAlt}
+                    setUploadImage={setUploadImage}
+                    showCodeModal={showCodeModal}
+                    setCurrentSlides={setCurrentSlides}
+                    showVideoModal={showVideoModal}
+                    setVideoUrl={setVideoUrl}
+                    setVideoSizeLength={setVideoSizeLength}
+                    setVideoSizeWidth={setVideoSizeWidth}
+                    setVideoAutoplay={setVideoAutoplay}
+                    showBackgroundModal={showBackgroundModal}
+                    setBackgroundColor={setBackgroundColor}
+                    setBackgroundGradient={setBackgroundGradient}
+                    setBackgroundImage={setBackgroundImage}
+                    setBackgroundType={setBackgroundType}
+                    text="Second"
+                  />
+                </Splitter.Panel>
+              </Splitter>
+
+              <DescSlide
+                currentSlides={currentSlides}
+                presentationId={presentationId}
+                selectedSlideId={selectedSlideId}
+                showTextModal={showTextModal}
+                setTextSizeLength={setTextSizeLength}
+                setTextSizeWidth={setTextSizeWidth}
+                setTextInput={setTextInput}
+                setTextFontSize={setTextFontSize}
+                setTextFontColor={setTextFontColor}
+                setSelectedElementId={setSelectedElementId}
+                showImageModal={showImageModal}
+                setImageSizeLength={setImageSizeLength}
+                setImageSizeWidth={setImageSizeWidth}
+                setImageAlt={setImageAlt}
+                setUploadImage={setUploadImage}
+                showCodeModal={showCodeModal}
+                setCurrentSlides={setCurrentSlides}
+                showVideoModal={showVideoModal}
+                setVideoUrl={setVideoUrl}
+                setVideoSizeLength={setVideoSizeLength}
+                setVideoSizeWidth={setVideoSizeWidth}
+                setVideoAutoplay={setVideoAutoplay}
+                showBackgroundModal={showBackgroundModal}
+                setBackgroundColor={setBackgroundColor}
+                setBackgroundGradient={setBackgroundGradient}
+                setBackgroundImage={setBackgroundImage}
+                setBackgroundType={setBackgroundType}
+                text="Second"
+              />
+            </Content>
+          </Layout>
+        )}
+
+        
+      </Layout>
     </>
   );
 }
