@@ -21,6 +21,8 @@ import {
   FontSizeOutlined,
   BgColorsOutlined,
   FullscreenOutlined,
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -54,7 +56,8 @@ const Tooltips = (
   setIsHidden,
   isBackgroundModalOpen,
   handleBackgroundCancel,
-  showBackgroundModal
+  showBackgroundModal,
+  handleLeftRightKeyPress
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -169,6 +172,20 @@ const Tooltips = (
               </Button>
             </Tooltip>
 
+            {/* change to the previous page */}
+            <Tooltip placement="right" title={"change to the previous page"}>
+              <Button onClick={() => handleLeftRightKeyPress("Left")}>
+                <ArrowLeftOutlined />
+              </Button>
+            </Tooltip>
+
+            {/* change to the next page */}
+            <Tooltip placement="right" title={"change to the next page"}>
+              <Button onClick={() => handleLeftRightKeyPress("Right")}>
+                <ArrowRightOutlined />
+              </Button>
+            </Tooltip>
+
             {/* put text */}
             <Tooltip placement="right" title={"put TEXT on the slide"}>
               <Button onClick={showTextModal}>
@@ -275,7 +292,8 @@ const DescList = ({
   setIsHidden,
   isBackgroundModalOpen,
   handleBackgroundCancel,
-  showBackgroundModal
+  showBackgroundModal,
+  handleLeftRightKeyPress,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -321,11 +339,11 @@ const DescList = ({
         isBackgroundModalOpen,
         handleBackgroundCancel,
         showBackgroundModal,
+        handleLeftRightKeyPress
       )}
     </div>
   </div>
 );
-
 
 function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
@@ -361,7 +379,6 @@ function PresentationPage() {
   const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
   const [codeContent, setCodeContent] = useState("");
   const [codeFontSize, setCodeFontSize] = useState(1);
-
 
   // New states for managing background settings
   const [isBackgroundModalOpen, setIsBackgroundModalOpen] = useState(false);
@@ -434,7 +451,7 @@ function PresentationPage() {
 
   const handleBackgroundCancel = () => {
     setIsBackgroundModalOpen(false);
-  }
+  };
 
   const handleArrowKeyPress = (e) => {
     console.log("key pressed", e.key);
@@ -454,7 +471,11 @@ function PresentationPage() {
       }
 
       if (hasTwoSlashes) {
-        window.history.pushState({}, "", `/presentation/${presentationId}/${selectedSlideId}`);
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${selectedSlideId}`
+        );
       }
     } else if (e.key === "ArrowRight") {
       const targetIndex = currentSlides.findIndex(
@@ -466,12 +487,65 @@ function PresentationPage() {
         showErrorToast("This is the last slide now");
       }
       if (hasTwoSlashes) {
-        window.history.pushState({}, "", `/presentation/${presentationId}/${selectedSlideId}`);
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${selectedSlideId}`
+        );
       }
     }
     // }
 
     if (e.key === "Escape") {
+      setIsHidden(false);
+      window.history.pushState({}, "", `/presentation/${presentationId}`);
+    }
+  };
+
+  const handleLeftRightKeyPress = (key) => {
+    console.log("key pressed", key);
+    console.log("active element", document.activeElement);
+    console.log("body", document.body);
+    const pathname = window.location.pathname;
+    const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
+    // if (document.activeElement === document.body) {
+    if (key === "Left") {
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId
+      );
+      if (targetIndex > 0) {
+        setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+      } else {
+        showErrorToast("This is the first slide now");
+      }
+
+      if (hasTwoSlashes) {
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${selectedSlideId}`
+        );
+      }
+    } else if (key === "Right") {
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId
+      );
+      if (targetIndex < currentSlides.length - 1) {
+        setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+      } else {
+        showErrorToast("This is the last slide now");
+      }
+      if (hasTwoSlashes) {
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${selectedSlideId}`
+        );
+      }
+    }
+    // }
+
+    if (key === "Escape") {
       setIsHidden(false);
       window.history.pushState({}, "", `/presentation/${presentationId}`);
     }
@@ -798,7 +872,7 @@ function PresentationPage() {
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-  
+
     let newBackground = {};
     if (backgroundType === "solid") {
       newBackground = { type: "solid", color: backgroundColor };
@@ -814,7 +888,7 @@ function PresentationPage() {
     } else if (backgroundType === "image") {
       newBackground = { type: "image", imageUrl: backgroundImage };
     }
-  
+
     const newSlides = currentSlides.map((slide, index) =>
       index === targetIndex
         ? {
@@ -823,14 +897,14 @@ function PresentationPage() {
           }
         : slide
     );
-  
+
     setCurrentSlides(newSlides);
-  
+
     // Save the background change to the backend
     const token = localStorage.getItem("token");
     const response = await getDetail(token);
     const { store } = response;
-  
+
     for (let i = 0; i < store.presentations.length; i++) {
       if (store.presentations[i].id == presentationId) {
         store.presentations[i].slides = newSlides;
@@ -839,7 +913,6 @@ function PresentationPage() {
     }
     await sendDetail(token, store);
   };
-  
 
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
@@ -985,6 +1058,7 @@ function PresentationPage() {
                       isBackgroundModalOpen={isBackgroundModalOpen}
                       handleBackgroundCancel={handleBackgroundCancel}
                       setIsHidden={setIsHidden}
+                      handleLeftRightKeyPress={handleLeftRightKeyPress}
                     />
                   </div>
                 </Splitter.Panel>
