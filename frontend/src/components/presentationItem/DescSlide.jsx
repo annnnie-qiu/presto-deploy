@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
+import html2canvas from "html2canvas"; // Import html2canvas for snapshot capturing
 import PresentationText from "./PresentationText";
 import PresentationImage from "./PresentationImage";
 import PresentationCode from "./PresentationCode";
@@ -21,7 +22,6 @@ const DescSlide = ({
   setImageAlt,
   setUploadImage,
   showCodeModal,
-  //   setCodeBlockSize,
   setCodeLeight,
   setCodeWidth,
   setCodeContent,
@@ -35,6 +35,20 @@ const DescSlide = ({
   setVideoAutoplay,
 }) => {
   const boundsRef = useRef(null);
+
+  // Function to take a snapshot of the slide
+  const takeSnapshot = async (element, slideId) => {
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element);
+      const snapshotUrl = canvas.toDataURL("image/png");
+
+      return { slideId, snapshotUrl };
+    } catch (error) {
+      console.error("Error taking snapshot:", error);
+    }
+  };
 
   // Find the currently selected slide to extract its background settings
   const selectedSlide = currentSlides.find(
@@ -60,12 +74,38 @@ const DescSlide = ({
     }
   }
 
+  // Take a snapshot of the slide whenever it is updated
+  useEffect(() => {
+    const takeAndStoreSnapshot = async () => {
+      if (boundsRef.current) {
+        const snapshot = await takeSnapshot(boundsRef.current, selectedSlideId);
+        if (snapshot) {
+          setCurrentSlides((slides) =>
+            slides.map((slide) =>
+              slide.slideId === snapshot.slideId
+                ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
+                : slide
+            )
+          );
+        }
+      }
+    };
+
+    if (selectedSlide) {
+      takeAndStoreSnapshot();
+    }
+  }, [selectedSlide, setCurrentSlides]); // Trigger whenever the selectedSlide changes
+
   return (
     <div className="flex h-full w-full justify-center items-center">
       <div
         className="h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
-        style={{ position: "relative", ...backgroundStyle }}
-        ref={boundsRef}
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          ...backgroundStyle,
+        }}
+        ref={boundsRef} // Assign the ref to this container for snapshot capturing
       >
         {currentSlides?.map((slide) => {
           if (slide.slideId === selectedSlideId) {
@@ -113,7 +153,6 @@ const DescSlide = ({
                     showCodeModal={showCodeModal}
                     key={element.id}
                     data={element}
-                    // setCodeBlockSize={setCodeBlockSize}
                     setCodeLeight={setCodeLeight}
                     setCodeWidth={setCodeWidth}
                     setCodeContent={setCodeContent}

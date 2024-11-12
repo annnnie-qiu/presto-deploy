@@ -34,6 +34,7 @@ import PresentationImage from "../components/presentationItem/PresentationImage"
 import PresentationCode from "../components/presentationItem/PresentationCode";
 import PresentationVideo from "../components/presentationItem/PresentationVideo";
 import DescSlide from "../components/presentationItem/DescSlide";
+import html2canvas from 'html2canvas';
 
 const Tooltips = (
   currentSlides,
@@ -118,6 +119,17 @@ const Tooltips = (
                   }
                 }
                 await sendDetail(token, store);
+                // const slideElement = document.getElementById(`slide-${nextAvailableSlideId}`);
+                // const snapshot = await takeSnapshot(slideElement, nextAvailableSlideId);
+                // if (snapshot) {
+                //   setCurrentSlides((slides) =>
+                //     slides.map((slide) =>
+                //       slide.slideId === snapshot.slideId
+                //         ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
+                //         : slide
+                //     )
+                //   );
+                // }
               }}
               arrow={mergedArrow}
             >
@@ -411,6 +423,19 @@ function PresentationPage() {
     setisTextModalOpen(true);
   };
 
+  const takeSnapshot = async (element, slideId) => {
+    if (!element) return;
+  
+    try {
+      const canvas = await html2canvas(element);
+      const snapshotUrl = canvas.toDataURL("image/png");
+  
+      return { slideId, snapshotUrl };
+    } catch (error) {
+      console.error("Error taking snapshot:", error);
+    }
+  };
+
   const showImageModal = () => {
     setisImageModalOpen(true);
   };
@@ -622,6 +647,19 @@ function PresentationPage() {
       }
     }
     await sendDetail(token, store);
+    
+    // Take snapshot after updating slide content
+    const slideElement = document.getElementById(`slide-${selectedSlideId}`);
+    const snapshot = await takeSnapshot(slideElement, selectedSlideId);
+    if (snapshot) {
+      setCurrentSlides((slides) =>
+        slides.map((slide) =>
+          slide.slideId === snapshot.slideId
+            ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
+            : slide
+        )
+      );
+    }
   };
 
   const handleFontOk = async () => {
@@ -916,7 +954,37 @@ function PresentationPage() {
       }
     }
     await sendDetail(token, store);
+
+    // Take snapshot after changing background
+    const slideElement = document.getElementById(`slide-${selectedSlideId}`);
+    const snapshot = await takeSnapshot(slideElement, selectedSlideId);
+    if (snapshot) {
+      setCurrentSlides((slides) =>
+        slides.map((slide) =>
+          slide.slideId === snapshot.slideId
+            ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
+            : slide
+        )
+      );
+    }
+
   };
+
+  const handleBackgroundImageUpload = (file) => {
+    const reader = new FileReader();
+  
+    reader.onload = (e) => {
+      const base64String = e.target.result;
+  
+      // Update the state to reflect the background image upload for the slide
+      setBackgroundImage(base64String);
+      console.log("Base64 of uploaded background image:", base64String);
+    };
+  
+    reader.readAsDataURL(file); // Convert the file to base64
+  
+    return false; // Prevent actual file upload
+  };  
 
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
@@ -1533,7 +1601,7 @@ function PresentationPage() {
 
             {backgroundType === "image" && (
               <Form.Item label="Upload Background Image">
-                <Upload beforeUpload={handleImageUplod}>
+                <Upload beforeUpload={handleBackgroundImageUpload}>
                   <Button icon={<UploadOutlined />}>Upload Image</Button>
                 </Upload>
               </Form.Item>
