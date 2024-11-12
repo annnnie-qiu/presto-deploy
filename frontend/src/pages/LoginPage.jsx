@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Button, Checkbox, Form, Input } from "antd";
 import PrestoLogo from "../assets/Presto.png";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
@@ -9,7 +9,7 @@ import { errorPopUp } from "../../utils/errorPopUp";
 import { GoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import jwt_decode from "jwt-decode";
-import ReCAPTCHA from 'react-google-recaptcha'
+import ReCAPTCHA from "react-google-recaptcha";
 
 function LoginPage() {
   const [email, setEmail] = React.useState("");
@@ -30,7 +30,17 @@ function LoginPage() {
     }
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event.preventDefault(); // prevent the default form submission
+
+    // catch the value of the ReCAPTCHA
+    const captchaValue = recaptcha.current.getValue();
+
+    // check if the user has verified the reCAPTCHA
+    if (!captchaValue) {
+      alert("Please do the human-machine verification!");
+      return;
+    }
     try {
       const response = await login(email, password);
       localStorage.setItem("token", response.token);
@@ -73,14 +83,18 @@ function LoginPage() {
         navigate("/dashboard");
       } catch (error) {
         console.log(error);
-        errorPopUp("There was an error logging in", "invalid email or password");
+        errorPopUp(
+          "There was an error logging in",
+          "invalid email or password"
+        );
       }
     }
-
   };
   const handleError = () => {
     console.log("Login Failed");
   };
+
+  const recaptcha = useRef();
 
   // check if the user press enter key to login TODO: not working
   React.useEffect(() => {
@@ -188,7 +202,11 @@ function LoginPage() {
             <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
           </GoogleOAuthProvider>
 
-          {/* <ReCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY} /> */}
+          <ReCAPTCHA
+            ref={recaptcha}
+            sitekey={import.meta.env.VITE_REACT_APP_SITE_KEY}
+          />
+          {/* <ReCAPTCHA sitekey={import.meta.env.VITE_REACT_APP_SITE_KEY} /> */}
         </div>
       </div>
     </div>
