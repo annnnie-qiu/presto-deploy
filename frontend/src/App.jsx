@@ -7,9 +7,9 @@ import DashboardPage from "./pages/DashboardPage";
 import PresentationPage from "./pages/PresentationPage";
 import CustomHeader from "./components/Header";
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
-
   const [darkMode, setDarkMode] = React.useState(false);
 
   // Toggle dark mode
@@ -19,11 +19,11 @@ function App() {
 
   React.useEffect(() => {
     if (darkMode) {
-      document.body.style.backgroundColor = '#1e1e1e';
-      document.body.style.color = '#f5f5f5';
+      document.body.style.backgroundColor = "#1e1e1e";
+      document.body.style.color = "#f5f5f5";
     } else {
-      document.body.style.backgroundColor = '#ffffff';
-      document.body.style.color = '#000000';
+      document.body.style.backgroundColor = "#ffffff";
+      document.body.style.color = "#000000";
     }
   }, [darkMode]);
 
@@ -34,9 +34,21 @@ function App() {
         <Route path="/" element={<WelcomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardPage darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />
-        <Route path="/presentation/:presentationId" element={<PresentationPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <DashboardPage
+              darkMode={darkMode}
+              toggleDarkMode={toggleDarkMode}
+            />
+          }
+        />
+        <Route
+          path="/presentation/:presentationId"
+          element={<PresentationPage />}
+        />
       </Routes>
+
     </Router>
   );
 }

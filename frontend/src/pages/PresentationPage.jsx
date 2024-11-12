@@ -21,6 +21,8 @@ import {
   FontSizeOutlined,
   BgColorsOutlined,
   FullscreenOutlined,
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -54,7 +56,8 @@ const Tooltips = (
   setIsHidden,
   isBackgroundModalOpen,
   handleBackgroundCancel,
-  showBackgroundModal
+  showBackgroundModal,
+  handleLeftRightKeyPress
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -169,6 +172,20 @@ const Tooltips = (
               </Button>
             </Tooltip>
 
+            {/* change to the previous page */}
+            <Tooltip placement="right" title={"change to the previous page"}>
+              <Button onClick={() => handleLeftRightKeyPress("Left")}>
+                <ArrowLeftOutlined />
+              </Button>
+            </Tooltip>
+
+            {/* change to the next page */}
+            <Tooltip placement="right" title={"change to the next page"}>
+              <Button onClick={() => handleLeftRightKeyPress("Right")}>
+                <ArrowRightOutlined />
+              </Button>
+            </Tooltip>
+
             {/* put text */}
             <Tooltip placement="right" title={"put TEXT on the slide"}>
               <Button onClick={showTextModal}>
@@ -275,7 +292,8 @@ const DescList = ({
   setIsHidden,
   isBackgroundModalOpen,
   handleBackgroundCancel,
-  showBackgroundModal
+  showBackgroundModal,
+  handleLeftRightKeyPress,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -321,11 +339,11 @@ const DescList = ({
         isBackgroundModalOpen,
         handleBackgroundCancel,
         showBackgroundModal,
+        handleLeftRightKeyPress
       )}
     </div>
   </div>
 );
-
 
 function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
@@ -358,10 +376,11 @@ function PresentationPage() {
   const [videoAutoplay, setVideoAutoplay] = useState(false);
 
   // for the code input
-  const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
+  // const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
+  const [codeLeight, setCodeLeight] = useState(0);
+  const [codeWidth, setCodeWidth] = useState(0);
   const [codeContent, setCodeContent] = useState("");
   const [codeFontSize, setCodeFontSize] = useState(1);
-
 
   // New states for managing background settings
   const [isBackgroundModalOpen, setIsBackgroundModalOpen] = useState(false);
@@ -434,7 +453,7 @@ function PresentationPage() {
 
   const handleBackgroundCancel = () => {
     setIsBackgroundModalOpen(false);
-  }
+  };
 
   const handleArrowKeyPress = (e) => {
     console.log("key pressed", e.key);
@@ -454,7 +473,11 @@ function PresentationPage() {
       }
 
       if (hasTwoSlashes) {
-        window.history.pushState({}, "", `/presentation/${presentationId}/${selectedSlideId}`);
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${selectedSlideId}`
+        );
       }
     } else if (e.key === "ArrowRight") {
       const targetIndex = currentSlides.findIndex(
@@ -466,12 +489,65 @@ function PresentationPage() {
         showErrorToast("This is the last slide now");
       }
       if (hasTwoSlashes) {
-        window.history.pushState({}, "", `/presentation/${presentationId}/${selectedSlideId}`);
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${selectedSlideId}`
+        );
       }
     }
     // }
 
     if (e.key === "Escape") {
+      setIsHidden(false);
+      window.history.pushState({}, "", `/presentation/${presentationId}`);
+    }
+  };
+
+  const handleLeftRightKeyPress = (key) => {
+    console.log("key pressed", key);
+    console.log("active element", document.activeElement);
+    console.log("body", document.body);
+    const pathname = window.location.pathname;
+    const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
+    // if (document.activeElement === document.body) {
+    if (key === "Left") {
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId
+      );
+      if (targetIndex > 0) {
+        setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+      } else {
+        showErrorToast("This is the first slide now");
+      }
+
+      if (hasTwoSlashes) {
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${selectedSlideId}`
+        );
+      }
+    } else if (key === "Right") {
+      const targetIndex = currentSlides.findIndex(
+        (slide) => slide.slideId === selectedSlideId
+      );
+      if (targetIndex < currentSlides.length - 1) {
+        setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+      } else {
+        showErrorToast("This is the last slide now");
+      }
+      if (hasTwoSlashes) {
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${selectedSlideId}`
+        );
+      }
+    }
+    // }
+
+    if (key === "Escape") {
       setIsHidden(false);
       window.history.pushState({}, "", `/presentation/${presentationId}`);
     }
@@ -675,7 +751,9 @@ function PresentationPage() {
       ...currentSlides[targetIndex].content,
       {
         type: "code",
-        codeBlockSize,
+        codeLeight,
+        codeWidth,
+        // codeBlockSize,
         codeContent,
         codeFontSize,
         // codeLanguage,
@@ -798,7 +876,7 @@ function PresentationPage() {
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-  
+
     let newBackground = {};
     if (backgroundType === "solid") {
       newBackground = { type: "solid", color: backgroundColor };
@@ -814,7 +892,7 @@ function PresentationPage() {
     } else if (backgroundType === "image") {
       newBackground = { type: "image", imageUrl: backgroundImage };
     }
-  
+
     const newSlides = currentSlides.map((slide, index) =>
       index === targetIndex
         ? {
@@ -823,14 +901,14 @@ function PresentationPage() {
           }
         : slide
     );
-  
+
     setCurrentSlides(newSlides);
-  
+
     // Save the background change to the backend
     const token = localStorage.getItem("token");
     const response = await getDetail(token);
     const { store } = response;
-  
+
     for (let i = 0; i < store.presentations.length; i++) {
       if (store.presentations[i].id == presentationId) {
         store.presentations[i].slides = newSlides;
@@ -839,7 +917,6 @@ function PresentationPage() {
     }
     await sendDetail(token, store);
   };
-  
 
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
@@ -890,72 +967,76 @@ function PresentationPage() {
   };
 
   return (
-    <Layout>
-      {isHidden && (
-        <DescSlide
-          currentSlides={currentSlides}
-          presentationId={presentationId}
-          selectedSlideId={selectedSlideId}
-          showTextModal={showTextModal}
-          setTextSizeLength={setTextSizeLength}
-          setTextSizeWidth={setTextSizeWidth}
-          setTextInput={setTextInput}
-          setTextFontSize={setTextFontSize}
-          setTextFontColor={setTextFontColor}
-          setSelectedElementId={setSelectedElementId}
-          showImageModal={showImageModal}
-          setImageSizeLength={setImageSizeLength}
-          setImageSizeWidth={setImageSizeWidth}
-          setImageAlt={setImageAlt}
-          setUploadImage={setUploadImage}
-          showCodeModal={showCodeModal}
-          setCurrentSlides={setCurrentSlides}
-          showVideoModal={showVideoModal}
-          setVideoUrl={setVideoUrl}
-          setVideoSizeLength={setVideoSizeLength}
-          setVideoSizeWidth={setVideoSizeWidth}
-          setVideoAutoplay={setVideoAutoplay}
-          showBackgroundModal={showBackgroundModal}
-          setBackgroundColor={setBackgroundColor}
-          setBackgroundGradient={setBackgroundGradient}
-          setBackgroundImage={setBackgroundImage}
-          setBackgroundType={setBackgroundType}
-          text="Second"
-        />
-      )}
-      {!isHidden && (
-        <Sider
-          theme="light"
-          trigger={null}
-          collapsible
-          collapsed={collapsed}
-          style={styles.sider}
-        >
-          <Sidebar />
-
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={styles.trigerbtn}
+    <>
+      <Layout>
+        {isHidden && (
+          <DescSlide
+            currentSlides={currentSlides}
+            presentationId={presentationId}
+            selectedSlideId={selectedSlideId}
+            showTextModal={showTextModal}
+            setTextSizeLength={setTextSizeLength}
+            setTextSizeWidth={setTextSizeWidth}
+            setTextInput={setTextInput}
+            setTextFontSize={setTextFontSize}
+            setTextFontColor={setTextFontColor}
+            setSelectedElementId={setSelectedElementId}
+            showImageModal={showImageModal}
+            setImageSizeLength={setImageSizeLength}
+            setImageSizeWidth={setImageSizeWidth}
+            setImageAlt={setImageAlt}
+            setUploadImage={setUploadImage}
+            showCodeModal={showCodeModal}
+            // setCodeBlockSize={setCodeBlockSize}
+            setCodeLeight={setCodeLeight}
+            setCodeWidth={setCodeWidth}
+            setCurrentSlides={setCurrentSlides}
+            showVideoModal={showVideoModal}
+            setVideoUrl={setVideoUrl}
+            setVideoSizeLength={setVideoSizeLength}
+            setVideoSizeWidth={setVideoSizeWidth}
+            setVideoAutoplay={setVideoAutoplay}
+            showBackgroundModal={showBackgroundModal}
+            setBackgroundColor={setBackgroundColor}
+            setBackgroundGradient={setBackgroundGradient}
+            setBackgroundImage={setBackgroundImage}
+            setBackgroundType={setBackgroundType}
+            text="Second"
           />
-        </Sider>
-      )}
+        )}
+      </Layout>
+
       <Layout>
         {!isHidden && (
-          <Header style={styles.header}>
-            <HeaherPresent />
-          </Header>
-        )}
+          <Sider
+            theme="light"
+            trigger={null}
+            collapsible
+            collapsed={collapsed}
+            style={styles.sider}
+          >
+            <Sidebar />
 
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={styles.trigerbtn}
+            />
+          </Sider>
+        )}
         {!isHidden && (
-          <Content style={styles.content}>
-            <Splitter
-              style={{
-                boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              {!isHidden && (
+          <Layout>
+            <Header style={styles.header}>
+              <HeaherPresent />
+            </Header>
+
+            <Content style={styles.content}>
+              <Splitter
+                style={{
+                  boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+                }}
+              >
                 <Splitter.Panel
                   defaultSize="20%"
                   min="20%"
@@ -985,12 +1066,10 @@ function PresentationPage() {
                       isBackgroundModalOpen={isBackgroundModalOpen}
                       handleBackgroundCancel={handleBackgroundCancel}
                       setIsHidden={setIsHidden}
+                      handleLeftRightKeyPress={handleLeftRightKeyPress}
                     />
                   </div>
                 </Splitter.Panel>
-              )}
-
-              {!isHidden && (
                 <Splitter.Panel>
                   <DescSlide
                     currentSlides={currentSlides}
@@ -1023,10 +1102,8 @@ function PresentationPage() {
                     text="Second"
                   />
                 </Splitter.Panel>
-              )}
-            </Splitter>
+              </Splitter>
 
-            {isHidden && (
               <DescSlide
                 currentSlides={currentSlides}
                 presentationId={presentationId}
@@ -1057,31 +1134,30 @@ function PresentationPage() {
                 setBackgroundType={setBackgroundType}
                 text="Second"
               />
-            )}
-          </Content>
+            </Content>
+          </Layout>
         )}
-      </Layout>
 
-      {/* modal for input text */}
-      <Modal
-        title="Input Text"
-        open={isTextModalOpen}
-        onOk={handleTextOk}
-        onCancel={handleTextCancel}
-      >
-        <Form
-          layout={formLayout}
-          form={form}
-          initialValues={{
-            layout: formLayout,
-          }}
-          onValuesChange={onFormLayoutChange}
-          style={{
-            maxWidth: formLayout === "inline" ? "none" : 600,
-          }}
+        {/* modal for input text */}
+        <Modal
+          title="Input Text"
+          open={isTextModalOpen}
+          onOk={handleTextOk}
+          onCancel={handleTextCancel}
         >
-          <Form.Item label="Size length">
-            {/* <Input
+          <Form
+            layout={formLayout}
+            form={form}
+            initialValues={{
+              layout: formLayout,
+            }}
+            onValuesChange={onFormLayoutChange}
+            style={{
+              maxWidth: formLayout === "inline" ? "none" : 600,
+            }}
+          >
+            <Form.Item label="Size length">
+              {/* <Input
               value={textSizeLength}
               placeholder="input placeholder"
               addonAfter="px"
@@ -1089,380 +1165,383 @@ function PresentationPage() {
                 setTextSizeLength(e.target.value);
               }}
             /> */}
-            <Input
-              value={textSizeLength}
-              placeholder="Please enter the length (0-100)"
-              addonAfter="%"
-              type="number"
-              min={0}
-              max={100}
-              onChange={(e) => {
-                setTextSizeLength(e.target.value);
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item label="Size width">
-            {/* <Input
-              value={textSizeWidth}
-              placeholder="input placeholder"
-              addonAfter="px"
-              onChange={(e) => {
-                setTextSizeWidth(e.target.value);
-              }}
-            /> */}
-            <Input
-              value={textSizeWidth}
-              placeholder="Please enter the width (0-100)"
-              addonAfter="%"
-              type="number"
-              min={0}
-              max={100}
-              onChange={(e) => {
-                setTextSizeWidth(e.target.value);
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item label="Text in the textarea">
-            <TextArea
-              value={textInput}
-              placeholder="input your text here"
-              autoSize={{ minRows: 1, maxRows: 4 }}
-              onChange={(e) => {
-                setTextInput(e.target.value);
-              }}
-            />
-          </Form.Item>
-          <Form.Item label="Font size of the text ">
-            <InputNumber
-              min={1}
-              max={100}
-              defaultValue={3}
-              value={textFontSize}
-              addonAfter="em"
-              changeOnWheel
-              onChange={(e) => {
-                setTextFontSize(e);
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item label="Font color of the text">
-            <ColorPicker
-              value={textFontColor}
-              defaultValue={"#111111"}
-              allowClear
-              onChange={(temp, _) => {
-                setTextFontColor(temp.toHexString());
-              }}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* modal for image input */}
-      <Modal
-        title="Input Image"
-        open={isImageModalOpen}
-        onOk={handleImageOk}
-        onCancel={handleImageCancel}
-      >
-        <Form
-          layout={formLayout}
-          form={form}
-          initialValues={{
-            layout: formLayout,
-          }}
-          onValuesChange={onFormLayoutChange}
-          style={{
-            maxWidth: formLayout === "inline" ? "none" : 600,
-          }}
-        >
-          {/* for image length */}
-          <Form.Item label="Size length">
-            <Input
-              value={imageSizeLength}
-              type="number"
-              placeholder="Please enter the length (0-100)"
-              // addonAfter="px"
-              addonAfter="%"
-              onChange={(e) => {
-                setImageSizeLength(e.target.value);
-              }}
-            />
-          </Form.Item>
-
-          {/* for image width */}
-          <Form.Item label="Size width">
-            <Input
-              value={imageSizeWidth}
-              type="number"
-              placeholder="Please enter the width (0-100)"
-              // addonAfter="px"
-              addonAfter="%"
-              onChange={(e) => {
-                setImageSizeWidth(e.target.value);
-              }}
-            />
-          </Form.Item>
-
-          {/* for image alt text */}
-          <Form.Item label="alt">
-            <TextArea
-              value={imageAlt}
-              placeholder="Input your alt here"
-              onChange={(e) => {
-                setImageAlt(e.target.value);
-              }}
-            />
-          </Form.Item>
-
-          {/* for uploading image */}
-          <Form.Item label="upload image">
-            <Upload beforeUpload={handleImageUplod}>
-              <Button
-                value={uploadImage}
+              <Input
+                value={textSizeLength}
+                placeholder="Please enter the length (0-100)"
+                addonAfter="%"
+                type="number"
+                min={0}
+                max={100}
                 onChange={(e) => {
-                  setUploadImage(e.target.value);
-                }}
-                icon={<UploadOutlined />}
-              >
-                Upload
-              </Button>
-            </Upload>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Modal for video input */}
-      <Modal
-        title="Input Video"
-        open={isVideoModalOpen}
-        onOk={handleVideoOk}
-        onCancel={handleVideoCancel}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Size Length (%)">
-            <Input
-              placeholder="Please enter the length (0-100)"
-              type="number"
-              min={0}
-              max={100}
-              value={videoSizeLength}
-              onChange={(e) => setVideoSizeLength(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item label="Size Width (%)">
-            <Input
-              placeholder="Please enter the width (0-100)"
-              type="number"
-              min={0}
-              max={100}
-              value={videoSizeWidth}
-              onChange={(e) => setVideoSizeWidth(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item label="Video URL (YouTube Embed)">
-            <Input
-              placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ?si=ZVLBiX_k2dqcfdBt"
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item label="Autoplay">
-            <Select
-              value={videoAutoplay}
-              onChange={(value) => setVideoAutoplay(value)}
-            >
-              <Select.Option value={false}>No</Select.Option>
-              <Select.Option value={true}>Yes</Select.Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Modal for code input */}
-      <Modal
-        title="Input Code"
-        open={isCodeModalOpen}
-        onOk={handleCodeOk}
-        onCancel={handleCodeCancel}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Block Size Length (%)">
-            <Input
-              placeholder="Please enter the length (0-100)"
-              type="number"
-              min={0}
-              max={100}
-              value={codeBlockSize.length}
-              onChange={(e) =>
-                setCodeBlockSize({ ...codeBlockSize, length: e.target.value })
-              }
-            />
-          </Form.Item>
-          <Form.Item label="Block Size Width (%)">
-            <Input
-              placeholder="Please enter the width (0-100)"
-              type="number"
-              min={0}
-              max={100}
-              value={codeBlockSize.width}
-              onChange={(e) =>
-                setCodeBlockSize({ ...codeBlockSize, width: e.target.value })
-              }
-            />
-          </Form.Item>
-          <Form.Item label="Code Content">
-            <TextArea
-              value={codeContent}
-              onChange={(e) => setCodeContent(e.target.value)}
-              autoSize={{ minRows: 5 }}
-            />
-          </Form.Item>
-          <Form.Item label="Font Size (em)">
-            <InputNumber
-              placeholder="Number"
-              type="number"
-              min={0.5}
-              max={5}
-              step={0.1}
-              value={codeFontSize}
-              onChange={(value) => setCodeFontSize(value)}
-            />
-          </Form.Item>
-          {/* <Form.Item label="Programming Language">
-            <Select
-              value={codeLanguage}
-              onChange={(value) => setCodeLanguage(value)}
-            >
-              <Select.Option value="Javascript">Javascript</Select.Option>
-              <Select.Option value="Python">Python</Select.Option>
-              <Select.Option value="C">C</Select.Option>
-            </Select>
-          </Form.Item> */}
-        </Form>
-      </Modal>
-      {/* Modal for font change inside the text box */}
-      <Modal
-        title="Select Font Family"
-        open={isFontModalOpen}
-        onOk={handleFontOk}
-        onCancel={handleFontCancel}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Font Family">
-            <Select
-              value={textFontFamily}
-              onChange={(value) => setTextFontFamily(value)}
-            >
-              <Select.Option value="Quicksand, sans-serif">
-                Quicksand
-              </Select.Option>
-              <Select.Option value="Edu AU VIC WA NT Pre, cursive">
-                Edu AU VIC WA NT Pre
-              </Select.Option>
-              <Select.Option value="Courier New, monospace">
-                Courier New
-              </Select.Option>
-              <Select.Option value="Kode Mono, monospace">
-                Kode Mono
-              </Select.Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-      {/* Modal for setting slide background */}
-      <Modal
-        title="Set Slide Background"
-        open={isBackgroundModalOpen}
-        onOk={handleBackground}
-        onCancel={handleBackgroundCancel}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Background Type">
-            <Select
-              value={backgroundType}
-              onChange={(value) => setBackgroundType(value)}
-            >
-              <Select.Option value="solid">Solid Colour</Select.Option>
-              <Select.Option value="gradient">Gradient</Select.Option>
-              <Select.Option value="image">Image</Select.Option>
-            </Select>
-          </Form.Item>
-
-          {backgroundType === "solid" && (
-            <Form.Item label="Background Colour">
-              <ColorPicker
-                value={backgroundColor}
-                defaultValue={"#ffffff"}
-                allowClear
-                onChange={(temp, _) => {
-                  setBackgroundColor(temp.toHexString());
+                  setTextSizeLength(e.target.value);
                 }}
               />
             </Form.Item>
-          )}
 
-          {backgroundType === "gradient" && (
-            <>
-              <Form.Item label="Gradient Start Colour">
+            <Form.Item label="Size width">
+              {/* <Input
+              value={textSizeWidth}
+              placeholder="input placeholder"
+              addonAfter="px"
+              onChange={(e) => {
+                setTextSizeWidth(e.target.value);
+              }}
+            /> */}
+              <Input
+                value={textSizeWidth}
+                placeholder="Please enter the width (0-100)"
+                addonAfter="%"
+                type="number"
+                min={0}
+                max={100}
+                onChange={(e) => {
+                  setTextSizeWidth(e.target.value);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item label="Text in the textarea">
+              <TextArea
+                value={textInput}
+                placeholder="input your text here"
+                autoSize={{ minRows: 1, maxRows: 4 }}
+                onChange={(e) => {
+                  setTextInput(e.target.value);
+                }}
+              />
+            </Form.Item>
+            <Form.Item label="Font size of the text ">
+              <InputNumber
+                min={1}
+                max={100}
+                defaultValue={3}
+                value={textFontSize}
+                addonAfter="em"
+                changeOnWheel
+                onChange={(e) => {
+                  setTextFontSize(e);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item label="Font color of the text">
+              <ColorPicker
+                value={textFontColor}
+                defaultValue={"#111111"}
+                allowClear
+                onChange={(temp, _) => {
+                  setTextFontColor(temp.toHexString());
+                }}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* modal for image input */}
+        <Modal
+          title="Input Image"
+          open={isImageModalOpen}
+          onOk={handleImageOk}
+          onCancel={handleImageCancel}
+        >
+          <Form
+            layout={formLayout}
+            form={form}
+            initialValues={{
+              layout: formLayout,
+            }}
+            onValuesChange={onFormLayoutChange}
+            style={{
+              maxWidth: formLayout === "inline" ? "none" : 600,
+            }}
+          >
+            {/* for image length */}
+            <Form.Item label="Size length">
+              <Input
+                value={imageSizeLength}
+                type="number"
+                placeholder="Please enter the length (0-100)"
+                // addonAfter="px"
+                addonAfter="%"
+                onChange={(e) => {
+                  setImageSizeLength(e.target.value);
+                }}
+              />
+            </Form.Item>
+
+            {/* for image width */}
+            <Form.Item label="Size width">
+              <Input
+                value={imageSizeWidth}
+                type="number"
+                placeholder="Please enter the width (0-100)"
+                // addonAfter="px"
+                addonAfter="%"
+                onChange={(e) => {
+                  setImageSizeWidth(e.target.value);
+                }}
+              />
+            </Form.Item>
+
+            {/* for image alt text */}
+            <Form.Item label="alt">
+              <TextArea
+                value={imageAlt}
+                placeholder="Input your alt here"
+                onChange={(e) => {
+                  setImageAlt(e.target.value);
+                }}
+              />
+            </Form.Item>
+
+            {/* for uploading image */}
+            <Form.Item label="upload image">
+              <Upload beforeUpload={handleImageUplod}>
+                <Button
+                  value={uploadImage}
+                  onChange={(e) => {
+                    setUploadImage(e.target.value);
+                  }}
+                  icon={<UploadOutlined />}
+                >
+                  Upload
+                </Button>
+              </Upload>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Modal for video input */}
+        <Modal
+          title="Input Video"
+          open={isVideoModalOpen}
+          onOk={handleVideoOk}
+          onCancel={handleVideoCancel}
+        >
+          <Form layout="vertical">
+            <Form.Item label="Size Length (%)">
+              <Input
+                placeholder="Please enter the length (0-100)"
+                type="number"
+                min={0}
+                max={100}
+                value={videoSizeLength}
+                onChange={(e) => setVideoSizeLength(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Size Width (%)">
+              <Input
+                placeholder="Please enter the width (0-100)"
+                type="number"
+                min={0}
+                max={100}
+                value={videoSizeWidth}
+                onChange={(e) => setVideoSizeWidth(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Video URL (YouTube Embed)">
+              <Input
+                placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ?si=ZVLBiX_k2dqcfdBt"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item label="Autoplay">
+              <Select
+                value={videoAutoplay}
+                onChange={(value) => setVideoAutoplay(value)}
+              >
+                <Select.Option value={false}>No</Select.Option>
+                <Select.Option value={true}>Yes</Select.Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Modal for code input */}
+        <Modal
+          title="Input Code"
+          open={isCodeModalOpen}
+          onOk={handleCodeOk}
+          onCancel={handleCodeCancel}
+        >
+          <Form layout="vertical">
+            <Form.Item label="Block Size Length (%)">
+              <Input
+                placeholder="Please enter the length (0-100)"
+                type="number"
+                min={0}
+                max={100}
+                value={codeLeight}
+                // value={codeBlockSize.length}
+                onChange={(e) =>
+                  // setCodeBlockSize({ ...codeBlockSize, length: e.target.value })
+                  setCodeLeight(e.target.value)
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Block Size Width (%)">
+              <Input
+                placeholder="Please enter the width (0-100)"
+                type="number"
+                min={0}
+                max={100}
+                // value={codeBlockSize.width}
+                value={codeWidth}
+                onChange={(e) =>
+                  // setCodeBlockSize({
+                  //   ...codeBlockSize,
+
+                  //   width: e.target.value,
+                  // })
+                  setCodeWidth(e.target.value)
+                }
+              />
+            </Form.Item>
+            <Form.Item label="Code Content">
+              <TextArea
+                value={codeContent}
+                onChange={(e) => setCodeContent(e.target.value)}
+                autoSize={{ minRows: 5 }}
+              />
+            </Form.Item>
+            <Form.Item label="Font Size (em)">
+              <InputNumber
+                placeholder="Number"
+                type="number"
+                min={0.5}
+                max={5}
+                step={0.1}
+                value={codeFontSize}
+                onChange={(value) => setCodeFontSize(value)}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
+        {/* Modal for font change inside the text box */}
+        <Modal
+          title="Select Font Family"
+          open={isFontModalOpen}
+          onOk={handleFontOk}
+          onCancel={handleFontCancel}
+        >
+          <Form layout="vertical">
+            <Form.Item label="Font Family">
+              <Select
+                value={textFontFamily}
+                onChange={(value) => setTextFontFamily(value)}
+              >
+                <Select.Option value="Quicksand, sans-serif">
+                  Quicksand
+                </Select.Option>
+                <Select.Option value="Edu AU VIC WA NT Pre, cursive">
+                  Edu AU VIC WA NT Pre
+                </Select.Option>
+                <Select.Option value="Courier New, monospace">
+                  Courier New
+                </Select.Option>
+                <Select.Option value="Kode Mono, monospace">
+                  Kode Mono
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
+        {/* Modal for setting slide background */}
+        <Modal
+          title="Set Slide Background"
+          open={isBackgroundModalOpen}
+          onOk={handleBackground}
+          onCancel={handleBackgroundCancel}
+        >
+          <Form layout="vertical">
+            <Form.Item label="Background Type">
+              <Select
+                value={backgroundType}
+                onChange={(value) => setBackgroundType(value)}
+              >
+                <Select.Option value="solid">Solid Colour</Select.Option>
+                <Select.Option value="gradient">Gradient</Select.Option>
+                <Select.Option value="image">Image</Select.Option>
+              </Select>
+            </Form.Item>
+
+            {backgroundType === "solid" && (
+              <Form.Item label="Background Colour">
                 <ColorPicker
-                  value={backgroundGradient.start}
+                  value={backgroundColor}
                   defaultValue={"#ffffff"}
                   allowClear
                   onChange={(temp, _) => {
-                    setBackgroundGradient((prev) => ({
-                      ...prev,
-                      start: temp.toHexString(),
-                    }));
+                    setBackgroundColor(temp.toHexString());
                   }}
                 />
               </Form.Item>
-              <Form.Item label="Gradient End Colour">
-                <ColorPicker
-                  value={backgroundGradient.end}
-                  defaultValue={"#000000"}
-                  allowClear
-                  onChange={(temp, _) => {
-                    setBackgroundGradient((prev) => ({
-                      ...prev,
-                      end: temp.toHexString(),
-                    }));
-                  }}
-                />
-              </Form.Item>
-              <Form.Item label="Gradient Direction">
-                <Select
-                  value={backgroundGradient.direction}
-                  onChange={(value) =>
-                    setBackgroundGradient((prev) => ({
-                      ...prev,
-                      direction: value,
-                    }))
-                  }
-                >
-                  <Select.Option value="to bottom">Top to Bottom</Select.Option>
-                  <Select.Option value="to right">Left to Right</Select.Option>
-                  <Select.Option value="to bottom right">
-                    Top Left to Bottom Right
-                  </Select.Option>
-                </Select>
-              </Form.Item>
-            </>
-          )}
+            )}
 
-          {backgroundType === "image" && (
-            <Form.Item label="Upload Background Image">
-              <Upload beforeUpload={handleImageUplod}>
-                <Button icon={<UploadOutlined />}>Upload Image</Button>
-              </Upload>
-            </Form.Item>
-          )}
-        </Form>
-      </Modal>
-    </Layout>
+            {backgroundType === "gradient" && (
+              <>
+                <Form.Item label="Gradient Start Colour">
+                  <ColorPicker
+                    value={backgroundGradient.start}
+                    defaultValue={"#ffffff"}
+                    allowClear
+                    onChange={(temp, _) => {
+                      setBackgroundGradient((prev) => ({
+                        ...prev,
+                        start: temp.toHexString(),
+                      }));
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item label="Gradient End Colour">
+                  <ColorPicker
+                    value={backgroundGradient.end}
+                    defaultValue={"#000000"}
+                    allowClear
+                    onChange={(temp, _) => {
+                      setBackgroundGradient((prev) => ({
+                        ...prev,
+                        end: temp.toHexString(),
+                      }));
+                    }}
+                  />
+                </Form.Item>
+                <Form.Item label="Gradient Direction">
+                  <Select
+                    value={backgroundGradient.direction}
+                    onChange={(value) =>
+                      setBackgroundGradient((prev) => ({
+                        ...prev,
+                        direction: value,
+                      }))
+                    }
+                  >
+                    <Select.Option value="to bottom">
+                      Top to Bottom
+                    </Select.Option>
+                    <Select.Option value="to right">
+                      Left to Right
+                    </Select.Option>
+                    <Select.Option value="to bottom right">
+                      Top Left to Bottom Right
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+              </>
+            )}
+
+            {backgroundType === "image" && (
+              <Form.Item label="Upload Background Image">
+                <Upload beforeUpload={handleImageUplod}>
+                  <Button icon={<UploadOutlined />}>Upload Image</Button>
+                </Upload>
+              </Form.Item>
+            )}
+          </Form>
+        </Modal>
+      </Layout>
+    </>
   );
 }
 
