@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaherPresent from "../components/HeaherPresent";
 import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
@@ -50,7 +50,6 @@ const Tooltips = (
   handleVideoCancel,
   isVideoModalOpen,
   showVideoModal,
-  navigate,
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -460,11 +459,23 @@ function PresentationPage() {
   const [codeContent, setCodeContent] = useState("");
   const [codeFontSize, setCodeFontSize] = useState(1);
   //TODO:
-  const [codeLanguage, setCodeLanguage] = useState("Javascript");
+  // const [codeLanguage, setCodeLanguage] = useState("Javascript");
 
   const [selectedElementId, setSelectedElementId] = useState(undefined);
 
-  const navigate = useNavigate();
+  const [isHidden, setIsHidden] = useState(false);
+
+  useEffect(() => {
+    // check if the pathname has two slashes
+    const pathname = location.pathname;
+    const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
+
+    if (hasTwoSlashes) {
+      setIsHidden(true); // hide content
+    } else {
+      setIsHidden(false); // show content
+    }
+  }, [location.pathname]); // check when pathname changes
 
   const [form] = Form.useForm();
   const [formLayout, setFormLayout] = useState("horizontal");
