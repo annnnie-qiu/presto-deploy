@@ -140,7 +140,10 @@ function PresentationText({
     );
     console.log("targetIndex", targetIndex);
     console.log("data.id", data.id);
-    console.log("currentSlides[targetIndex].content", currentSlides[targetIndex].content);
+    console.log(
+      "currentSlides[targetIndex].content",
+      currentSlides[targetIndex].content
+    );
     const newContent = currentSlides[targetIndex].content.filter(
       (element) => element.id !== data.id // Exclude the element with the matching id
     );
@@ -152,8 +155,6 @@ function PresentationText({
       currentSlides,
       setCurrentSlides
     );
-
-
   };
 
   const handleCancel = () => {
