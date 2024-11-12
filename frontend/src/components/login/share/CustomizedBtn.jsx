@@ -13,9 +13,9 @@ function CustomizedBtn({ id, content, path = "", action }) {
       id={id}
       type="button"
       className="text-white bg-gradient-to-br from-pink-500 to-orange-400 font-medium rounded-lg text-lg px-5 py-2.5 text-center me-2 mb-2"
-      onClick={() => {
+      onClick={(e) => {
         if (path === "") {
-          action();
+          action(e);
         } else {
           navigateTO(path);
         }
