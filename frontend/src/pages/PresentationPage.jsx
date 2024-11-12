@@ -1138,7 +1138,180 @@ function PresentationPage() {
           </Layout>
         )}
 
-        
+        {/* modal for input text */}
+        <Modal
+          title="Input Text"
+          open={isTextModalOpen}
+          onOk={handleTextOk}
+          onCancel={handleTextCancel}
+        >
+          <Form
+            layout={formLayout}
+            form={form}
+            initialValues={{
+              layout: formLayout,
+            }}
+            onValuesChange={onFormLayoutChange}
+            style={{
+              maxWidth: formLayout === "inline" ? "none" : 600,
+            }}
+          >
+            <Form.Item label="Size length">
+              {/* <Input
+              value={textSizeLength}
+              placeholder="input placeholder"
+              addonAfter="px"
+              onChange={(e) => {
+                setTextSizeLength(e.target.value);
+              }}
+            /> */}
+              <Input
+                value={textSizeLength}
+                placeholder="Please enter the length (0-100)"
+                addonAfter="%"
+                type="number"
+                min={0}
+                max={100}
+                onChange={(e) => {
+                  setTextSizeLength(e.target.value);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item label="Size width">
+              {/* <Input
+              value={textSizeWidth}
+              placeholder="input placeholder"
+              addonAfter="px"
+              onChange={(e) => {
+                setTextSizeWidth(e.target.value);
+              }}
+            /> */}
+              <Input
+                value={textSizeWidth}
+                placeholder="Please enter the width (0-100)"
+                addonAfter="%"
+                type="number"
+                min={0}
+                max={100}
+                onChange={(e) => {
+                  setTextSizeWidth(e.target.value);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item label="Text in the textarea">
+              <TextArea
+                value={textInput}
+                placeholder="input your text here"
+                autoSize={{ minRows: 1, maxRows: 4 }}
+                onChange={(e) => {
+                  setTextInput(e.target.value);
+                }}
+              />
+            </Form.Item>
+            <Form.Item label="Font size of the text ">
+              <InputNumber
+                min={1}
+                max={100}
+                defaultValue={3}
+                value={textFontSize}
+                addonAfter="em"
+                changeOnWheel
+                onChange={(e) => {
+                  setTextFontSize(e);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item label="Font color of the text">
+              <ColorPicker
+                value={textFontColor}
+                defaultValue={"#111111"}
+                allowClear
+                onChange={(temp, _) => {
+                  setTextFontColor(temp.toHexString());
+                }}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* modal for image input */}
+        <Modal
+          title="Input Image"
+          open={isImageModalOpen}
+          onOk={handleImageOk}
+          onCancel={handleImageCancel}
+        >
+          <Form
+            layout={formLayout}
+            form={form}
+            initialValues={{
+              layout: formLayout,
+            }}
+            onValuesChange={onFormLayoutChange}
+            style={{
+              maxWidth: formLayout === "inline" ? "none" : 600,
+            }}
+          >
+            {/* for image length */}
+            <Form.Item label="Size length">
+              <Input
+                value={imageSizeLength}
+                type="number"
+                placeholder="Please enter the length (0-100)"
+                // addonAfter="px"
+                addonAfter="%"
+                onChange={(e) => {
+                  setImageSizeLength(e.target.value);
+                }}
+              />
+            </Form.Item>
+
+            {/* for image width */}
+            <Form.Item label="Size width">
+              <Input
+                value={imageSizeWidth}
+                type="number"
+                placeholder="Please enter the width (0-100)"
+                // addonAfter="px"
+                addonAfter="%"
+                onChange={(e) => {
+                  setImageSizeWidth(e.target.value);
+                }}
+              />
+            </Form.Item>
+
+            {/* for image alt text */}
+            <Form.Item label="alt">
+              <TextArea
+                value={imageAlt}
+                placeholder="Input your alt here"
+                onChange={(e) => {
+                  setImageAlt(e.target.value);
+                }}
+              />
+            </Form.Item>
+
+            {/* for uploading image */}
+            <Form.Item label="upload image">
+              <Upload beforeUpload={handleImageUplod}>
+                <Button
+                  value={uploadImage}
+                  onChange={(e) => {
+                    setUploadImage(e.target.value);
+                  }}
+                  icon={<UploadOutlined />}
+                >
+                  Upload
+                </Button>
+              </Upload>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+ 
       </Layout>
     </>
   );
