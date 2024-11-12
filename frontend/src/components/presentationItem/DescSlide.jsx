@@ -4,7 +4,6 @@ import PresentationImage from "./PresentationImage";
 import PresentationCode from "./PresentationCode";
 import PresentationVideo from "./PresentationVideo";
 
-
 const DescSlide = ({
   currentSlides,
   presentationId,
@@ -34,11 +33,36 @@ const DescSlide = ({
   setVideoAutoplay,
 }) => {
   const boundsRef = useRef(null);
+
+  // Find the currently selected slide to extract its background settings
+  const selectedSlide = currentSlides.find(
+    (slide) => slide.slideId === selectedSlideId
+  );
+
+  // Determine the background style based on the type (solid, gradient, or image)
+  let backgroundStyle = {};
+  if (selectedSlide?.background) {
+    if (selectedSlide.background.type === "solid") {
+      backgroundStyle = { backgroundColor: selectedSlide.background.color };
+    } else if (selectedSlide.background.type === "gradient") {
+      const { start, end, direction } = selectedSlide.background.gradient;
+      backgroundStyle = {
+        background: `linear-gradient(${direction}, ${start}, ${end})`,
+      };
+    } else if (selectedSlide.background.type === "image") {
+      backgroundStyle = {
+        backgroundImage: `url(${selectedSlide.background.imageUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      };
+    }
+  }
+
   return (
     <div className="flex h-full w-full justify-center items-center">
       <div
-        className="bg-white h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
-        style={{ position: "relative" }}
+        className="h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
+        style={{ position: "relative", ...backgroundStyle }}
         ref={boundsRef}
       >
         {currentSlides?.map((slide) => {
