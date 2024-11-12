@@ -19,6 +19,7 @@ import {
   CodeOutlined,
   UploadOutlined,
   FontSizeOutlined,
+  BgColorsOutlined,
   FullscreenOutlined,
 } from "@ant-design/icons";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -50,7 +51,10 @@ const Tooltips = (
   handleVideoCancel,
   isVideoModalOpen,
   showVideoModal,
-  setIsHidden
+  setIsHidden,
+  isBackgroundModalOpen,
+  handleBackgroundCancel,
+  showBackgroundModal
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -208,6 +212,13 @@ const Tooltips = (
               </Button>
             </Tooltip>
 
+            {/* Set Slide Background */}
+            <Tooltip placement="right" title={"Set slide background"}>
+              <Button onClick={showBackgroundModal}>
+                <BgColorsOutlined />
+              </Button>
+            </Tooltip>
+
             {/* Preview viewing */}
             <Tooltip
               placement="right"
@@ -262,6 +273,9 @@ const DescList = ({
   showVideoModal,
   handleVideoCancel,
   setIsHidden,
+  isBackgroundModalOpen,
+  handleBackgroundCancel,
+  showBackgroundModal
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -303,7 +317,10 @@ const DescList = ({
         handleVideoCancel,
         isVideoModalOpen,
         showVideoModal,
-        setIsHidden
+        setIsHidden,
+        isBackgroundModalOpen,
+        handleBackgroundCancel,
+        showBackgroundModal,
       )}
     </div>
   </div>
@@ -344,6 +361,18 @@ function PresentationPage() {
   const [codeBlockSize, setCodeBlockSize] = useState({ length: 0, width: 0 });
   const [codeContent, setCodeContent] = useState("");
   const [codeFontSize, setCodeFontSize] = useState(1);
+
+
+  // New states for managing background settings
+  const [isBackgroundModalOpen, setIsBackgroundModalOpen] = useState(false);
+  const [backgroundType, setBackgroundType] = useState("solid");
+  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [backgroundGradient, setBackgroundGradient] = useState({
+    start: "#ffffff",
+    end: "#000000",
+    direction: "to bottom",
+  });
+  const [backgroundImage, setBackgroundImage] = useState("");
 
   const [selectedElementId, setSelectedElementId] = useState(undefined);
 
@@ -398,6 +427,14 @@ function PresentationPage() {
   const handleVideoCancel = () => {
     setisVideoModalOpen(false);
   };
+
+  const showBackgroundModal = () => {
+    setIsBackgroundModalOpen(true);
+  };
+
+  const handleBackgroundCancel = () => {
+    setIsBackgroundModalOpen(false);
+  }
 
   const handleArrowKeyPress = (e) => {
     console.log("key pressed", e.key);
@@ -678,19 +715,47 @@ function PresentationPage() {
       (slide) => slide.slideId === selectedSlideId
     );
 
-    const newContent = [
-      ...currentSlides[targetIndex].content,
-      {
-        type: "video",
-        videoUrl,
-        videoSizeLength,
-        videoSizeWidth,
-        videoAutoplay,
-        id: currentSlides[targetIndex].nextElementId,
-        position: { x: 0, y: 0 },
-        zIndex: zIndex,
-      },
-    ];
+    // Check if content already exists (edit modal) or is new (add modal)
+    const existingElementIndex = currentSlides[targetIndex].content.findIndex(
+      (element) => element.id === selectedElementId // Assuming `selectedElementId` is set for editing
+    );
+
+    let newContent;
+
+    if (existingElementIndex !== -1) {
+      // Edit mode
+      // Update existing content
+      newContent = currentSlides[targetIndex].content.map((element, index) =>
+        index === existingElementIndex
+          ? {
+              ...element,
+              videoUrl: videoUrl,
+              videoSizeLength: videoSizeLength,
+              videoSizeWidth: videoSizeWidth,
+              videoAutoplay: videoAutoplay,
+              zIndex: zIndex,
+            }
+          : element
+      );
+    } else {
+      // Add mode
+      // Add new content to the slide
+      newContent = [
+        ...currentSlides[targetIndex].content,
+        {
+          type: "video",
+          videoUrl,
+          videoSizeLength,
+          videoSizeWidth,
+          videoAutoplay,
+          id: currentSlides[targetIndex].nextElementId,
+          position: { x: 0, y: 0 },
+          zIndex: zIndex,
+        },
+      ];
+    }
+
+    setZIndex(zIndex + 1);
 
     const newSlideList = currentSlides.map((slide) => {
       if (slide.slideId === selectedSlideId) {
@@ -726,6 +791,55 @@ function PresentationPage() {
     // Prevent actual upload by returning false
     return false;
   };
+
+  const handleBackground = async () => {
+    setIsBackgroundModalOpen(false);
+    // Update the selected slide's background
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+  
+    let newBackground = {};
+    if (backgroundType === "solid") {
+      newBackground = { type: "solid", color: backgroundColor };
+    } else if (backgroundType === "gradient") {
+      newBackground = {
+        type: "gradient",
+        gradient: {
+          start: backgroundGradient.start,
+          end: backgroundGradient.end,
+          direction: backgroundGradient.direction,
+        },
+      };
+    } else if (backgroundType === "image") {
+      newBackground = { type: "image", imageUrl: backgroundImage };
+    }
+  
+    const newSlides = currentSlides.map((slide, index) =>
+      index === targetIndex
+        ? {
+            ...slide,
+            background: newBackground,
+          }
+        : slide
+    );
+  
+    setCurrentSlides(newSlides);
+  
+    // Save the background change to the backend
+    const token = localStorage.getItem("token");
+    const response = await getDetail(token);
+    const { store } = response;
+  
+    for (let i = 0; i < store.presentations.length; i++) {
+      if (store.presentations[i].id == presentationId) {
+        store.presentations[i].slides = newSlides;
+        break;
+      }
+    }
+    await sendDetail(token, store);
+  };
+  
 
   React.useEffect(() => {
     window.addEventListener("keydown", handleArrowKeyPress);
@@ -801,6 +915,11 @@ function PresentationPage() {
           setVideoSizeLength={setVideoSizeLength}
           setVideoSizeWidth={setVideoSizeWidth}
           setVideoAutoplay={setVideoAutoplay}
+          showBackgroundModal={showBackgroundModal}
+          setBackgroundColor={setBackgroundColor}
+          setBackgroundGradient={setBackgroundGradient}
+          setBackgroundImage={setBackgroundImage}
+          setBackgroundType={setBackgroundType}
           text="Second"
         />
       )}
@@ -862,6 +981,9 @@ function PresentationPage() {
                       isVideoModalOpen={isVideoModalOpen}
                       showVideoModal={showVideoModal}
                       handleVideoCancel={handleVideoCancel}
+                      showBackgroundModal={showBackgroundModal}
+                      isBackgroundModalOpen={isBackgroundModalOpen}
+                      handleBackgroundCancel={handleBackgroundCancel}
                       setIsHidden={setIsHidden}
                     />
                   </div>
@@ -893,6 +1015,11 @@ function PresentationPage() {
                     setVideoSizeLength={setVideoSizeLength}
                     setVideoSizeWidth={setVideoSizeWidth}
                     setVideoAutoplay={setVideoAutoplay}
+                    showBackgroundModal={showBackgroundModal}
+                    setBackgroundColor={setBackgroundColor}
+                    setBackgroundGradient={setBackgroundGradient}
+                    setBackgroundImage={setBackgroundImage}
+                    setBackgroundType={setBackgroundType}
                     text="Second"
                   />
                 </Splitter.Panel>
@@ -923,6 +1050,11 @@ function PresentationPage() {
                 setVideoSizeLength={setVideoSizeLength}
                 setVideoSizeWidth={setVideoSizeWidth}
                 setVideoAutoplay={setVideoAutoplay}
+                showBackgroundModal={showBackgroundModal}
+                setBackgroundColor={setBackgroundColor}
+                setBackgroundGradient={setBackgroundGradient}
+                setBackgroundImage={setBackgroundImage}
+                setBackgroundType={setBackgroundType}
                 text="Second"
               />
             )}
@@ -1239,6 +1371,95 @@ function PresentationPage() {
               </Select.Option>
             </Select>
           </Form.Item>
+        </Form>
+      </Modal>
+      {/* Modal for setting slide background */}
+      <Modal
+        title="Set Slide Background"
+        open={isBackgroundModalOpen}
+        onOk={handleBackground}
+        onCancel={handleBackgroundCancel}
+      >
+        <Form layout="vertical">
+          <Form.Item label="Background Type">
+            <Select
+              value={backgroundType}
+              onChange={(value) => setBackgroundType(value)}
+            >
+              <Select.Option value="solid">Solid Colour</Select.Option>
+              <Select.Option value="gradient">Gradient</Select.Option>
+              <Select.Option value="image">Image</Select.Option>
+            </Select>
+          </Form.Item>
+
+          {backgroundType === "solid" && (
+            <Form.Item label="Background Colour">
+              <ColorPicker
+                value={backgroundColor}
+                defaultValue={"#ffffff"}
+                allowClear
+                onChange={(temp, _) => {
+                  setBackgroundColor(temp.toHexString());
+                }}
+              />
+            </Form.Item>
+          )}
+
+          {backgroundType === "gradient" && (
+            <>
+              <Form.Item label="Gradient Start Colour">
+                <ColorPicker
+                  value={backgroundGradient.start}
+                  defaultValue={"#ffffff"}
+                  allowClear
+                  onChange={(temp, _) => {
+                    setBackgroundGradient((prev) => ({
+                      ...prev,
+                      start: temp.toHexString(),
+                    }));
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Gradient End Colour">
+                <ColorPicker
+                  value={backgroundGradient.end}
+                  defaultValue={"#000000"}
+                  allowClear
+                  onChange={(temp, _) => {
+                    setBackgroundGradient((prev) => ({
+                      ...prev,
+                      end: temp.toHexString(),
+                    }));
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Gradient Direction">
+                <Select
+                  value={backgroundGradient.direction}
+                  onChange={(value) =>
+                    setBackgroundGradient((prev) => ({
+                      ...prev,
+                      direction: value,
+                    }))
+                  }
+                >
+                  <Select.Option value="to bottom">Top to Bottom</Select.Option>
+                  <Select.Option value="to right">Left to Right</Select.Option>
+                  <Select.Option value="to bottom right">
+                    Top Left to Bottom Right
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+            </>
+          )}
+
+          {backgroundType === "image" && (
+            <Form.Item label="Upload Background Image">
+              <Upload beforeUpload={handleImageUplod}>
+                <Button icon={<UploadOutlined />}>Upload Image</Button>
+              </Upload>
+            </Form.Item>
+          )}
         </Form>
       </Modal>
     </Layout>
