@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Rnd } from "react-rnd";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
 import PresentationSlideMove from "./PresentationSlideMove";
+import { Modal } from "antd";
 import { CodepenSquareFilled } from "@ant-design/icons";
 
 function PresentationText({
@@ -31,9 +32,6 @@ function PresentationText({
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-    console.log("targetIndex", targetIndex);
-    console.log("currentSlides", currentSlides);
-    console.log("data", data);
     // Edit mode
     // Update existing content
     const newContent = currentSlides[targetIndex].content.map((element) =>
@@ -52,9 +50,11 @@ function PresentationText({
       currentSlides,
       setCurrentSlides
     );
+    console.log("currentSlides drage", currentSlides);
   };
 
   const handleResizeStop = (e, direction, ref, delta, position) => {
+    console.log("resize stopped", ref.style.width, ref.style.height);
     setSize({
       width: ref.style.width,
       height: ref.style.height,
@@ -67,9 +67,7 @@ function PresentationText({
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-    console.log("targetIndex", targetIndex);
-    console.log("currentSlides", currentSlides);
-    console.log("data", data);
+
     // Edit mode
     // Update existing content
     const newContent = currentSlides[targetIndex].content.map((element) =>
@@ -77,12 +75,12 @@ function PresentationText({
         ? {
             ...element,
             position: { x: position.x, y: position.y },
-            textSizeLength: size.height,
-            textSizeWidth: size.width,
+            textSizeLength: ref.style.height,
+            textSizeWidth: ref.style.width,
           }
         : element
     );
-    console.log("newContent", newContent);
+
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -121,10 +119,47 @@ function PresentationText({
     setSelectedElementId(data.id);
     showTextModal();
   };
-  console.log("data?.position.x", data?.position.x);
-  console.log("data?.position.y", data?.position.y);
 
-  console.log("textSizeLength", data?.textSizeLength);
+  const handleContextMenu = (event) => {
+    event.preventDefault(); // Prevent default right-click menu
+    showModal();
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+    // delete the presentation from the backend and navigate to the dashboard
+    console.log("delete the text");
+    console.log("currentSlides", currentSlides);
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    console.log("targetIndex", targetIndex);
+    console.log("data.id", data.id);
+    console.log("currentSlides[targetIndex].content", currentSlides[targetIndex].content);
+    const newContent = currentSlides[targetIndex].content.filter(
+      (element) => element.id !== data.id // Exclude the element with the matching id
+    );
+    console.log("newContent", newContent);
+    getUpdateDetail(
+      presentationId,
+      selectedSlideId,
+      newContent,
+      currentSlides,
+      setCurrentSlides
+    );
+
+
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <Rnd
       default={{
@@ -150,6 +185,7 @@ function PresentationText({
       }}
       onDragStop={handleDragStop}
       onResizeStop={handleResizeStop}
+      onContextMenu={handleContextMenu}
     >
       <div
         style={{
@@ -171,6 +207,17 @@ function PresentationText({
         {/* Corner Handles */}
         {isMoveActive && PresentationSlideMove}
       </div>
+
+      <Modal
+        title="Delete this"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Yes"
+        cancelText="No"
+      >
+        <p>Are you sure?</p>
+      </Modal>
     </Rnd>
   );
 }

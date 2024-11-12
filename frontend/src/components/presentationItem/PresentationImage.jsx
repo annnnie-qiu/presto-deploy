@@ -36,7 +36,7 @@ function PresentationImage({
           }
         : element
     );
-    
+
     console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
@@ -58,6 +58,41 @@ function PresentationImage({
     setLastClickTime(now);
   };
 
+  const handleResizeStop = (e, direction, ref, delta, position) => {
+    const { width, height } = ref.getBoundingClientRect();
+    console.log("resize stopped", width, height);
+
+    setPosition({
+      x: position.x,
+      y: position.y,
+    });
+    // save the text to the backend
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+
+    // Edit mode
+    // Update existing content
+    const newContent = currentSlides[targetIndex].content.map((element) =>
+      element.id === data.id
+        ? {
+            ...element,
+            position: { x: position.x, y: position.y },
+            imageSizeLength: height,
+            imageSizeWidth: width,
+          }
+        : element
+    );
+
+    getUpdateDetail(
+      presentationId,
+      selectedSlideId,
+      newContent,
+      currentSlides,
+      setCurrentSlides
+    );
+  };
+
   const onDoubleClick = async () => {
     console.log("double clicked");
     setImageSizeLength(data.imageSizeLength);
@@ -71,6 +106,14 @@ function PresentationImage({
   console.log("boundsRef", boundsRef);
   return (
     <Rnd
+      size={{
+        width: data?.imageSizeLength,
+        height: data?.imageSizeWidth,
+      }}
+      position={{
+        x: data?.position.x || 0,
+        y: data?.position.y || 0,
+      }}
       default={{
         x: `${data?.position.x}`,
         y: `${data?.position.y}`,
@@ -78,9 +121,6 @@ function PresentationImage({
       className="border border-gray-300"
       bounds={boundsRef.current}
       style={{
-        width: `${data?.imageSizeLength}%`,
-        height: `${data?.imageSizeWidth}%`,
-        color: data?.textFontColor,
         overflow: "hidden",
         cursor: isMoveActive ? "move" : "default",
         position: "window",
@@ -90,6 +130,7 @@ function PresentationImage({
         handleClick();
       }}
       onDragStop={handleDragStop}
+      onResizeStop={handleResizeStop}
     >
       <div>
         {data ? (

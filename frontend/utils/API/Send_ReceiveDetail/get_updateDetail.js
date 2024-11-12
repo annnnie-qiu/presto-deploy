@@ -33,5 +33,6 @@ export async function getUpdateDetail(presentationId, selectedSlideId, newConten
       break;
     }
   }
+  console.log("store in getSend detail", store);
   await sendDetail(token, store);
 }
