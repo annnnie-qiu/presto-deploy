@@ -156,12 +156,13 @@ const PresentationVideo = ({
         x: `${data?.position.x}`,
         y: `${data?.position.y}`,
       }}
+
       bounds={boundsRef.current}
       style={{
         position: "relative",
         border: "2px dashed #000",
-        width: `${data.videoSizeWidth}%`,
-        height: `${data.videoSizeLength}%`,
+        width: `${data?.videoSizeWidth}%`,
+        height: `${data?.videoSizeLength}%`,
         margin: "0px",
         padding: "0px",
         zIndex: data.zIndex,

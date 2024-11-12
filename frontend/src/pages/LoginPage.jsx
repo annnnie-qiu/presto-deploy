@@ -2,9 +2,13 @@ import React from "react";
 import { Button, Checkbox, Form, Input } from "antd";
 import PrestoLogo from "../assets/Presto.png";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
-import { login } from "../../utils/API/Login_Register/login_register";
+import { login, register } from "../../utils/API/Login_Register/login_register";
 import { useNavigate } from "react-router-dom";
 import { errorPopUp } from "../../utils/errorPopUp";
+
+import { GoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import jwt_decode from "jwt-decode";
 
 function LoginPage() {
   const [email, setEmail] = React.useState("");
@@ -34,6 +38,47 @@ function LoginPage() {
       console.log(error);
       errorPopUp("There was an error logging in", "invalid email or password");
     }
+  };
+
+  const handleSuccess = async (credentialResponse) => {
+    console.log(credentialResponse);
+    const decoded = jwt_decode(credentialResponse.credential);
+    const userEmail = decoded.email;
+    const userName = decoded.name; // Access the user's name
+
+    console.log("User Email:", userEmail);
+    setEmail(userEmail);
+    const encoder = new TextEncoder();
+    const data = encoder.encode(userEmail);
+
+    const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const password = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    setPassword(password);
+    // try to login first
+    try {
+      const response = await login(userEmail, password);
+      localStorage.setItem("token", response.token);
+      navigate("/dashboard");
+    } catch (error) {
+      // if login failed, try to register
+      try {
+        const response = await register(userEmail, password, userName);
+        // save in the localStorage
+        localStorage.setItem("token", response.token);
+        navigate("/dashboard");
+      } catch (error) {
+        console.log(error);
+        errorPopUp("There was an error logging in", "invalid email or password");
+      }
+    }
+
+  };
+  const handleError = () => {
+    console.log("Login Failed");
   };
 
   // check if the user press enter key to login TODO: not working
@@ -136,6 +181,11 @@ function LoginPage() {
               Don't have an account? Register here
             </a>
           </div>
+
+          <GoogleOAuthProvider clientId="398166640926-mt5lmsm2bqp87ek57lp5er93etmlh41l.apps.googleusercontent.com">
+            {/* Your app components go here */}
+            <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
+          </GoogleOAuthProvider>
         </div>
       </div>
     </div>
