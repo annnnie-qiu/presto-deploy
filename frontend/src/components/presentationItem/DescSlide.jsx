@@ -98,7 +98,7 @@ const DescSlide = ({
   // }, [selectedSlide, setCurrentSlides]); // Trigger whenever the selectedSlide changes
 
   return (
-    <div className="flex h-screen w-screen  justify-center  items-center">
+    <div className="flex h-screen w-screen justify-center  items-center">
       <div
         className={`rounded-lg border-solid border-2 border-inherit ${
           isHidden ? "w-full h-full" : "w-11/12 h-5/6"
