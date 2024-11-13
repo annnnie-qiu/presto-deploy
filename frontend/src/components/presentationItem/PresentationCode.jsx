@@ -66,9 +66,9 @@ function PresentationCode({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+        }
         : element
     );
     console.log("newContent", newContent);
@@ -102,16 +102,16 @@ function PresentationCode({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            // codeBlockSize: {
-            //   // Add codeBlockSize
-            //   width: parseFloat(size.width),
-            //   length: parseFloat(size.height),
-            // },
-            codeWidth: ref.style.width,
-            codeLeight: ref.style.height,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          // codeBlockSize: {
+          //   // Add codeBlockSize
+          //   width: parseFloat(size.width),
+          //   length: parseFloat(size.height),
+          // },
+          codeWidth: ref.style.width,
+          codeLeight: ref.style.height,
+        }
         : element
     );
     console.log("newContent", newContent);

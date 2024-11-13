@@ -604,14 +604,14 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              textInput: textInput,
-              textSizeLength: textSizeLength,
-              textSizeWidth: textSizeWidth,
-              textFontSize: textFontSize,
-              textFontColor: textFontColor,
-              zIndex: zIndex,
-            }
+            ...element,
+            textInput: textInput,
+            textSizeLength: textSizeLength,
+            textSizeWidth: textSizeWidth,
+            textFontSize: textFontSize,
+            textFontColor: textFontColor,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -730,13 +730,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              imageSizeLength: imageSizeLength,
-              imageSizeWidth: imageSizeWidth,
-              imageAlt: imageAlt,
-              uploadImage: uploadImage,
-              zIndex: zIndex,
-            }
+            ...element,
+            imageSizeLength: imageSizeLength,
+            imageSizeWidth: imageSizeWidth,
+            imageAlt: imageAlt,
+            uploadImage: uploadImage,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -849,13 +849,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              videoUrl: videoUrl,
-              videoSizeLength: videoSizeLength,
-              videoSizeWidth: videoSizeWidth,
-              videoAutoplay: videoAutoplay,
-              zIndex: zIndex,
-            }
+            ...element,
+            videoUrl: videoUrl,
+            videoSizeLength: videoSizeLength,
+            videoSizeWidth: videoSizeWidth,
+            videoAutoplay: videoAutoplay,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -939,9 +939,9 @@ function PresentationPage() {
     const newSlides = currentSlides.map((slide, index) =>
       index === targetIndex
         ? {
-            ...slide,
-            background: newBackground,
-          }
+          ...slide,
+          background: newBackground,
+        }
         : slide
     );
 
@@ -1072,8 +1072,11 @@ function PresentationPage() {
 
               {/* change to the previous page */}
               <Tooltip placement="right" title={"change to the previous page"}>
-                <Button onClick={() => {
-                  handleLeftRightKeyPress("Left")}}>
+                <Button
+                  onClick={() => {
+                    handleLeftRightKeyPress("Left");
+                  }}
+                >
                   <ArrowLeftOutlined />
                 </Button>
               </Tooltip>
@@ -1506,11 +1509,6 @@ function PresentationPage() {
                 // value={codeBlockSize.width}
                 value={codeWidth}
                 onChange={(e) =>
-                  // setCodeBlockSize({
-                  //   ...codeBlockSize,
-
-                  //   width: e.target.value,
-                  // })
                   setCodeWidth(e.target.value)
                 }
               />
