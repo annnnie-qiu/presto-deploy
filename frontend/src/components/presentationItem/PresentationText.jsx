@@ -175,7 +175,7 @@ function PresentationText({
         color: data?.textFontColor,
         fontSize: `${data?.textFontSize}em`,
         fontFamily: data?.textFontFamily || "Quicksand, sans-serif",
-        overflow: "hidden",
+        overflow: "show",
         cursor: isMoveActive ? "move" : "default",
         position: "window",
       }}
@@ -192,6 +192,8 @@ function PresentationText({
         style={{
           width: `${data?.textSizeWidth}`,
           height: `${data?.textSizeLength}`,
+          position: "relative",
+          overflow: "hidden",
         }}
       >
         {data ? (
@@ -204,10 +206,9 @@ function PresentationText({
             ))}
           </span>
         ) : null}
-
-        {/* Corner Handles */}
-        {isMoveActive && PresentationSlideMove()}
       </div>
+      {/* Corner Handles */}
+      {isMoveActive && PresentationSlideMove()}
 
       <Modal
         title="Delete this"

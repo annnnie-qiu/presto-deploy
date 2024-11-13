@@ -148,6 +148,9 @@ function PresentationImage({
       size={{
         width: data?.imageSizeLength,
         height: data?.imageSizeWidth,
+        position: "window",
+        overflow: "show",
+        cursor: isMoveActive ? "move" : "default",
       }}
       position={{
         x: data?.position.x || 0,
@@ -159,11 +162,11 @@ function PresentationImage({
       }}
       className="border border-gray-300"
       bounds={boundsRef.current}
-      style={{
-        overflow: "hidden",
-        cursor: isMoveActive ? "move" : "default",
-        position: "window",
-      }}
+      // style={{
+      //   overflow: "hidden",
+      //   cursor: isMoveActive ? "move" : "default",
+      //   position: "window",
+      // }}
       onClick={() => {
         setIsMoveActive(!isMoveActive);
         handleClick();
@@ -172,7 +175,14 @@ function PresentationImage({
       onResizeStop={handleResizeStop}
       onContextMenu={handleContextMenu}
     >
-      <div>
+      <div
+        size={{
+          width: data?.imageSizeLength,
+          height: data?.imageSizeWidth,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
         {data ? (
           <span>
             <img
@@ -183,10 +193,9 @@ function PresentationImage({
             />
           </span>
         ) : null}
-
-        {/* Corner Handles */}
-        {isMoveActive && PresentationSlideMove()}
       </div>
+      {/* Corner Handles */}
+      {isMoveActive && PresentationSlideMove()}
 
       <Modal
         title="Delete this"

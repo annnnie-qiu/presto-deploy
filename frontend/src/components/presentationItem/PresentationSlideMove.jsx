@@ -11,7 +11,7 @@ function PresentationSlideMove() {
             height: "5px",
             backgroundColor: "black",
             top: "-2.5px",
-            left: "0px",
+            left: "-2.5px",
           }}
         />
         <div

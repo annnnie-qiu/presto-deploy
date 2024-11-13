@@ -104,8 +104,8 @@ const DescSlide = ({
           isHidden ? "w-full h-full" : "w-11/12 h-5/6"
         }`}
         style={{
-          position: "relative",
-          overflow: "hidden",
+        //   position: "relative",
+        //   overflow: "hidden",
           ...backgroundStyle,
         }}
         ref={boundsRef} // Assign the ref to this container for snapshot capturing
