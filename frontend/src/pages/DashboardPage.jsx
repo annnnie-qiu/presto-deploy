@@ -11,10 +11,9 @@ import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail
 import "react-toastify/dist/ReactToastify.css";
 import ToastNotification from "../components/ToastNotification";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
-import { debounce } from 'lodash';
 // import DashboardSideContent from '../components/DashboardSideContent';
 
-const { Sider, Header, Content } = Layout;
+const { Sider, Content } = Layout;
 
 function DashboardPage({ darkMode, toggleDarkMode }) {
   const navigate = useNavigate();

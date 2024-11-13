@@ -29,12 +29,7 @@ import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail
 import { useParams } from "react-router-dom";
 import { errorPopUp } from "../../utils/errorPopUp";
 import { showErrorToast } from "../../utils/toastUtils";
-import PresentationText from "../components/presentationItem/PresentationText";
-import PresentationImage from "../components/presentationItem/PresentationImage";
-import PresentationCode from "../components/presentationItem/PresentationCode";
-import PresentationVideo from "../components/presentationItem/PresentationVideo";
 import DescSlide from "../components/presentationItem/DescSlide";
-import html2canvas from "html2canvas";
 
 const Tooltips = (
   currentSlides,
@@ -491,34 +486,54 @@ function PresentationPage() {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
+
       if (targetIndex > 0) {
-        setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+        const newSlideId = currentSlides[targetIndex - 1].slideId;
+        setSelectedSlideId(newSlideId);
+        if (hasTwoSlashes) {
+          console.log("targetIndex", targetIndex);
+          console.log("has two slashes");
+          window.history.pushState(
+            {},
+            "",
+            `/presentation/${presentationId}/${newSlideId}`
+          );
+        }
       } else {
         showErrorToast("This is the first slide now");
       }
 
-      if (hasTwoSlashes) {
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${selectedSlideId}`
-        );
-      }
+      // if (hasTwoSlashes) {
+      //   if (targetIndex >= 0) {
+      //     console.log("targetIndex", targetIndex);
+      //     console.log("has two slashes");
+      //     window.history.pushState(
+      //       {},
+      //       "",
+      //       `/presentation/${presentationId}/${newSlideId}`
+      //     );
+      //   } else {
+      //     console.log("targetIndex", targetIndex);
+      //     showErrorToast("This is the first slide now");
+      //   }
+      // }
     } else if (e.key === "ArrowRight") {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
+
       if (targetIndex < currentSlides.length - 1) {
-        setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+        const newSlideId = currentSlides[targetIndex + 1].slideId;
+        setSelectedSlideId(newSlideId);
+        if (hasTwoSlashes) {
+          window.history.pushState(
+            {},
+            "",
+            `/presentation/${presentationId}/${newSlideId}`
+          );
+        }
       } else {
         showErrorToast("This is the last slide now");
-      }
-      if (hasTwoSlashes) {
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${selectedSlideId}`
-        );
       }
     }
     // }
@@ -649,17 +664,17 @@ function PresentationPage() {
     await sendDetail(token, store);
 
     // Take snapshot after updating slide content
-  //   const slideElement = document.getElementById(`slide-${selectedSlideId}`);
-  //   const snapshot = await takeSnapshot(slideElement, selectedSlideId);
-  //   if (snapshot) {
-  //     setCurrentSlides((slides) =>
-  //       slides.map((slide) =>
-  //         slide.slideId === snapshot.slideId
-  //           ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
-  //           : slide
-  //       )
-  //     );
-  //   }
+    //   const slideElement = document.getElementById(`slide-${selectedSlideId}`);
+    //   const snapshot = await takeSnapshot(slideElement, selectedSlideId);
+    //   if (snapshot) {
+    //     setCurrentSlides((slides) =>
+    //       slides.map((slide) =>
+    //         slide.slideId === snapshot.slideId
+    //           ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
+    //           : slide
+    //       )
+    //     );
+    //   }
   };
 
   const handleFontOk = async () => {
@@ -956,17 +971,17 @@ function PresentationPage() {
     await sendDetail(token, store);
 
     // Take snapshot after changing background
-  //   const slideElement = document.getElementById(`slide-${selectedSlideId}`);
-  //   const snapshot = await takeSnapshot(slideElement, selectedSlideId);
-  //   if (snapshot) {
-  //     setCurrentSlides((slides) =>
-  //       slides.map((slide) =>
-  //         slide.slideId === snapshot.slideId
-  //           ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
-  //           : slide
-  //       )
-  //     );
-  //   }
+    //   const slideElement = document.getElementById(`slide-${selectedSlideId}`);
+    //   const snapshot = await takeSnapshot(slideElement, selectedSlideId);
+    //   if (snapshot) {
+    //     setCurrentSlides((slides) =>
+    //       slides.map((slide) =>
+    //         slide.slideId === snapshot.slideId
+    //           ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
+    //           : slide
+    //       )
+    //     );
+    //   }
   };
 
   const handleBackgroundImageUpload = (file) => {
@@ -1037,39 +1052,68 @@ function PresentationPage() {
     <>
       <Layout>
         {isHidden && (
-          <DescSlide
-            currentSlides={currentSlides}
-            presentationId={presentationId}
-            selectedSlideId={selectedSlideId}
-            showTextModal={showTextModal}
-            setTextSizeLength={setTextSizeLength}
-            setTextSizeWidth={setTextSizeWidth}
-            setTextInput={setTextInput}
-            setTextFontSize={setTextFontSize}
-            setTextFontColor={setTextFontColor}
-            setSelectedElementId={setSelectedElementId}
-            showImageModal={showImageModal}
-            setImageSizeLength={setImageSizeLength}
-            setImageSizeWidth={setImageSizeWidth}
-            setImageAlt={setImageAlt}
-            setUploadImage={setUploadImage}
-            showCodeModal={showCodeModal}
-            // setCodeBlockSize={setCodeBlockSize}
-            setCodeLeight={setCodeLeight}
-            setCodeWidth={setCodeWidth}
-            setCurrentSlides={setCurrentSlides}
-            showVideoModal={showVideoModal}
-            setVideoUrl={setVideoUrl}
-            setVideoSizeLength={setVideoSizeLength}
-            setVideoSizeWidth={setVideoSizeWidth}
-            setVideoAutoplay={setVideoAutoplay}
-            showBackgroundModal={showBackgroundModal}
-            setBackgroundColor={setBackgroundColor}
-            setBackgroundGradient={setBackgroundGradient}
-            setBackgroundImage={setBackgroundImage}
-            setBackgroundType={setBackgroundType}
-            text="Second"
-          />
+          <div className="flex h-screen w-screen">
+            {/* <div className="w-8 h-full ">
+              {Tooltips(
+                currentSlides,
+                setCurrentSlides,
+                presentationId,
+                selectedSlideId,
+                setSelectedSlideId,
+                showTextModal,
+                showImageModal,
+                handleTextCancel,
+                isTextModalOpen,
+                showCodeModal,
+                isCodeModalOpen,
+                handleFontCancel,
+                isFontModalOpen,
+                showFontModal,
+                handleVideoCancel,
+                isVideoModalOpen,
+                showVideoModal,
+                setIsHidden,
+                isBackgroundModalOpen,
+                handleBackgroundCancel,
+                showBackgroundModal,
+                handleLeftRightKeyPress
+              )}
+            </div> */}
+            <DescSlide
+              currentSlides={currentSlides}
+              presentationId={presentationId}
+              selectedSlideId={selectedSlideId}
+              showTextModal={showTextModal}
+              setTextSizeLength={setTextSizeLength}
+              setTextSizeWidth={setTextSizeWidth}
+              setTextInput={setTextInput}
+              setTextFontSize={setTextFontSize}
+              setTextFontColor={setTextFontColor}
+              setSelectedElementId={setSelectedElementId}
+              showImageModal={showImageModal}
+              setImageSizeLength={setImageSizeLength}
+              setImageSizeWidth={setImageSizeWidth}
+              setImageAlt={setImageAlt}
+              setUploadImage={setUploadImage}
+              showCodeModal={showCodeModal}
+              // setCodeBlockSize={setCodeBlockSize}
+              setCodeLeight={setCodeLeight}
+              setCodeWidth={setCodeWidth}
+              setCurrentSlides={setCurrentSlides}
+              showVideoModal={showVideoModal}
+              setVideoUrl={setVideoUrl}
+              setVideoSizeLength={setVideoSizeLength}
+              setVideoSizeWidth={setVideoSizeWidth}
+              setVideoAutoplay={setVideoAutoplay}
+              showBackgroundModal={showBackgroundModal}
+              setBackgroundColor={setBackgroundColor}
+              setBackgroundGradient={setBackgroundGradient}
+              setBackgroundImage={setBackgroundImage}
+              setBackgroundType={setBackgroundType}
+              isHidden={isHidden}
+              text="Second"
+            />
+          </div>
         )}
       </Layout>
 

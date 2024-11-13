@@ -3,7 +3,7 @@ import { Rnd } from "react-rnd";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
 import PresentationSlideMove from "./PresentationSlideMove";
 import { Modal } from "antd";
-import { CodepenSquareFilled } from "@ant-design/icons";
+// import { CodepenSquareFilled } from "@ant-design/icons";
 
 function PresentationText({
   data,
@@ -175,7 +175,7 @@ function PresentationText({
         color: data?.textFontColor,
         fontSize: `${data?.textFontSize}em`,
         fontFamily: data?.textFontFamily || "Quicksand, sans-serif",
-        overflow: "hidden",
+        overflow: "show",
         cursor: isMoveActive ? "move" : "default",
         position: "window",
       }}
@@ -192,6 +192,8 @@ function PresentationText({
         style={{
           width: `${data?.textSizeWidth}`,
           height: `${data?.textSizeLength}`,
+          position: "relative",
+          overflow: "hidden",
         }}
       >
         {data ? (
@@ -204,53 +206,9 @@ function PresentationText({
             ))}
           </span>
         ) : null}
-
-        {/* Corner Handles */}
-        {isMoveActive && (
-          <>
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                top: "-2.5px",
-                left: "-2.5px",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                top: "-2.5px",
-                right: "-2.5px",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                bottom: "-2.5px",
-                left: "-2.5px",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                width: "5px",
-                height: "5px",
-                backgroundColor: "black",
-                bottom: "-2.5px",
-                right: "-2.5px",
-              }}
-            />
-          </>
-        )}
       </div>
+      {/* Corner Handles */}
+      {isMoveActive && PresentationSlideMove()}
 
       <Modal
         title="Delete this"

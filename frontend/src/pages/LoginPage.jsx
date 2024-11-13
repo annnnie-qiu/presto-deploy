@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Form, Input } from "antd";
 import PrestoLogo from "../assets/Presto.png";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
 import { login, register } from "../../utils/API/Login_Register/login_register";

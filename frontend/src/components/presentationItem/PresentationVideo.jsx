@@ -156,10 +156,10 @@ const PresentationVideo = ({
         x: `${data?.position.x}`,
         y: `${data?.position.y}`,
       }}
-
       bounds={boundsRef.current}
       style={{
-        position: "relative",
+        position: "window",
+        overflow: "show",
         border: "2px dashed #000",
         width: `${data?.videoSizeWidth}%`,
         height: `${data?.videoSizeLength}%`,
@@ -180,6 +180,8 @@ const PresentationVideo = ({
         style={{
           width: `${data.videoSizeWidth}%`,
           height: `${data.videoSizeLength}%`,
+          position: "relative",
+          overflow: "hidden",
         }}
       >
         <iframe
@@ -190,7 +192,10 @@ const PresentationVideo = ({
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
+
       </div>
+      {/* Corner Handles */}
+      {isMoveActive && PresentationSlideMove()}
 
       <Modal
         title="Delete this"

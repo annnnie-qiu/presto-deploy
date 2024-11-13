@@ -10,7 +10,7 @@ const DashboardMainContent = ({ presentations, setPresentations, refetchPresenta
         <DashboardBanner onCreate={onCreate} />
         <DashboardPresentationList 
           presentations={presentations} 
-          setPresentations={setPresentations}
+          // setPresentations={setPresentations}
           refetchPresentations={refetchPresentations}
         />
       </Flex>

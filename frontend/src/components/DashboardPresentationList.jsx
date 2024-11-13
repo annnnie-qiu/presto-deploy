@@ -12,7 +12,6 @@ const { Meta } = Card;
 
 const DashboardPresentationList = ({
   presentations = [],
-  darkMode,
   refetchPresentations,
 }) => {
   const navigate = useNavigate();
