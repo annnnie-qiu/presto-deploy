@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Draggable from "react-draggable";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
 import Handlebars from "handlebars";
@@ -203,7 +202,8 @@ function PresentationCode({
         // width: `${data?.codeBlockSize?.width}%`,
         // height: `${data?.codeBlockSize?.length}%`,
         fontSize: `${data?.codeFontSize}em`,
-        overflow: "hidden",
+        position: "window",
+        overflow: "show",
         margin: "0px",
         padding: "0px",
         backgroundColor: "transparent",
@@ -221,6 +221,8 @@ function PresentationCode({
         style={{
           width: `${data?.codeWidth}%`,
           height: `${data?.codeLeight}%`,
+          position: "relative",
+          overflow: "hidden",
         }}
       >
         <pre
@@ -243,7 +245,10 @@ function PresentationCode({
             }}
           ></code>
         </pre>
+
       </div>
+      {/* Corner Handles */}
+      {isMoveActive && PresentationSlideMove()}
 
       <Modal
         title="Delete this"

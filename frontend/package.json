@@ -14,6 +14,7 @@
     "@ant-design/icons": "^5.5.1",
     "@react-oauth/google": "^0.12.1",
     "antd": "^5.21.6",
+    "framer-motion": "^11.11.13",
     "handlebars": "^4.7.8",
     "he": "^1.2.0",
     "highlight.js": "^11.10.0",

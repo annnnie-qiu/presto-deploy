@@ -1,7 +1,7 @@
 import React from 'react'
 import { Avatar, Flex, Typography } from 'antd';
 import Search from 'antd/es/transfer/search';
-import { MessageOutlined, NotificationOutlined, UserOutlined} from '@ant-design/icons';
+import { UserOutlined} from '@ant-design/icons';
 import { FaMoon, FaSun } from "react-icons/fa";
 
 const CustomHeader = ({ darkMode, toggleDarkMode, style }) => {

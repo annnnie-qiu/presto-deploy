@@ -5,9 +5,6 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import PresentationPage from "./pages/PresentationPage";
-import CustomHeader from "./components/Header";
-
-import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
   const [darkMode, setDarkMode] = React.useState(false);
