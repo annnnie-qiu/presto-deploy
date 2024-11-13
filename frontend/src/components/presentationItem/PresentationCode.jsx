@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import Draggable from "react-draggable";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
 import Handlebars from "handlebars";

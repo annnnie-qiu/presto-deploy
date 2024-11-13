@@ -29,12 +29,7 @@ import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail
 import { useParams } from "react-router-dom";
 import { errorPopUp } from "../../utils/errorPopUp";
 import { showErrorToast } from "../../utils/toastUtils";
-import PresentationText from "../components/presentationItem/PresentationText";
-import PresentationImage from "../components/presentationItem/PresentationImage";
-import PresentationCode from "../components/presentationItem/PresentationCode";
-import PresentationVideo from "../components/presentationItem/PresentationVideo";
 import DescSlide from "../components/presentationItem/DescSlide";
-import html2canvas from "html2canvas";
 
 const Tooltips = (
   currentSlides,
@@ -1058,7 +1053,7 @@ function PresentationPage() {
       <Layout>
         {isHidden && (
           <div className="flex h-screen w-screen">
-            {/* <div className="w-8 h-full">
+            {/* <div className="w-8 h-full ">
               {Tooltips(
                 currentSlides,
                 setCurrentSlides,

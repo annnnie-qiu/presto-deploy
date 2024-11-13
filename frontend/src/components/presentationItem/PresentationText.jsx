@@ -3,7 +3,7 @@ import { Rnd } from "react-rnd";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
 import PresentationSlideMove from "./PresentationSlideMove";
 import { Modal } from "antd";
-import { CodepenSquareFilled } from "@ant-design/icons";
+// import { CodepenSquareFilled } from "@ant-design/icons";
 
 function PresentationText({
   data,
