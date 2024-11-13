@@ -54,6 +54,7 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
     layout: {
       minHeight: "100vh",
       backgroundColor: darkMode ? "#203175" : "#fff",
+      overflowX: "hidden", // Prevent horizontal scrolling
     },
     sider: {
       position: "sticky !important",
@@ -71,6 +72,7 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       margin: "24px 16px",
       padding: "20px",
       backgroundColor: darkMode ? "#113536" : "",
+      boxSizing: "border-box", // Include padding in the width calculations
     },
     trigerbtn: {
       fontSize: "16px",
@@ -126,16 +128,17 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       return;
     }
 
-    let newThumbnailReference = "";
-    if (newPresentationThumbnail) {
-      newThumbnailReference = `thumbnail-${presentations.length + 1}`;
-      localStorage.setItem(newThumbnailReference, newPresentationThumbnail);
-    }
+    // let newThumbnailReference = "";
+    // if (newPresentationThumbnail) {
+    //   newThumbnailReference = `thumbnail-${presentations.length + 1}`;
+    //   localStorage.setItem(newThumbnailReference, newPresentationThumbnail);
+    // }
 
     const newPresentation = {
       id: presentations.length + 1,
       name: newPresentationName,
-      thumbnail: newThumbnailReference,
+      // thumbnail: newThumbnailReference,
+      thumbnail: newPresentationThumbnail, // Directly store the base64 thumbnail
       description: newPresentationDescription,
       numSlides: 1,
       nextSlideId: 2,
@@ -149,9 +152,9 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
     };
 
     // Conditionally add the thumbnail property if there's a valid thumbnail
-    if (newThumbnailReference) {
-      newPresentation.thumbnail = newThumbnailReference;
-    }
+    // if (newThumbnailReference) {
+    //   newPresentation.thumbnail = newThumbnailReference;
+    // }
 
     try {
       // Get the current store details
@@ -256,13 +259,13 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
           <Upload beforeUpload={handleThumbnailUpload} accept="image/*">
             <Button icon={<UploadOutlined />}>Upload Thumbnail</Button>
           </Upload>
-          {/* {newPresentationThumbnail && (
+          {newPresentationThumbnail && (
             <img
               src={newPresentationThumbnail}
               alt="Thumbnail Preview"
               style={{ width: "100%", marginTop: 10 }}
             />
-          )} */}
+          )}
         </div>
       </Modal>
 
