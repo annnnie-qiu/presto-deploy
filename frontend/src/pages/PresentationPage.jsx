@@ -9,6 +9,7 @@ import {
   MenuFoldOutlined,
   FileTextOutlined,
   FileImageOutlined,
+  FullscreenExitOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import { ConfigProvider, Segmented, Tooltip } from "antd";
@@ -502,21 +503,6 @@ function PresentationPage() {
       } else {
         showErrorToast("This is the first slide now");
       }
-
-      // if (hasTwoSlashes) {
-      //   if (targetIndex >= 0) {
-      //     console.log("targetIndex", targetIndex);
-      //     console.log("has two slashes");
-      //     window.history.pushState(
-      //       {},
-      //       "",
-      //       `/presentation/${presentationId}/${newSlideId}`
-      //     );
-      //   } else {
-      //     console.log("targetIndex", targetIndex);
-      //     showErrorToast("This is the first slide now");
-      //   }
-      // }
     } else if (e.key === "ArrowRight") {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
@@ -555,34 +541,38 @@ function PresentationPage() {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
+
       if (targetIndex > 0) {
-        setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+        const newSlideId = currentSlides[targetIndex - 1].slideId;
+        setSelectedSlideId(newSlideId);
+        if (hasTwoSlashes) {
+          console.log("targetIndex", targetIndex);
+          console.log("has two slashes");
+          window.history.pushState(
+            {},
+            "",
+            `/presentation/${presentationId}/${newSlideId}`
+          );
+        }
       } else {
         showErrorToast("This is the first slide now");
-      }
-
-      if (hasTwoSlashes) {
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${selectedSlideId}`
-        );
       }
     } else if (key === "Right") {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
       if (targetIndex < currentSlides.length - 1) {
-        setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+        const newSlideId = currentSlides[targetIndex + 1].slideId;
+        setSelectedSlideId(newSlideId);
+        if (hasTwoSlashes) {
+          window.history.pushState(
+            {},
+            "",
+            `/presentation/${presentationId}/${newSlideId}`
+          );
+        }
       } else {
         showErrorToast("This is the last slide now");
-      }
-      if (hasTwoSlashes) {
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${selectedSlideId}`
-        );
       }
     }
     // }
@@ -1053,32 +1043,48 @@ function PresentationPage() {
       <Layout>
         {isHidden && (
           <div className="flex h-screen w-screen">
-            {/* <div className="w-8 h-full ">
-              {Tooltips(
-                currentSlides,
-                setCurrentSlides,
-                presentationId,
-                selectedSlideId,
-                setSelectedSlideId,
-                showTextModal,
-                showImageModal,
-                handleTextCancel,
-                isTextModalOpen,
-                showCodeModal,
-                isCodeModalOpen,
-                handleFontCancel,
-                isFontModalOpen,
-                showFontModal,
-                handleVideoCancel,
-                isVideoModalOpen,
-                showVideoModal,
-                setIsHidden,
-                isBackgroundModalOpen,
-                handleBackgroundCancel,
-                showBackgroundModal,
-                handleLeftRightKeyPress
-              )}
-            </div> */}
+            <div className="w-10 h-full">
+              <Tooltip
+                placement="right"
+                title={"Click for Preview viewing your current presentation"}
+              >
+                <Button
+                  onClick={() => {
+                    try {
+                      setIsHidden(false);
+                      window.history.pushState(
+                        {},
+                        "",
+                        `/presentation/${presentationId}`
+                      );
+                    } catch (error) {
+                      console.log(error);
+                      errorPopUp(
+                        "Error",
+                        "An error occurred while navigating to the preview page"
+                      );
+                    }
+                  }}
+                >
+                  <FullscreenExitOutlined />
+                </Button>
+              </Tooltip>
+
+              {/* change to the previous page */}
+              <Tooltip placement="right" title={"change to the previous page"}>
+                <Button onClick={() => {
+                  handleLeftRightKeyPress("Left")}}>
+                  <ArrowLeftOutlined />
+                </Button>
+              </Tooltip>
+
+              {/* change to the next page */}
+              <Tooltip placement="right" title={"change to the next page"}>
+                <Button onClick={() => handleLeftRightKeyPress("Right")}>
+                  <ArrowRightOutlined />
+                </Button>
+              </Tooltip>
+            </div>
             <DescSlide
               currentSlides={currentSlides}
               presentationId={presentationId}
