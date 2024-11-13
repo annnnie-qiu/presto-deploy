@@ -37,18 +37,18 @@ const DescSlide = ({
   const boundsRef = useRef(null);
 
   // Function to take a snapshot of the slide
-  const takeSnapshot = async (element, slideId) => {
-    if (!element) return;
+  // const takeSnapshot = async (element, slideId) => {
+  //   if (!element) return;
 
-    try {
-      const canvas = await html2canvas(element);
-      const snapshotUrl = canvas.toDataURL("image/png");
+  //   try {
+  //     const canvas = await html2canvas(element);
+  //     const snapshotUrl = canvas.toDataURL("image/png");
 
-      return { slideId, snapshotUrl };
-    } catch (error) {
-      console.error("Error taking snapshot:", error);
-    }
-  };
+  //     return { slideId, snapshotUrl };
+  //   } catch (error) {
+  //     console.error("Error taking snapshot:", error);
+  //   }
+  // };
 
   // Find the currently selected slide to extract its background settings
   const selectedSlide = currentSlides.find(
@@ -75,26 +75,26 @@ const DescSlide = ({
   }
 
   // Take a snapshot of the slide whenever it is updated
-  useEffect(() => {
-    const takeAndStoreSnapshot = async () => {
-      if (boundsRef.current) {
-        const snapshot = await takeSnapshot(boundsRef.current, selectedSlideId);
-        if (snapshot) {
-          setCurrentSlides((slides) =>
-            slides.map((slide) =>
-              slide.slideId === snapshot.slideId
-                ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
-                : slide
-            )
-          );
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const takeAndStoreSnapshot = async () => {
+  //     if (boundsRef.current) {
+  //       const snapshot = await takeSnapshot(boundsRef.current, selectedSlideId);
+  //       if (snapshot) {
+  //         setCurrentSlides((slides) =>
+  //           slides.map((slide) =>
+  //             slide.slideId === snapshot.slideId
+  //               ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
+  //               : slide
+  //           )
+  //         );
+  //       }
+  //     }
+  //   };
 
-    if (selectedSlide) {
-      takeAndStoreSnapshot();
-    }
-  }, [selectedSlide, setCurrentSlides]); // Trigger whenever the selectedSlide changes
+  //   if (selectedSlide) {
+  //     takeAndStoreSnapshot();
+  //   }
+  // }, [selectedSlide, setCurrentSlides]); // Trigger whenever the selectedSlide changes
 
   return (
     <div className="flex h-full w-full justify-center items-center">

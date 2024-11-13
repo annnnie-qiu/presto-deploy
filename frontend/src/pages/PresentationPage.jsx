@@ -423,18 +423,18 @@ function PresentationPage() {
     setisTextModalOpen(true);
   };
 
-  const takeSnapshot = async (element, slideId) => {
-    if (!element) return;
+  // const takeSnapshot = async (element, slideId) => {
+  //   if (!element) return;
 
-    try {
-      const canvas = await html2canvas(element);
-      const snapshotUrl = canvas.toDataURL("image/png");
+  //   try {
+  //     const canvas = await html2canvas(element);
+  //     const snapshotUrl = canvas.toDataURL("image/png");
 
-      return { slideId, snapshotUrl };
-    } catch (error) {
-      console.error("Error taking snapshot:", error);
-    }
-  };
+  //     return { slideId, snapshotUrl };
+  //   } catch (error) {
+  //     console.error("Error taking snapshot:", error);
+  //   }
+  // };
 
   const showImageModal = () => {
     setisImageModalOpen(true);
@@ -649,17 +649,17 @@ function PresentationPage() {
     await sendDetail(token, store);
 
     // Take snapshot after updating slide content
-    const slideElement = document.getElementById(`slide-${selectedSlideId}`);
-    const snapshot = await takeSnapshot(slideElement, selectedSlideId);
-    if (snapshot) {
-      setCurrentSlides((slides) =>
-        slides.map((slide) =>
-          slide.slideId === snapshot.slideId
-            ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
-            : slide
-        )
-      );
-    }
+  //   const slideElement = document.getElementById(`slide-${selectedSlideId}`);
+  //   const snapshot = await takeSnapshot(slideElement, selectedSlideId);
+  //   if (snapshot) {
+  //     setCurrentSlides((slides) =>
+  //       slides.map((slide) =>
+  //         slide.slideId === snapshot.slideId
+  //           ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
+  //           : slide
+  //       )
+  //     );
+  //   }
   };
 
   const handleFontOk = async () => {
@@ -956,17 +956,17 @@ function PresentationPage() {
     await sendDetail(token, store);
 
     // Take snapshot after changing background
-    const slideElement = document.getElementById(`slide-${selectedSlideId}`);
-    const snapshot = await takeSnapshot(slideElement, selectedSlideId);
-    if (snapshot) {
-      setCurrentSlides((slides) =>
-        slides.map((slide) =>
-          slide.slideId === snapshot.slideId
-            ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
-            : slide
-        )
-      );
-    }
+  //   const slideElement = document.getElementById(`slide-${selectedSlideId}`);
+  //   const snapshot = await takeSnapshot(slideElement, selectedSlideId);
+  //   if (snapshot) {
+  //     setCurrentSlides((slides) =>
+  //       slides.map((slide) =>
+  //         slide.slideId === snapshot.slideId
+  //           ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
+  //           : slide
+  //       )
+  //     );
+  //   }
   };
 
   const handleBackgroundImageUpload = (file) => {
