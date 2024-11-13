@@ -63,53 +63,6 @@ function HeaherPresent() {
     setIsModalOpen(false);
   };
 
-  // // Function to handle the thumbnail upload
-  // const handleThumbnailUpload = async (event) => {
-  //   const file = event.target.files[0];
-  //   if (!file) {
-  //     return;
-  //   }
-
-  //   const reader = new FileReader();
-  //   reader.onloadend = async () => {
-  //     const base64String = reader.result;
-
-  //     try {
-  //       const storeResponse = await getDetail(localStorage.getItem("token"));
-  //       const { store } = storeResponse;
-
-  //       // Find and update the current presentation with the new thumbnail base64 string
-  //       store.presentations = store.presentations.map((presentation) => {
-  //         if (presentation.id === parseInt(presentationId, 10)) {
-  //           return {
-  //             ...presentation,
-  //             thumbnail: base64String,
-  //           };
-  //         }
-  //         return presentation;
-  //       });
-
-  //       // Update the state with the new presentation
-  //       setCurrentPresentation((prev) => ({
-  //         ...prev,
-  //         thumbnail: base64String,
-  //       }));
-
-  //       // Save the base64 string to localStorage
-  //       localStorage.setItem(`thumbnail-${presentationId}`, base64String);
-
-  //       // Send the updated 'store' data to the backend to hold this change
-  //       await sendDetail(localStorage.getItem("token"), store);
-  //       showSuccessToast("Thumbnail uploaded successfully!");
-  //     } catch (error) {
-  //       console.error("Error updating thumbnail:", error);
-  //       showErrorToast("Failed to upload thumbnail :(");
-  //     }
-  //   };
-
-  //   reader.readAsDataURL(file);
-  // };
-
   // Function to handle the thumbnail upload
   const handleThumbnailUpload = async (event) => {
     const file = event.target.files[0];
@@ -122,21 +75,15 @@ function HeaherPresent() {
       const base64String = reader.result;
 
       try {
-        // Generate a unique key for localStorage
-        const thumbnailKey = `thumbnail-${presentationId}`;
-
-        // Save the base64 string to localStorage
-        localStorage.setItem(thumbnailKey, base64String);
-
         const storeResponse = await getDetail(localStorage.getItem("token"));
         const { store } = storeResponse;
 
-        // Find and update the current presentation with the new thumbnail reference
+        // Find and update the current presentation with the new thumbnail base64 string
         store.presentations = store.presentations.map((presentation) => {
           if (presentation.id === parseInt(presentationId, 10)) {
             return {
               ...presentation,
-              thumbnail: thumbnailKey,
+              thumbnail: base64String,
             };
           }
           return presentation;
@@ -145,8 +92,11 @@ function HeaherPresent() {
         // Update the state with the new presentation
         setCurrentPresentation((prev) => ({
           ...prev,
-          thumbnail: thumbnailKey,
+          thumbnail: base64String,
         }));
+
+        // Save the base64 string to localStorage
+        localStorage.setItem(`thumbnail-${presentationId}`, base64String);
 
         // Send the updated 'store' data to the backend to hold this change
         await sendDetail(localStorage.getItem("token"), store);
@@ -159,6 +109,56 @@ function HeaherPresent() {
 
     reader.readAsDataURL(file);
   };
+
+  // Function to handle the thumbnail upload
+  // const handleThumbnailUpload = async (event) => {
+  //   const file = event.target.files[0];
+  //   if (!file) {
+  //     return;
+  //   }
+
+  //   const reader = new FileReader();
+  //   reader.onloadend = async () => {
+  //     const base64String = reader.result;
+
+  //     try {
+  //       // Generate a unique key for localStorage
+  //       const thumbnailKey = `thumbnail-${presentationId}`;
+
+  //       // Save the base64 string to localStorage
+  //       localStorage.setItem(thumbnailKey, base64String);
+
+  //       const storeResponse = await getDetail(localStorage.getItem("token"));
+  //       const { store } = storeResponse;
+
+  //       // Find and update the current presentation with the new thumbnail reference
+  //       store.presentations = store.presentations.map((presentation) => {
+  //         if (presentation.id === parseInt(presentationId, 10)) {
+  //           return {
+  //             ...presentation,
+  //             thumbnail: thumbnailKey,
+  //           };
+  //         }
+  //         return presentation;
+  //       });
+
+  //       // Update the state with the new presentation
+  //       setCurrentPresentation((prev) => ({
+  //         ...prev,
+  //         thumbnail: thumbnailKey,
+  //       }));
+
+  //       // Send the updated 'store' data to the backend to hold this change
+  //       await sendDetail(localStorage.getItem("token"), store);
+  //       showSuccessToast("Thumbnail uploaded successfully!");
+  //     } catch (error) {
+  //       console.error("Error updating thumbnail:", error);
+  //       showErrorToast("Failed to upload thumbnail :(");
+  //     }
+  //   };
+
+  //   reader.readAsDataURL(file);
+  // };
 
 
   const [newPresentationName, setNewPresentationName] = useState("");

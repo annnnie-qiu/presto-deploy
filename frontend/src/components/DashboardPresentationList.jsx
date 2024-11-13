@@ -108,12 +108,12 @@ const DashboardPresentationList = ({
   };
 
   // Function to get the thumbnail from localStorage when displaying the presentation
-  const getThumbnail = (thumbnailReference) => {
-    if (thumbnailReference && localStorage.getItem(thumbnailReference)) {
-      return localStorage.getItem(thumbnailReference);
-    }
-    return null;
-  };
+  // const getThumbnail = (thumbnailReference) => {
+  //   if (thumbnailReference && localStorage.getItem(thumbnailReference)) {
+  //     return localStorage.getItem(thumbnailReference);
+  //   }
+  //   return null;
+  // };
 
 
   const styles = {
@@ -205,9 +205,15 @@ const DashboardPresentationList = ({
                   <Meta
                     avatar={
                       presentation.thumbnail ? (
+                        // <Avatar
+                        //   shape="square"
+                        //   src={getThumbnail(presentation.thumbnail)}
+                        //   alt={presentation.name}
+                        //   style={styles.thumbnail}
+                        // />
                         <Avatar
                           shape="square"
-                          src={getThumbnail(presentation.thumbnail)}
+                          src={presentation.thumbnail} // Directly use base64 data
                           alt={presentation.name}
                           style={styles.thumbnail}
                         />
