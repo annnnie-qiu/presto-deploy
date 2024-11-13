@@ -156,7 +156,6 @@ const PresentationVideo = ({
         x: `${data?.position.x}`,
         y: `${data?.position.y}`,
       }}
-
       bounds={boundsRef.current}
       style={{
         position: "relative",
@@ -190,6 +189,9 @@ const PresentationVideo = ({
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
+
+        {/* Corner Handles */}
+        {isMoveActive && PresentationSlideMove()}
       </div>
 
       <Modal

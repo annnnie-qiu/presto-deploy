@@ -33,6 +33,7 @@ const DescSlide = ({
   setVideoSizeLength,
   setVideoSizeWidth,
   setVideoAutoplay,
+  isHidden,
 }) => {
   const boundsRef = useRef(null);
 
@@ -97,9 +98,11 @@ const DescSlide = ({
   // }, [selectedSlide, setCurrentSlides]); // Trigger whenever the selectedSlide changes
 
   return (
-    <div className="flex h-full w-full justify-center items-center">
+    <div className="flex h-screen w-screen  justify-center  items-center">
       <div
-        className="h-5/6 w-11/12 rounded-lg border-solid border-2 border-inherit"
+        className={`rounded-lg border-solid border-2 border-inherit ${
+          isHidden ? "w-full h-full" : "w-11/12 h-5/6"
+        }`}
         style={{
           position: "relative",
           overflow: "hidden",

@@ -243,6 +243,9 @@ function PresentationCode({
             }}
           ></code>
         </pre>
+
+        {/* Corner Handles */}
+        {isMoveActive && PresentationSlideMove()}
       </div>
 
       <Modal

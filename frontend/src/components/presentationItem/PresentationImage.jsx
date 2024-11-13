@@ -185,7 +185,7 @@ function PresentationImage({
         ) : null}
 
         {/* Corner Handles */}
-        {isMoveActive && PresentationSlideMove}
+        {isMoveActive && PresentationSlideMove()}
       </div>
 
       <Modal

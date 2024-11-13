@@ -1068,6 +1068,7 @@ function PresentationPage() {
             setBackgroundGradient={setBackgroundGradient}
             setBackgroundImage={setBackgroundImage}
             setBackgroundType={setBackgroundType}
+            isHidden={isHidden}
             text="Second"
           />
         )}
