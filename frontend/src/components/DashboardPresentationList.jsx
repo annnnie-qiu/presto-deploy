@@ -17,6 +17,16 @@ const DashboardPresentationList = ({
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+
+  // Effect to track window resizing
+  React.useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // State for modal visibiliy and currently selected presentation
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [currentPresentation, setCurrentPresentation] = React.useState(null);
@@ -98,12 +108,12 @@ const DashboardPresentationList = ({
   };
 
   // Function to get the thumbnail from localStorage when displaying the presentation
-  const getThumbnail = (thumbnailReference) => {
-    if (thumbnailReference && localStorage.getItem(thumbnailReference)) {
-      return localStorage.getItem(thumbnailReference);
-    }
-    return null;
-  };
+  // const getThumbnail = (thumbnailReference) => {
+  //   if (thumbnailReference && localStorage.getItem(thumbnailReference)) {
+  //     return localStorage.getItem(thumbnailReference);
+  //   }
+  //   return null;
+  // };
 
 
   const styles = {
@@ -112,6 +122,11 @@ const DashboardPresentationList = ({
       alignItems: "center",
       justifyContent: "space-between",
       marginBottom: "20px",
+      marginLeft: windowWidth < 450 ? "-30px" : "0",
+    },
+    headText: {
+      fontSize: windowWidth <= 450 ? "16px" : "",
+      textAlign: windowWidth <= 450 ? "center" : "left",
     },
     gridContainer: {
       display: "grid",
@@ -126,7 +141,10 @@ const DashboardPresentationList = ({
       display: "flex",
       flexDirection: "column",
       overflow: "hidden",
-      maxWidth: "400px",
+      maxWidth: windowWidth <= 450 ? "100%" : "400px",
+      padding: windowWidth <= 450 ? "10px" : "15px",
+      marginLeft: windowWidth < 450 ? "-30px" : "0",
+      marginTop: windowWidth < 450 ? "-20px" : "0",
     },
     card: {
       width: "100%",
@@ -164,10 +182,10 @@ const DashboardPresentationList = ({
   return (
     <>
       <div style={styles.headerFlex}>
-        <Typography.Title level={3} strong>
+        <Typography.Title level={3} strong style={styles.headText}>
           Your Presentation List
         </Typography.Title>
-        <Button type="link">View All</Button>
+        {/* <Button type="link">View All</Button> */}
       </div>
 
       {/* Grid layout for consistent spacing without overlapping */}
@@ -187,9 +205,15 @@ const DashboardPresentationList = ({
                   <Meta
                     avatar={
                       presentation.thumbnail ? (
+                        // <Avatar
+                        //   shape="square"
+                        //   src={getThumbnail(presentation.thumbnail)}
+                        //   alt={presentation.name}
+                        //   style={styles.thumbnail}
+                        // />
                         <Avatar
                           shape="square"
-                          src={getThumbnail(presentation.thumbnail)}
+                          src={presentation.thumbnail} // Directly use base64 data
                           alt={presentation.name}
                           style={styles.thumbnail}
                         />
