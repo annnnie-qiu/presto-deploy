@@ -13,16 +13,6 @@ const DashboardBanner = ( { darkMode, onCreate }) => {
   }, []);
 
   const styles = {
-    // creatBtn: {
-    //   background: darkMode ? "#444" : 'linear-gradient(to right, #ffafbd, #ffc3a0)',
-    //   border: 'none',
-    // },
-    // bannerCard: {
-    //   height: 260,
-    //   padding: "20px",
-    //   backgroundColor: darkMode ? "#113536" : "#fff",
-    //   color: darkMode ? "#f5f5f5" : "#000",
-    // }
     bannerCard: {
       height: windowWidth <= 600 ? "auto" : 260,
       padding: windowWidth <= 600 ? "15px" : "20px",
@@ -30,6 +20,7 @@ const DashboardBanner = ( { darkMode, onCreate }) => {
       color: darkMode ? "#f5f5f5" : "#000",
       maxWidth: "100%",
       marginBottom: "20px",
+      marginLeft: windowWidth < 450 ? "-20px" : "0",
     },
     creatBtn: {
       background: darkMode ? "#444" : 'linear-gradient(to right, #ffafbd, #ffc3a0)',

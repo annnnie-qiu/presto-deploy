@@ -17,6 +17,16 @@ const DashboardPresentationList = ({
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+
+  // Effect to track window resizing
+  React.useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // State for modal visibiliy and currently selected presentation
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [currentPresentation, setCurrentPresentation] = React.useState(null);
@@ -112,6 +122,11 @@ const DashboardPresentationList = ({
       alignItems: "center",
       justifyContent: "space-between",
       marginBottom: "20px",
+      marginLeft: windowWidth < 450 ? "-30px" : "0",
+    },
+    headText: {
+      fontSize: windowWidth <= 450 ? "16px" : "",
+      textAlign: windowWidth <= 450 ? "center" : "left",
     },
     gridContainer: {
       display: "grid",
@@ -127,6 +142,8 @@ const DashboardPresentationList = ({
       flexDirection: "column",
       overflow: "hidden",
       maxWidth: "400px",
+      marginLeft: windowWidth < 450 ? "-30px" : "0",
+      marginTop: windowWidth < 450 ? "-20px" : "0",
     },
     card: {
       width: "100%",
@@ -164,7 +181,7 @@ const DashboardPresentationList = ({
   return (
     <>
       <div style={styles.headerFlex}>
-        <Typography.Title level={3} strong>
+        <Typography.Title level={3} strong style={styles.headText}>
           Your Presentation List
         </Typography.Title>
         {/* <Button type="link">View All</Button> */}

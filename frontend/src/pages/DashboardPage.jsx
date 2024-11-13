@@ -54,6 +54,7 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
     layout: {
       minHeight: "100vh",
       backgroundColor: darkMode ? "#203175" : "#fff",
+      overflowX: "hidden", // Prevent horizontal scrolling
     },
     sider: {
       position: "sticky !important",
@@ -71,6 +72,7 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       margin: "24px 16px",
       padding: "20px",
       backgroundColor: darkMode ? "#113536" : "",
+      boxSizing: "border-box", // Include padding in the width calculations
     },
     trigerbtn: {
       fontSize: "16px",
