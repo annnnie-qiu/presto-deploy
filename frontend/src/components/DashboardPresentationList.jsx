@@ -167,7 +167,7 @@ const DashboardPresentationList = ({
         <Typography.Title level={3} strong>
           Your Presentation List
         </Typography.Title>
-        <Button type="link">View All</Button>
+        {/* <Button type="link">View All</Button> */}
       </div>
 
       {/* Grid layout for consistent spacing without overlapping */}
