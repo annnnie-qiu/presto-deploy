@@ -1,7 +1,6 @@
 import React, { StrictMode, useEffect } from "react";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
 import { motion, useAnimation } from "framer-motion";
-import CustomHeader from "../components/Header";
 import PrestoLogo from "../assets/Presto.png";
 
 function WelcomePage() {
@@ -32,7 +31,6 @@ function WelcomePage() {
 
   return (
     <div className=" h-screen w-screen">
-      <CustomHeader />
       <div className="logo">
         <img className="items-center justify-center" src={PrestoLogo} alt="Presto Logo"/>
       </div>

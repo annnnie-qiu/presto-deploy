@@ -1364,7 +1364,7 @@ function PresentationPage() {
                 </Splitter.Panel>
               </Splitter>
 
-              <DescSlide
+              {/* <DescSlide
                 currentSlides={currentSlides}
                 presentationId={presentationId}
                 selectedSlideId={selectedSlideId}
@@ -1393,7 +1393,7 @@ function PresentationPage() {
                 setBackgroundImage={setBackgroundImage}
                 setBackgroundType={setBackgroundType}
                 text="Second"
-              />
+              /> */}
             </Content>
           </Layout>
         )}
