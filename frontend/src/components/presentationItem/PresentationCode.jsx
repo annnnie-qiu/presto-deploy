@@ -10,7 +10,6 @@ import { Modal } from "antd";
 function PresentationCode({
   showCodeModal,
   data,
-  // setCodeBlockSize,
   setCodeLeight,
   setCodeWidth,
   setCodeContent,
@@ -21,6 +20,7 @@ function PresentationCode({
   selectedSlideId,
   setCurrentSlides,
   presentationId,
+  isHidden,
 }) {
   const codeRef = useRef(null);
   console.log("data", data);
@@ -51,9 +51,9 @@ function PresentationCode({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 0, height: 0 });
 
-  const handleDragStop = async (e, position) => {
-    console.log("drag stopped", position);
-    setPosition({ x: position.x, y: position.y });
+  const handleDragStop = async (e, newPos) => {
+    if (!isMoveActive) return;
+    setPosition({ x: newPos.x, y: newPos.y });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -66,9 +66,9 @@ function PresentationCode({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-          ...element,
-          position: { x: position.x, y: position.y },
-        }
+            ...element,
+            position: { x: newPos.x, y: newPos.y },
+          }
         : element
     );
     console.log("newContent", newContent);
@@ -82,14 +82,21 @@ function PresentationCode({
   };
 
   const handleResizeStop = (e, direction, ref, delta, position) => {
+    if (!isMoveActive) return;
+    const containerWidth = boundsRef.current.clientWidth;
+    const containerHeight = boundsRef.current.clientHeight;
+
+    // Calculate new dimensions in percentage relative to container
+    const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
+    const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
     setSize({
-      width: ref.style.width,
-      height: ref.style.height,
+      width: newWidthPercentage,
+      height: newHeightPercentage,
     });
-    setPosition({
-      x: position.x,
-      y: position.y,
-    });
+    // setPosition({
+    //   x: position.x,
+    //   y: position.y,
+    // });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -102,16 +109,11 @@ function PresentationCode({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-          ...element,
-          position: { x: position.x, y: position.y },
-          // codeBlockSize: {
-          //   // Add codeBlockSize
-          //   width: parseFloat(size.width),
-          //   length: parseFloat(size.height),
-          // },
-          codeWidth: ref.style.width,
-          codeLeight: ref.style.height,
-        }
+            ...element,
+            position: { x: position.x, y: position.y },
+            codeWidth: newWidthPercentage,
+            codeLeight: newHeightPercentage,
+          }
         : element
     );
     console.log("newContent", newContent);
@@ -138,12 +140,9 @@ function PresentationCode({
 
   const [lastClickTime, setLastClickTime] = useState(0);
   const handleClick = () => {
-    console.log("click event", isMoveActive);
-    console.log("yessssssssssss");
     const now = Date.now();
     // check if the click is a double click
     if (now - lastClickTime <= 500) {
-      console.log("double clicked");
       onDoubleClick(); // double click if in 0.5s
     }
     // update the last click time
@@ -191,76 +190,116 @@ function PresentationCode({
   };
 
   return (
-    <Rnd
-      default={{
-        x: `${data?.position.x}`,
-        y: `${data?.position.y}`,
-      }}
-      className="border border-gray-300"
-      bounds={boundsRef.current}
-      style={{
-        // width: `${data?.codeBlockSize?.width}%`,
-        // height: `${data?.codeBlockSize?.length}%`,
-        fontSize: `${data?.codeFontSize}em`,
-        position: "window",
-        overflow: "show",
-        margin: "0px",
-        padding: "0px",
-        backgroundColor: "transparent",
-      }}
-      onClick={(e) => {
-        console.log("click event111", e);
-        setIsMoveActive(!isMoveActive);
-        handleClick();
-      }}
-      onDragStop={handleDragStop}
-      onResizeStop={handleResizeStop}
-      onContextMenu={handleContextMenu}
-    >
-      <div
-        style={{
-          width: `${data?.codeWidth}%`,
-          height: `${data?.codeLeight}%`,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <pre
+    <>
+      {!isHidden && (
+        <Rnd
+          className="border border-gray-300"
+          bounds={boundsRef.current}
+          position={data?.position}
+          size={{
+            width: `${data?.codeWidth}%`,
+            height: `${data?.codeLeight}%`,
+          }}
           style={{
-            margin: "0",
-            padding: "0",
-            textAlign: "left",
-            overflow: "auto",
-            height: "100%",
-            width: "100%",
+            // width: `${data?.codeBlockSize?.width}%`,
+            // height: `${data?.codeBlockSize?.length}%`,
+            fontSize: `${data?.codeFontSize}em`,
+            position: "window",
+            overflow: "show",
+            backgroundColor: "transparent",
+          }}
+          onClick={() => {
+            setIsMoveActive(!isMoveActive);
+            handleClick();
+          }}
+          onDragStop={handleDragStop}
+          onResizeStop={handleResizeStop}
+          onContextMenu={handleContextMenu}
+        >
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            <pre
+              style={{
+                textAlign: "left",
+                overflow: "auto",
+                height: "100%",
+                width: "100%",
+              }}
+            >
+              <code
+                ref={codeRef}
+                style={{
+                  margin: "0",
+                  padding: "0",
+                  textAlign: "left",
+                  display: "block",
+                }}
+              ></code>
+            </pre>
+          </div>
+          {/* Corner Handles */}
+          {isMoveActive && PresentationSlideMove()}
+
+          <Modal
+            title="Delete this"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <p>Are you sure?</p>
+          </Modal>
+        </Rnd>
+      )}
+
+      {isHidden && (
+        <div
+          size={{
+            width: `${data?.codeWidth}%`,
+            height: `${data?.codeLeight}%`,
+          }}
+          style={{
+            fontSize: `${data?.codeFontSize}em`,
+            position: "window",
+            overflow: "show",
+            backgroundColor: "transparent",
           }}
         >
-          <code
-            ref={codeRef}
+          <div
             style={{
-              margin: "0",
-              padding: "0",
-              textAlign: "left",
-              display: "block",
+              width: "100%",
+              height: "100%",
+              overflow: "hidden",
             }}
-          ></code>
-        </pre>
-
-      </div>
-      {/* Corner Handles */}
-      {isMoveActive && PresentationSlideMove()}
-
-      <Modal
-        title="Delete this"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Yes"
-        cancelText="No"
-      >
-        <p>Are you sure?</p>
-      </Modal>
-    </Rnd>
+          >
+            <pre
+              style={{
+                textAlign: "left",
+                overflow: "auto",
+                height: "100%",
+                width: "100%",
+              }}
+            >
+              <code
+                ref={codeRef}
+                style={{
+                  margin: "0",
+                  padding: "0",
+                  textAlign: "left",
+                  display: "block",
+                }}
+              ></code>
+            </pre>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

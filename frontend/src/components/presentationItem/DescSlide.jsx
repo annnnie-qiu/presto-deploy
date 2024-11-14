@@ -122,7 +122,7 @@ const DescSlide = ({
                           selectedSlideId={selectedSlideId}
                           setCurrentSlides={setCurrentSlides}
                           presentationId={presentationId}
-                          isHidden={isHidden}
+
                         />
                       );
                     } else if (element.type === "code") {
@@ -142,7 +142,7 @@ const DescSlide = ({
                           selectedSlideId={selectedSlideId}
                           setCurrentSlides={setCurrentSlides}
                           presentationId={presentationId}
-                          isHidden={isHidden}
+
                         />
                       );
                     } else if (element.type === "video") {
@@ -212,6 +212,7 @@ const DescSlide = ({
                         selectedSlideId={selectedSlideId}
                         setCurrentSlides={setCurrentSlides}
                         presentationId={presentationId}
+                        isHidden={isHidden}
                       />
                     ); // Use a unique key for each element
                   } else if (element.type === "image") {
@@ -230,6 +231,7 @@ const DescSlide = ({
                         selectedSlideId={selectedSlideId}
                         setCurrentSlides={setCurrentSlides}
                         presentationId={presentationId}
+                        isHidden={isHidden}
                       />
                     );
                   } else if (element.type === "code") {
@@ -249,6 +251,7 @@ const DescSlide = ({
                         selectedSlideId={selectedSlideId}
                         setCurrentSlides={setCurrentSlides}
                         presentationId={presentationId}
+                        isHidden={isHidden}
                       />
                     );
                   } else if (element.type === "video") {
@@ -267,6 +270,7 @@ const DescSlide = ({
                         selectedSlideId={selectedSlideId}
                         setCurrentSlides={setCurrentSlides}
                         presentationId={presentationId}
+                        isHidden={isHidden}
                       />
                     );
                   }
