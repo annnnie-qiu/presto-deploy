@@ -75,8 +75,8 @@ const PresentationVideo = ({
         ? {
           ...element,
           position: { x: position.x, y: position.y },
-          videoSizeLength: size.height,
-          videoSizeWidth: size.width,
+          videoSizeLength: ref.style.height,
+          videoSizeWidth: ref.style.width,
         }
         : element
     );
