@@ -3,6 +3,7 @@ import { Flex, Menu } from 'antd';
 import PrestoLogo from "../assets/Presto.png";
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { showErrorToast } from "../../utils/toastUtils";
 import {
   UserOutlined,
   ProfileOutlined,
@@ -19,7 +20,7 @@ const StyledMenu = styled(Menu)`
 }
 `;
 
-const Sidebar = ({ darkMode }) => {
+const Sidebar = ({ darkMode, presentations }) => {
 
   const styles = {
     logo: {
@@ -67,6 +68,15 @@ const Sidebar = ({ darkMode }) => {
     navigate('/dashboard');
   }
 
+  const handleMyPresentations = () => {
+    if (presentations.length > 0) {
+      const latestPresentation = presentations[presentations.length - 1];
+      navigate(`/presentation/${latestPresentation.id}`);
+    } else {
+      showErrorToast("No presentations available.");
+    }
+  };
+
   const isPresentationPage = location.pathname.startsWith('/presentation');
 
   return (
@@ -92,7 +102,8 @@ const Sidebar = ({ darkMode }) => {
           {
             key: '2',
             icon: <OrderedListOutlined />,
-            label: 'My presentations',
+            label: isPresentationPage ? 'My presentations' : 'My Recent One',
+            onClick: handleMyPresentations
           },
           {
             key: '3',
