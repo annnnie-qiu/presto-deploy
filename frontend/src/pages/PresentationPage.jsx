@@ -276,12 +276,148 @@ const Tooltips = (
               </Button>
             </Tooltip>
 
+            <Tooltip
+              placement="right"
+              title={"Slide Re-arranging"}
+            >
+              <Button
+                onClick={() => {
+                  console.log("currentSlides", currentSlides);
+                  DescListPage(
+                    currentSlides,
+                    setCurrentSlides,
+                    selectedSlideId,
+                    setSelectedSlideId,
+                    presentationId,
+                    showTextModal,
+                    handleTextCancel,
+                    isTextModalOpen,
+                    showImageModal,
+                    isCodeModalOpen,
+                    showCodeModal,
+                    isFontModalOpen,
+                    showFontModal,
+                    handleFontCancel,
+                    isVideoModalOpen,
+                    showVideoModal,
+                    handleVideoCancel,
+                    setIsHidden,
+                    isBackgroundModalOpen,
+                    handleBackgroundCancel,
+                    showBackgroundModal,
+                    handleLeftRightKeyPress);
+                }}
+              >
+                <AppstoreOutlined />
+              </Button>
+            </Tooltip>
           </Flex>
         </Flex>
       </Flex>
     </ConfigProvider>
   );
 };
+
+const DescListPage = ({
+  currentSlides,
+  setCurrentSlides,
+  selectedSlideId,
+  setSelectedSlideId,
+  presentationId,
+  showTextModal,
+  handleTextCancel,
+  isTextModalOpen,
+  showImageModal,
+  isCodeModalOpen,
+  showCodeModal,
+  isFontModalOpen,
+  showFontModal,
+  handleFontCancel,
+  isVideoModalOpen,
+  showVideoModal,
+  handleVideoCancel,
+  setIsHidden,
+  isBackgroundModalOpen,
+  handleBackgroundCancel,
+  showBackgroundModal,
+  handleLeftRightKeyPress,
+}) => {
+
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const reorderedSlides = Array.from(currentSlides);
+    const [movedSlide] = reorderedSlides.splice(result.source.index, 1);
+    reorderedSlides.splice(result.destination.index, 0, movedSlide);
+
+    setCurrentSlides(reorderedSlides);
+  };
+
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="slides" direction="horizontal">
+        {(provided) => (
+          <div
+            className="flex h-full w-full px-2 overflow-x-auto"
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            <div className="grow flex flex-row gap-2 items-center py-2">
+              {currentSlides.map((slide, index) => (
+                <Draggable key={slide.slideId} draggableId={slide.slideId} index={index}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className={`flex w-48 h-24 justify-center items-center gap-2 size-4 ${
+                        selectedSlideId === slide.slideId
+                          ? "border-blue-500"
+                          : "border-inherit"
+                      }`}
+                      onClick={() => setSelectedSlideId(slide.slideId)}
+                    >
+                      <div className="self-end pb-2">{index + 1}</div>
+                      <div className="bg-white h-24 w-full rounded-lg border-solid border-2"></div>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+            <div className="w-8 h-full">
+              {Tooltips(
+                currentSlides,
+                setCurrentSlides,
+                presentationId,
+                selectedSlideId,
+                setSelectedSlideId,
+                showTextModal,
+                showImageModal,
+                handleTextCancel,
+                isTextModalOpen,
+                showCodeModal,
+                isCodeModalOpen,
+                handleFontCancel,
+                isFontModalOpen,
+                showFontModal,
+                handleVideoCancel,
+                isVideoModalOpen,
+                showVideoModal,
+                setIsHidden,
+                isBackgroundModalOpen,
+                handleBackgroundCancel,
+                showBackgroundModal,
+                handleLeftRightKeyPress
+              )}
+            </div>
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
+  );
+};
+
 
 const DescList = ({
   currentSlides,
