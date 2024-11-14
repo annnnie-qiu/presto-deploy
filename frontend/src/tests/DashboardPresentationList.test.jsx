@@ -7,7 +7,8 @@ import { BrowserRouter } from 'react-router-dom';
 // Mock getComputedStyle to avoid JSDOM errors
 Object.defineProperty(window, 'getComputedStyle', {
   value: () => ({
-    getPropertyValue: () => '', // Mocking the return value for getComputedStyle
+    // Mocking the return value for getComputedStyle
+    getPropertyValue: () => '',
   }),
 });
 
