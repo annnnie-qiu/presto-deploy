@@ -111,7 +111,7 @@ const DescSlide = ({
               exit={{ x: isHidden ? "-100vw" : 0 }}
               transition={{ duration: 0.1, ease: "linear" }}
               className={`rounded-lg border-solid border-2 border-inherit ${
-                isHidden ? "w-full h-full" : "w-11/12 h-5/6 bg-white"
+                isHidden ? "w-full h-full  bg-white" : "w-11/12 h-5/6 bg-white"
               }`}
               style={{
                 //   position: "relative",
@@ -140,6 +140,7 @@ const DescSlide = ({
                           selectedSlideId={selectedSlideId}
                           setCurrentSlides={setCurrentSlides}
                           presentationId={presentationId}
+                          isHidden={isHidden}
                         />
                       ); // Use a unique key for each element
                     } else if (element.type === "image") {
@@ -158,6 +159,7 @@ const DescSlide = ({
                           selectedSlideId={selectedSlideId}
                           setCurrentSlides={setCurrentSlides}
                           presentationId={presentationId}
+                          isHidden={isHidden}
                         />
                       );
                     } else if (element.type === "code") {
