@@ -37,9 +37,9 @@ const PresentationVideo = ({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-          ...element,
-          position: { x: position.x, y: position.y },
-        }
+            ...element,
+            position: { x: position.x, y: position.y },
+          }
         : element
     );
     console.log("newContent", newContent);
@@ -57,6 +57,9 @@ const PresentationVideo = ({
       width: ref.style.width,
       height: ref.style.height,
     });
+    console.log("size", size);
+    console.log("width", ref.style.width);
+    console.log("height", ref.style.height);
     setPosition({
       x: position.x,
       y: position.y,
@@ -73,11 +76,11 @@ const PresentationVideo = ({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-          ...element,
-          position: { x: position.x, y: position.y },
-          videoSizeLength: ref.style.height,
-          videoSizeWidth: ref.style.width,
-        }
+            ...element,
+            position: { x: position.x, y: position.y },
+            videoSizeLength: ref.style.height,
+            videoSizeWidth: ref.style.width,
+          }
         : element
     );
     console.log("newContent", newContent);
@@ -155,16 +158,14 @@ const PresentationVideo = ({
       default={{
         x: `${data?.position.x}`,
         y: `${data?.position.y}`,
+        width: `${data?.videoSizeWidth}`,
+        height: `${data?.videoSizeLength}`,
       }}
       bounds={boundsRef.current}
       style={{
         position: "window",
         overflow: "show",
         border: "2px dashed #000",
-        width: `${data?.videoSizeWidth}%`,
-        height: `${data?.videoSizeLength}%`,
-        margin: "0px",
-        padding: "0px",
         zIndex: data.zIndex,
       }}
       onClick={(e) => {
@@ -176,24 +177,31 @@ const PresentationVideo = ({
       onResizeStop={handleResizeStop}
       onContextMenu={handleContextMenu}
     >
-      <div
+      {/* <div
+        className="border border-4 "
+        onClick={(e) => {
+          console.log("click event111", e);
+          setIsMoveActive(!isMoveActive);
+          handleClick();
+        }}
+        onContextMenu={handleContextMenu}
+      > */}
+      <div className="w-full h-full"
         style={{
-          width: `${data.videoSizeWidth}%`,
-          height: `${data.videoSizeLength}%`,
           position: "relative",
           overflow: "hidden",
         }}
       >
-        <iframe
-          width="100%"
-          height="100%"
+        <iframe className="w-full h-full"
+          // width="100%"
+          // height="100%"
           src={`${data.videoUrl}${data.videoAutoplay ? "&autoplay=1" : ""}`}
           title="Embedded Video"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
-
       </div>
+      {/* </div> */}
       {/* Corner Handles */}
       {isMoveActive && PresentationSlideMove()}
 

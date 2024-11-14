@@ -143,11 +143,11 @@ function PresentationImage({
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  console.log("dataimage", data);
   return (
     <Rnd
       size={{
-        width: data?.imageSizeLength,
-        height: data?.imageSizeWidth,
         position: "window",
         overflow: "show",
         cursor: isMoveActive ? "move" : "default",
@@ -159,6 +159,8 @@ function PresentationImage({
       default={{
         x: `${data?.position.x}`,
         y: `${data?.position.y}`,
+        width: data?.imageSizeLength,
+        height: data?.imageSizeWidth,
       }}
       className="border border-gray-300"
       bounds={boundsRef.current}
