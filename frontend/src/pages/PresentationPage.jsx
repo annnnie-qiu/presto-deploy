@@ -57,7 +57,8 @@ const Tooltips = (
   isBackgroundModalOpen,
   handleBackgroundCancel,
   showBackgroundModal,
-  handleLeftRightKeyPress
+  handleLeftRightKeyPress,
+  setIsListHidden
 ) => {
   const [arrow, setArrow] = useState("Show");
   const mergedArrow = useMemo(() => {
@@ -276,36 +277,12 @@ const Tooltips = (
               </Button>
             </Tooltip>
 
-            <Tooltip
-              placement="right"
-              title={"Slide Re-arranging"}
-            >
+            {/* Slide Re-arranging */}
+            <Tooltip placement="right" title={"Slide Re-arranging"}>
               <Button
                 onClick={() => {
                   console.log("currentSlides", currentSlides);
-                  DescListPage(
-                    currentSlides,
-                    setCurrentSlides,
-                    selectedSlideId,
-                    setSelectedSlideId,
-                    presentationId,
-                    showTextModal,
-                    handleTextCancel,
-                    isTextModalOpen,
-                    showImageModal,
-                    isCodeModalOpen,
-                    showCodeModal,
-                    isFontModalOpen,
-                    showFontModal,
-                    handleFontCancel,
-                    isVideoModalOpen,
-                    showVideoModal,
-                    handleVideoCancel,
-                    setIsHidden,
-                    isBackgroundModalOpen,
-                    handleBackgroundCancel,
-                    showBackgroundModal,
-                    handleLeftRightKeyPress);
+                  setIsListHidden(false);
                 }}
               >
                 <AppstoreOutlined />
@@ -318,106 +295,85 @@ const Tooltips = (
   );
 };
 
-const DescListPage = ({
-  currentSlides,
-  setCurrentSlides,
-  selectedSlideId,
-  setSelectedSlideId,
-  presentationId,
-  showTextModal,
-  handleTextCancel,
-  isTextModalOpen,
-  showImageModal,
-  isCodeModalOpen,
-  showCodeModal,
-  isFontModalOpen,
-  showFontModal,
-  handleFontCancel,
-  isVideoModalOpen,
-  showVideoModal,
-  handleVideoCancel,
-  setIsHidden,
-  isBackgroundModalOpen,
-  handleBackgroundCancel,
-  showBackgroundModal,
-  handleLeftRightKeyPress,
-}) => {
+const DescListPage = () => {
+  // const handleDragEnd = (result) => {
+  //   console.log("result", result);
+  //   if (!result.destination) return;
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
+  //   const reorderedSlides = Array.from(currentSlides);
+  //   console.log("reorderedSlides", reorderedSlides);
+  //   const [movedSlide] = reorderedSlides.splice(result.source.index, 1);
+  //   console.log("movedSlide", movedSlide);
+  //   reorderedSlides.splice(result.destination.index, 0, movedSlide);
 
-    const reorderedSlides = Array.from(currentSlides);
-    const [movedSlide] = reorderedSlides.splice(result.source.index, 1);
-    reorderedSlides.splice(result.destination.index, 0, movedSlide);
-
-    setCurrentSlides(reorderedSlides);
-  };
+  //   setCurrentSlides(reorderedSlides);
+  // };
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="slides" direction="horizontal">
-        {(provided) => (
-          <div
-            className="flex h-full w-full px-2 overflow-x-auto"
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            <div className="grow flex flex-row gap-2 items-center py-2">
-              {currentSlides.map((slide, index) => (
-                <Draggable key={slide.slideId} draggableId={slide.slideId} index={index}>
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className={`flex w-48 h-24 justify-center items-center gap-2 size-4 ${
-                        selectedSlideId === slide.slideId
-                          ? "border-blue-500"
-                          : "border-inherit"
-                      }`}
-                      onClick={() => setSelectedSlideId(slide.slideId)}
-                    >
-                      <div className="self-end pb-2">{index + 1}</div>
-                      <div className="bg-white h-24 w-full rounded-lg border-solid border-2"></div>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-            <div className="w-8 h-full">
-              {Tooltips(
-                currentSlides,
-                setCurrentSlides,
-                presentationId,
-                selectedSlideId,
-                setSelectedSlideId,
-                showTextModal,
-                showImageModal,
-                handleTextCancel,
-                isTextModalOpen,
-                showCodeModal,
-                isCodeModalOpen,
-                handleFontCancel,
-                isFontModalOpen,
-                showFontModal,
-                handleVideoCancel,
-                isVideoModalOpen,
-                showVideoModal,
-                setIsHidden,
-                isBackgroundModalOpen,
-                handleBackgroundCancel,
-                showBackgroundModal,
-                handleLeftRightKeyPress
-              )}
-            </div>
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+    // <DragDropContext onDragEnd={handleDragEnd}>
+    //   <Droppable droppableId="slides" direction="horizontal">
+    //     {(provided) => (
+    //       <div
+    //         className="flex h-full w-full px-2 overflow-x-auto"
+    //         ref={provided.innerRef}
+    //         {...provided.droppableProps}
+    //       >
+    //         <div className="grow flex flex-row gap-2 items-center py-2">
+    //           {currentSlides.map((slide, index) => (
+    //             <Draggable key={slide.slideId} draggableId={slide.slideId} index={index}>
+    //               {(provided) => (
+    //                 <div
+    //                   ref={provided.innerRef}
+    //                   {...provided.draggableProps}
+    //                   {...provided.dragHandleProps}
+    //                   className={`flex w-48 h-24 justify-center items-center gap-2 size-4 ${
+    //                     selectedSlideId === slide.slideId
+    //                       ? "border-blue-500"
+    //                       : "border-inherit"
+    //                   }`}
+    //                   onClick={() => setSelectedSlideId(slide.slideId)}
+    //                 >
+    //                   <div className="self-end pb-2">{index + 1}</div>
+    //                   <div className="bg-white h-24 w-full rounded-lg border-solid border-2"></div>
+    //                 </div>
+    //               )}
+    //             </Draggable>
+    //           ))}
+    //           {provided.placeholder}
+    //         </div>
+    //         <div className="w-8 h-full">
+    //           {Tooltips(
+    //             currentSlides,
+    //             setCurrentSlides,
+    //             presentationId,
+    //             selectedSlideId,
+    //             setSelectedSlideId,
+    //             showTextModal,
+    //             showImageModal,
+    //             handleTextCancel,
+    //             isTextModalOpen,
+    //             showCodeModal,
+    //             isCodeModalOpen,
+    //             handleFontCancel,
+    //             isFontModalOpen,
+    //             showFontModal,
+    //             handleVideoCancel,
+    //             isVideoModalOpen,
+    //             showVideoModal,
+    //             setIsHidden,
+    //             isBackgroundModalOpen,
+    //             handleBackgroundCancel,
+    //             showBackgroundModal,
+    //             handleLeftRightKeyPress
+    //           )}
+    //         </div>
+    //       </div>
+    //     )}
+    //   </Droppable>
+    // </DragDropContext>
+    <div>check</div>
   );
 };
-
 
 const DescList = ({
   currentSlides,
@@ -442,6 +398,7 @@ const DescList = ({
   handleBackgroundCancel,
   showBackgroundModal,
   handleLeftRightKeyPress,
+  setIsListHidden,
 }) => (
   <div className="flex h-full w-full px-2">
     <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
@@ -487,7 +444,8 @@ const DescList = ({
         isBackgroundModalOpen,
         handleBackgroundCancel,
         showBackgroundModal,
-        handleLeftRightKeyPress
+        handleLeftRightKeyPress,
+        setIsListHidden
       )}
     </div>
   </div>
@@ -544,6 +502,7 @@ function PresentationPage() {
   const [selectedElementId, setSelectedElementId] = useState(undefined);
 
   const [isHidden, setIsHidden] = useState(false);
+  const [isListHidden, setIsListHidden] = useState(true);
 
   const [form] = Form.useForm();
   const [formLayout, setFormLayout] = useState("horizontal");
@@ -744,14 +703,14 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-            ...element,
-            textInput: textInput,
-            textSizeLength: textSizeLength,
-            textSizeWidth: textSizeWidth,
-            textFontSize: textFontSize,
-            textFontColor: textFontColor,
-            zIndex: zIndex,
-          }
+              ...element,
+              textInput: textInput,
+              textSizeLength: textSizeLength,
+              textSizeWidth: textSizeWidth,
+              textFontSize: textFontSize,
+              textFontColor: textFontColor,
+              zIndex: zIndex,
+            }
           : element
       );
     } else {
@@ -870,13 +829,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-            ...element,
-            imageSizeLength: imageSizeLength,
-            imageSizeWidth: imageSizeWidth,
-            imageAlt: imageAlt,
-            uploadImage: uploadImage,
-            zIndex: zIndex,
-          }
+              ...element,
+              imageSizeLength: imageSizeLength,
+              imageSizeWidth: imageSizeWidth,
+              imageAlt: imageAlt,
+              uploadImage: uploadImage,
+              zIndex: zIndex,
+            }
           : element
       );
     } else {
@@ -989,13 +948,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-            ...element,
-            videoUrl: videoUrl,
-            videoSizeLength: videoSizeLength,
-            videoSizeWidth: videoSizeWidth,
-            videoAutoplay: videoAutoplay,
-            zIndex: zIndex,
-          }
+              ...element,
+              videoUrl: videoUrl,
+              videoSizeLength: videoSizeLength,
+              videoSizeWidth: videoSizeWidth,
+              videoAutoplay: videoAutoplay,
+              zIndex: zIndex,
+            }
           : element
       );
     } else {
@@ -1079,9 +1038,9 @@ function PresentationPage() {
     const newSlides = currentSlides.map((slide, index) =>
       index === targetIndex
         ? {
-          ...slide,
-          background: newBackground,
-        }
+            ...slide,
+            background: newBackground,
+          }
         : slide
     );
 
@@ -1152,6 +1111,19 @@ function PresentationPage() {
   const [currentPresentation, setCurrentPresentation] =
     React.useState(undefined);
 
+  const handleDragEnd = (result) => {
+    console.log("result", result);
+    if (!result.destination) return;
+
+    const reorderedSlides = Array.from(currentSlides);
+    console.log("reorderedSlides", reorderedSlides);
+    const [movedSlide] = reorderedSlides.splice(result.source.index, 1);
+    console.log("movedSlide", movedSlide);
+    reorderedSlides.splice(result.destination.index, 0, movedSlide);
+
+    setCurrentSlides(reorderedSlides);
+  };
+
   const styles = {
     sider: {
       height: "100vh",
@@ -1181,12 +1153,12 @@ function PresentationPage() {
   return (
     <>
       <Layout>
-        {isHidden && (
+        {isHidden && isListHidden && (
           <div className="flex h-screen w-screen">
             <div className="w-10 h-full">
               <Tooltip
                 placement="right"
-                title={"Click for Preview viewing your current presentation"}
+                title={"Click for back to your current presentation list"}
               >
                 <Button
                   onClick={() => {
@@ -1267,7 +1239,64 @@ function PresentationPage() {
       </Layout>
 
       <Layout>
-        {!isHidden && (
+        {!isHidden && !isListHidden && (
+          <div className="flex h-screen w-screen">
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="slides" direction="horizontal">
+                {(provided) => (
+                  <div
+                    className="flex h-full w-full px-2 overflow-x-auto"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    <div className="grow flex flex-row gap-2 items-center py-2">
+                      {currentSlides.map((slide, index) => (
+                        <Draggable
+                          key={slide.slideId}
+                          draggableId={slide.slideId.toString()}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className={`flex w-48 h-24 justify-center items-center gap-2 size-4 ${
+                                selectedSlideId === slide.slideId
+                                  ? "border-blue-500"
+                                  : "border-inherit"
+                              }`}
+                              onClick={() => setSelectedSlideId(slide.slideId)}
+                            >
+                              <div className="self-end pb-2">{index + 1}</div>
+                              <div className="bg-white h-24 w-full rounded-lg border-solid border-2"></div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                    <div className="w-8 h-full">
+                      <Tooltip placement="right" title={"Click"}>
+                        <Button
+                          onClick={() => {
+                            setIsListHidden(true);
+                          }}
+                        >
+                          <FullscreenExitOutlined />
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </div>
+        )}
+      </Layout>
+
+      <Layout>
+        {!isHidden && isListHidden && (
           <Sider
             theme="light"
             trigger={null}
@@ -1285,7 +1314,7 @@ function PresentationPage() {
             />
           </Sider>
         )}
-        {!isHidden && (
+        {!isHidden && isListHidden && (
           <Layout className="flex flex-col h-screen">
             <Header style={styles.header}>
               <HeaherPresent />
@@ -1303,7 +1332,7 @@ function PresentationPage() {
                   max="70%"
                   className="flex-grow overflow-y-auto max-h-screen"
                 >
-                  <div >
+                  <div>
                     <DescList
                       currentSlides={currentSlides}
                       setCurrentSlides={setCurrentSlides}
@@ -1327,6 +1356,7 @@ function PresentationPage() {
                       handleBackgroundCancel={handleBackgroundCancel}
                       setIsHidden={setIsHidden}
                       handleLeftRightKeyPress={handleLeftRightKeyPress}
+                      setIsListHidden={setIsListHidden}
                     />
                   </div>
                 </Splitter.Panel>
@@ -1648,9 +1678,7 @@ function PresentationPage() {
                 max={100}
                 // value={codeBlockSize.width}
                 value={codeWidth}
-                onChange={(e) =>
-                  setCodeWidth(e.target.value)
-                }
+                onChange={(e) => setCodeWidth(e.target.value)}
               />
             </Form.Item>
             <Form.Item label="Code Content">
