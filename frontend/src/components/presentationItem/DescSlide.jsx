@@ -109,7 +109,7 @@ const DescSlide = ({
           exit={{ x: isHidden ? "-100vw" : 0 }}
           transition={{ duration: 0.1, ease: "linear" }}
           className={`rounded-lg border-solid border-2 border-inherit ${
-            isHidden ? "w-full h-full" : "w-11/12 h-5/6"
+            isHidden ? "w-full h-full" : "w-11/12 h-5/6 bg-white"
           }`}
           style={{
             //   position: "relative",
