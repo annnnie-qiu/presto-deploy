@@ -195,7 +195,7 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
         collapsed={collapsed}
         style={styles.sider}
       >
-        <Sidebar darkMode={darkMode} />
+        <Sidebar darkMode={darkMode} presentations={presentations} />
 
         <Button
           type="text"
