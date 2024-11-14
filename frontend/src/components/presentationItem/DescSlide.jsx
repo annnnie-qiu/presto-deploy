@@ -103,7 +103,7 @@ const DescSlide = ({
     <div className="flex h-screen w-screen justify-center  items-center">
       <AnimatePresence mode="popLayout">
         <motion.div
-          key={selectedSlideId} // 唯一 key 触发 AnimatePresence
+          key={selectedSlideId}
           initial={{ x: isHidden ? "100vw" : 0 }}
           animate={{ x: 0 }}
           exit={{ x: isHidden ? "-100vw" : 0 }}

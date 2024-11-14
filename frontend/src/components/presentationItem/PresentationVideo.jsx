@@ -37,9 +37,9 @@ const PresentationVideo = ({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+        }
         : element
     );
     console.log("newContent", newContent);
@@ -73,11 +73,11 @@ const PresentationVideo = ({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            videoSizeLength: size.height,
-            videoSizeWidth: size.width,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          videoSizeLength: size.height,
+          videoSizeWidth: size.width,
+        }
         : element
     );
     console.log("newContent", newContent);
