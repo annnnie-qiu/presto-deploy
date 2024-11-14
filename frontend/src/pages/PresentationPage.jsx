@@ -511,15 +511,20 @@ function PresentationPage() {
       if (targetIndex > 0) {
         const newSlideId = currentSlides[targetIndex - 1].slideId;
         setSelectedSlideId(newSlideId);
-        if (hasTwoSlashes) {
-          console.log("targetIndex", targetIndex);
-          console.log("has two slashes");
-          window.history.pushState(
-            {},
-            "",
-            `/presentation/${presentationId}/${newSlideId}`
-          );
-        }
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${newSlideId}`
+        );
+        // if (hasTwoSlashes) {
+        //   console.log("targetIndex", targetIndex);
+        //   console.log("has two slashes");
+        //   window.history.pushState(
+        //     {},
+        //     "",
+        //     `/presentation/${presentationId}/${newSlideId}`
+        //   );
+        // }
       } else {
         showErrorToast("This is the first slide now");
       }
@@ -531,13 +536,18 @@ function PresentationPage() {
       if (targetIndex < currentSlides.length - 1) {
         const newSlideId = currentSlides[targetIndex + 1].slideId;
         setSelectedSlideId(newSlideId);
-        if (hasTwoSlashes) {
-          window.history.pushState(
-            {},
-            "",
-            `/presentation/${presentationId}/${newSlideId}`
-          );
-        }
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${newSlideId}`
+        );
+        // if (hasTwoSlashes) {
+        //   window.history.pushState(
+        //     {},
+        //     "",
+        //     `/presentation/${presentationId}/${newSlideId}`
+        //   );
+        // }
       } else {
         showErrorToast("This is the last slide now");
       }
@@ -546,7 +556,7 @@ function PresentationPage() {
 
     if (e.key === "Escape") {
       setIsHidden(false);
-      window.history.pushState({}, "", `/presentation/${presentationId}`);
+      // window.history.pushState({}, "", `/presentation/${presentationId}`);
     }
   };
 
@@ -565,15 +575,20 @@ function PresentationPage() {
       if (targetIndex > 0) {
         const newSlideId = currentSlides[targetIndex - 1].slideId;
         setSelectedSlideId(newSlideId);
-        if (hasTwoSlashes) {
-          console.log("targetIndex", targetIndex);
-          console.log("has two slashes");
-          window.history.pushState(
-            {},
-            "",
-            `/presentation/${presentationId}/${newSlideId}`
-          );
-        }
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${newSlideId}`
+        );
+        // if (hasTwoSlashes) {
+        //   console.log("targetIndex", targetIndex);
+        //   console.log("has two slashes");
+        //   window.history.pushState(
+        //     {},
+        //     "",
+        //     `/presentation/${presentationId}/${newSlideId}`
+        //   );
+        // }
       } else {
         showErrorToast("This is the first slide now");
       }
@@ -584,13 +599,18 @@ function PresentationPage() {
       if (targetIndex < currentSlides.length - 1) {
         const newSlideId = currentSlides[targetIndex + 1].slideId;
         setSelectedSlideId(newSlideId);
-        if (hasTwoSlashes) {
-          window.history.pushState(
-            {},
-            "",
-            `/presentation/${presentationId}/${newSlideId}`
-          );
-        }
+        window.history.pushState(
+          {},
+          "",
+          `/presentation/${presentationId}/${newSlideId}`
+        );
+        // if (hasTwoSlashes) {
+        //   window.history.pushState(
+        //     {},
+        //     "",
+        //     `/presentation/${presentationId}/${newSlideId}`
+        //   );
+        // }
       } else {
         showErrorToast("This is the last slide now");
       }
@@ -599,7 +619,7 @@ function PresentationPage() {
 
     if (key === "Escape") {
       setIsHidden(false);
-      window.history.pushState({}, "", `/presentation/${presentationId}`);
+      // window.history.pushState({}, "", `/presentation/${presentationId}`);
     }
   };
 
@@ -1088,7 +1108,7 @@ function PresentationPage() {
                       window.history.pushState(
                         {},
                         "",
-                        `/presentation/${presentationId}`
+                        `/presentation/${presentationId}/${selectedSlideId}`
                       );
                     } catch (error) {
                       console.log(error);
