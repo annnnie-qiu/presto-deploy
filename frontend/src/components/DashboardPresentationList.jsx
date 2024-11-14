@@ -66,6 +66,8 @@ const DashboardPresentationList = ({
 
   // Function to handle modal save
   const handleSave = async () => {
+
+
     if (currentPresentation) {
       try {
         const updatedPresentation = {
