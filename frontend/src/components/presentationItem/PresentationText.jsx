@@ -21,8 +21,8 @@ function PresentationText({
   setCurrentSlides,
   presentationId,
   isHidden,
+  setTriggerByDoubleClick,
 }) {
-
   const [isMoveActive, setIsMoveActive] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -49,6 +49,7 @@ function PresentationText({
     setTextFontColor(data.textFontColor);
     // setTextFontFamily(data.textFontFamily);
     setSelectedElementId(data.id);
+    setTriggerByDoubleClick(true);
     showTextModal();
   };
 
@@ -184,10 +185,6 @@ function PresentationText({
     <>
       {!isHidden && (
         <Rnd
-          // default={{
-          //   x: `${data?.position.x}%`,
-          //   y: `${data?.position.y}%`,
-          // }}
           size={{
             width: `${data?.textSizeWidth}%`,
             height: `${data?.textSizeLength}%`,

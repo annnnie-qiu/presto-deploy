@@ -18,6 +18,7 @@ function PresentationImage({
   setCurrentSlides,
   presentationId,
   isHidden,
+  setTriggerByDoubleClick,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -109,6 +110,7 @@ function PresentationImage({
     setImageAlt(data.imageAlt);
     setSelectedElementId(data.id);
     setUploadImage(data.uploadImage);
+    setTriggerByDoubleClick(true);
     showImageModal();
   };
 

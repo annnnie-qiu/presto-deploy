@@ -36,6 +36,7 @@ const DescSlide = ({
   setVideoSizeWidth,
   setVideoAutoplay,
   isHidden,
+  setTriggerByDoubleClick,
 }) => {
   const boundsRef = useRef(null);
 
@@ -64,6 +65,7 @@ const DescSlide = ({
   }
   return (
     <>
+      {/* for preview page */}
       {isHidden && (
         <div className="flex h-full w-full justify-center  items-center">
           <AnimatePresence mode="popLayout">
@@ -104,6 +106,7 @@ const DescSlide = ({
                           setCurrentSlides={setCurrentSlides}
                           presentationId={presentationId}
                           isHidden={isHidden}
+                          setTriggerByDoubleClick={setTriggerByDoubleClick}
                         />
                       ); // Use a unique key for each element
                     } else if (element.type === "image") {
@@ -122,7 +125,7 @@ const DescSlide = ({
                           selectedSlideId={selectedSlideId}
                           setCurrentSlides={setCurrentSlides}
                           presentationId={presentationId}
-
+                          setTriggerByDoubleClick={setTriggerByDoubleClick}
                         />
                       );
                     } else if (element.type === "code") {
@@ -142,7 +145,7 @@ const DescSlide = ({
                           selectedSlideId={selectedSlideId}
                           setCurrentSlides={setCurrentSlides}
                           presentationId={presentationId}
-
+                          setTriggerByDoubleClick={setTriggerByDoubleClick}
                         />
                       );
                     } else if (element.type === "video") {
@@ -161,6 +164,7 @@ const DescSlide = ({
                           selectedSlideId={selectedSlideId}
                           setCurrentSlides={setCurrentSlides}
                           presentationId={presentationId}
+                          setTriggerByDoubleClick={setTriggerByDoubleClick}
                         />
                       );
                     }
@@ -213,6 +217,7 @@ const DescSlide = ({
                         setCurrentSlides={setCurrentSlides}
                         presentationId={presentationId}
                         isHidden={isHidden}
+                        setTriggerByDoubleClick={setTriggerByDoubleClick}
                       />
                     ); // Use a unique key for each element
                   } else if (element.type === "image") {
@@ -232,6 +237,7 @@ const DescSlide = ({
                         setCurrentSlides={setCurrentSlides}
                         presentationId={presentationId}
                         isHidden={isHidden}
+                        setTriggerByDoubleClick={setTriggerByDoubleClick}
                       />
                     );
                   } else if (element.type === "code") {
@@ -252,6 +258,7 @@ const DescSlide = ({
                         setCurrentSlides={setCurrentSlides}
                         presentationId={presentationId}
                         isHidden={isHidden}
+                        setTriggerByDoubleClick={setTriggerByDoubleClick}
                       />
                     );
                   } else if (element.type === "video") {
@@ -271,6 +278,7 @@ const DescSlide = ({
                         setCurrentSlides={setCurrentSlides}
                         presentationId={presentationId}
                         isHidden={isHidden}
+                        setTriggerByDoubleClick={setTriggerByDoubleClick}
                       />
                     );
                   }

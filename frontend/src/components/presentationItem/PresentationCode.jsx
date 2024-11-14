@@ -21,6 +21,7 @@ function PresentationCode({
   setCurrentSlides,
   presentationId,
   isHidden,
+  setTriggerByDoubleClick,
 }) {
   const codeRef = useRef(null);
   console.log("data", data);
@@ -127,7 +128,6 @@ function PresentationCode({
   };
 
   const onDoubleClick = async () => {
-    console.log("double clicked");
 
     setSelectedElementId(data.id);
     // setCodeBlockSize(data.codeBlockSize);
@@ -135,6 +135,7 @@ function PresentationCode({
     setCodeWidth(data.codeWidth);
     setCodeContent(data.codeContent);
     setCodeFontSize(data.codeFontSize);
+    setTriggerByDoubleClick(true);
     showCodeModal();
   };
 

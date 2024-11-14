@@ -18,6 +18,7 @@ const PresentationVideo = ({
   setCurrentSlides,
   presentationId,
   isHidden,
+  setTriggerByDoubleClick,
 }) => {
   const [isMoveActive, setIsMoveActive] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -116,6 +117,7 @@ const PresentationVideo = ({
     setVideoSizeLength(data.videoSizeLength);
     setVideoSizeWidth(data.videoSizeWidth);
     setVideoAutoplay(data.videoAutoplay);
+    setTriggerByDoubleClick(true);
     showVideoModal();
   };
 
