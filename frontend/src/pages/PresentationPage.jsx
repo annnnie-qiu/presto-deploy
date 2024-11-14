@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { MyDroppable } from "./MyDroppable";
-
 import { useNavigate } from "react-router-dom";
 import HeaherPresent from "../components/HeaherPresent";
 import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
@@ -1012,12 +1011,20 @@ function PresentationPage() {
     };
   }, [currentSlides, selectedSlideId]);
 
+  const navigate = useNavigate();
   React.useEffect(() => {
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
       const presentation = response.store.presentations.find(
         (presentation) => presentation.id == presentationId
       );
+      console.log("presentation", presentation);
+      if (presentation === undefined) {
+        errorPopUp("Error", "This presentation does not exist");
+        navigate("/dashboard");
+        // navigator.history.push("/dashboard");
+        return;
+      }
       setCurrentPresentation(presentation);
       setCurrentSlides(presentation.slides);
     };
