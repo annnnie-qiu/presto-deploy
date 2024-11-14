@@ -57,7 +57,7 @@ const DashboardBanner = ( { darkMode, onCreate }) => {
             strong
             style={{ ...styles.descriptionText, fontFamily: "Quicksand, sans-serif", fontStyle: "italic" }}
           >
-            Prestro makes everthing happen
+            Prestro makes everything happen
           </Typography.Text>
         </Flex>
 
