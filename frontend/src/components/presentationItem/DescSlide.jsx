@@ -100,7 +100,7 @@ const DescSlide = ({
   // }, [selectedSlide, setCurrentSlides]); // Trigger whenever the selectedSlide changes
 
   return (
-    <div className="flex h-screen w-screen justify-center  items-center">
+    <div className="flex h-full w-full justify-center  items-center">
       <AnimatePresence mode="popLayout">
         <motion.div
           key={selectedSlideId}

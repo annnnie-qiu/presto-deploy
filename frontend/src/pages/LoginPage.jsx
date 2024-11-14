@@ -38,7 +38,7 @@ function LoginPage() {
 
     // check if the user has verified the reCAPTCHA
     if (!captchaValue) {
-      alert("Please do the human-machine verification!");
+      errorPopUp("There was an error logging in", "Please do the human-machine verification!");
       return;
     }
     try {

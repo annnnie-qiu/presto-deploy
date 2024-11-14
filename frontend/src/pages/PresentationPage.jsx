@@ -1286,7 +1286,7 @@ function PresentationPage() {
           </Sider>
         )}
         {!isHidden && (
-          <Layout>
+          <Layout className="flex flex-col h-screen">
             <Header style={styles.header}>
               <HeaherPresent />
             </Header>
@@ -1301,9 +1301,9 @@ function PresentationPage() {
                   defaultSize="20%"
                   min="20%"
                   max="70%"
-                  className="max-h-screen overflow-y-auto"
+                  className="flex-grow overflow-y-auto max-h-screen"
                 >
-                  <div className="h-full">
+                  <div >
                     <DescList
                       currentSlides={currentSlides}
                       setCurrentSlides={setCurrentSlides}
