@@ -22,27 +22,14 @@ function PresentationText({
   presentationId,
   isHidden,
 }) {
-  // Adjust the initial position and dimensions
-  const adjustedPosition = {
-    x: data.position.x * 0.615,
-    y: data.position.y * 0.687,
-  };
-  const adjustedWidth = data.textSizeWidth * 0.615;
-  const adjustedHeight = data.textSizeLength * 0.687;
 
   const [isMoveActive, setIsMoveActive] = useState(false);
-  // const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 0, height: 0 });
-  const [position, setPosition] = useState(adjustedPosition);
+  // const [position, setPosition] = useState(adjustedPosition);
 
   const [lastClickTime, setLastClickTime] = useState(0);
   const handleClick = () => {
-    // console.log("click event", e);
-    // if (e.type === "click") {
-    //   console.log("left click");
-    // } else if (e.type === "contextmenu") {
-    //   console.log("Right click");
-    // }
     const now = Date.now();
     // check if the click is a double click
     if (now - lastClickTime <= 500) {
@@ -209,8 +196,8 @@ function PresentationText({
           className={`${isHidden ? "" : "border border-gray-300"}`}
           bounds={boundsRef.current}
           style={{
-            width: `${data?.textSizeWidth}`,
-            height: `${data?.textSizeLength}`,
+            // width: `${data?.textSizeWidth}`,
+            // height: `${data?.textSizeLength}`,
             color: data?.textFontColor,
             fontSize: `${data?.textFontSize}em`,
             fontFamily: data?.textFontFamily || "Quicksand, sans-serif",

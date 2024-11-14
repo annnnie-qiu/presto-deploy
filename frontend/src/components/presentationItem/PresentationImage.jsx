@@ -22,9 +22,10 @@ function PresentationImage({
   const [isMoveActive, setIsMoveActive] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleDragStop = async (e, position) => {
-    console.log("drag stopped", position);
-    setPosition({ x: position.x, y: position.y });
+  const handleDragStop = async (e, newPos) => {
+    if (!isMoveActive) return;
+    console.log("drag stopped", newPos);
+    setPosition({ x: newPos.x, y: newPos.y });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -34,7 +35,7 @@ function PresentationImage({
       element.id === data.id
         ? {
             ...element,
-            position: { x: position.x, y: position.y },
+            position: { x: newPos.x, y: newPos.y },
           }
         : element
     );
@@ -61,13 +62,24 @@ function PresentationImage({
   };
 
   const handleResizeStop = (e, direction, ref, delta, position) => {
+    if (!isMoveActive) return;
     const { width, height } = ref.getBoundingClientRect();
     console.log("resize stopped", width, height);
+    console.log("ref.style.width", ref.style.width);
+    console.log("ref.offsetWidth", ref.offsetWidth);
+    const containerWidth = boundsRef.current.clientWidth;
+    const containerHeight = boundsRef.current.clientHeight;
+    console.log("containerWidth", containerWidth);
 
-    setPosition({
-      x: position.x,
-      y: position.y,
-    });
+    // Calculate new dimensions in percentage relative to container
+    const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
+    const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
+    console.log("newWidthPercentage", newWidthPercentage);
+
+    // setPosition({
+    //   x: position.x,
+    //   y: position.y,
+    // });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -80,8 +92,8 @@ function PresentationImage({
         ? {
             ...element,
             position: { x: position.x, y: position.y },
-            imageSizeLength: height,
-            imageSizeWidth: width,
+            imageSizeLength: newHeightPercentage,
+            imageSizeWidth: newWidthPercentage,
           }
         : element
     );
@@ -147,68 +159,78 @@ function PresentationImage({
   };
 
   console.log("dataimage", data);
-  return (
-    <Rnd
-      size={{
-        position: "window",
-        overflow: "show",
-        cursor: isMoveActive ? "move" : "default",
-        width: `${data?.imageSizeWidth}px`,
-        height: `${data?.imageSizeLength}px`,
-      }}
-      position={{
-        x: data?.position.x || 0,
-        y: data?.position.y || 0,
-      }}
-      default={{
-        x: `${data?.position.x}`,
-        y: `${data?.position.y}`,
-        width: `${data?.imageSizeLength}`,
-        height: `${data?.imageSizeWidth}`,
-      }}
-      className="border border-gray-300"
-      bounds={boundsRef.current}
-      onClick={() => {
-        setIsMoveActive(!isMoveActive);
-        handleClick();
-      }}
-      onDragStop={handleDragStop}
-      onResizeStop={handleResizeStop}
-      onContextMenu={handleContextMenu}
-    >
-      <div
-        className="w-full h-full"
-        size={{
-          // width: `${data?.imageSizeLength}px`,
-          // height: `${data?.imageSizeWidth}px`,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        {data ? (
-          <span>
-            <img
-              src={`${data.uploadImage}`}
-              alt={`${data.imageAlt}`}
-              className="w-full h-full"
-            />
-          </span>
-        ) : null}
-      </div>
-      {/* Corner Handles */}
-      {isMoveActive && PresentationSlideMove()}
 
-      <Modal
-        title="Delete this"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Yes"
-        cancelText="No"
-      >
-        <p>Are you sure?</p>
-      </Modal>
-    </Rnd>
+
+  return (
+    <>
+      {!isHidden && (
+        <Rnd
+          size={{
+            width: `${data?.imageSizeWidth}%`,
+            height: `${data?.imageSizeLength}%`,
+          }}
+          position={{
+            x: data?.position.x || 0,
+            y: data?.position.y || 0,
+          }}
+          style={{
+            position: "window",
+            overflow: "show",
+            cursor: isMoveActive ? "move" : "default",
+          }}
+          // default={{
+          //   x: `${data?.position.x}`,
+          //   y: `${data?.position.y}`,
+          //   width: `${data?.imageSizeLength}`,
+          //   height: `${data?.imageSizeWidth}`,
+          // }}
+          className="border border-gray-300"
+          bounds={boundsRef.current}
+          onClick={() => {
+            setIsMoveActive(!isMoveActive);
+            handleClick();
+          }}
+          onDragStop={handleDragStop}
+          onResizeStop={handleResizeStop}
+          onContextMenu={handleContextMenu}
+        >
+          <div
+            // className="w-full h-full"
+            size={{
+              // width: `${data?.imageSizeLength}px`,
+              // height: `${data?.imageSizeWidth}px`,
+              width: "100%",
+              height: "100%",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            {data ? (
+              <span>
+                <img
+                  src={`${data.uploadImage}`}
+                  alt={`${data.imageAlt}`}
+                  // className="w-full h-full"
+                />
+              </span>
+            ) : null}
+          </div>
+          {/* Corner Handles */}
+          {isMoveActive && PresentationSlideMove()}
+
+          <Modal
+            title="Delete this"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <p>Are you sure?</p>
+          </Modal>
+        </Rnd>
+      )}
+    </>
   );
 }
 
