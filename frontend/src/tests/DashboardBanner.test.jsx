@@ -36,4 +36,14 @@ describe('DashboardBanner Component', () => {
     expect(bannerCard).toHaveStyle('background-color: #fff');
     expect(bannerCard).toHaveStyle('color: #000');
   });
+
+  // Test to check if create button works
+  it('calls onCreate function when New presentation button is clicked', () => {
+    render(<DashboardBanner darkMode={false} onCreate={mockOnCreate} />);
+
+    const createButton = screen.getByRole('button', { name: /new presentation/i });
+    fireEvent.click(createButton);
+
+    expect(mockOnCreate).toHaveBeenCalled();
+  });
 })
