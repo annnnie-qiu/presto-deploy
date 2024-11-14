@@ -63,18 +63,12 @@ function PresentationImage({
 
   const handleResizeStop = (e, direction, ref, delta, position) => {
     if (!isMoveActive) return;
-    const { width, height } = ref.getBoundingClientRect();
-    console.log("resize stopped", width, height);
-    console.log("ref.style.width", ref.style.width);
-    console.log("ref.offsetWidth", ref.offsetWidth);
     const containerWidth = boundsRef.current.clientWidth;
     const containerHeight = boundsRef.current.clientHeight;
-    console.log("containerWidth", containerWidth);
 
     // Calculate new dimensions in percentage relative to container
     const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
     const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
-    console.log("newWidthPercentage", newWidthPercentage);
 
     // setPosition({
     //   x: position.x,
@@ -158,9 +152,6 @@ function PresentationImage({
     setIsModalOpen(false);
   };
 
-  console.log("dataimage", data);
-
-
   return (
     <>
       {!isHidden && (
@@ -178,12 +169,6 @@ function PresentationImage({
             overflow: "show",
             cursor: isMoveActive ? "move" : "default",
           }}
-          // default={{
-          //   x: `${data?.position.x}`,
-          //   y: `${data?.position.y}`,
-          //   width: `${data?.imageSizeLength}`,
-          //   height: `${data?.imageSizeWidth}`,
-          // }}
           className="border border-gray-300"
           bounds={boundsRef.current}
           onClick={() => {
@@ -195,10 +180,7 @@ function PresentationImage({
           onContextMenu={handleContextMenu}
         >
           <div
-            // className="w-full h-full"
             size={{
-              // width: `${data?.imageSizeLength}px`,
-              // height: `${data?.imageSizeWidth}px`,
               width: "100%",
               height: "100%",
               position: "relative",
@@ -229,6 +211,39 @@ function PresentationImage({
             <p>Are you sure?</p>
           </Modal>
         </Rnd>
+      )}
+
+      {isHidden && (
+        <div
+          size={{
+            width: `${data?.imageSizeWidth}%`,
+            height: `${data?.imageSizeLength}%`,
+          }}
+          style={{
+            position: "window",
+            overflow: "show",
+            cursor: isMoveActive ? "move" : "default",
+          }}
+        >
+          <div
+            size={{
+              width: "100%",
+              height: "100%",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            {data ? (
+              <span>
+                <img
+                  src={`${data.uploadImage}`}
+                  alt={`${data.imageAlt}`}
+                  // className="w-full h-full"
+                />
+              </span>
+            ) : null}
+          </div>
+        </div>
       )}
     </>
   );

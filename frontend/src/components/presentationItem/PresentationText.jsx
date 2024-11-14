@@ -259,8 +259,8 @@ function PresentationText({
           }}
           className={`${isHidden ? "" : "border border-gray-300"}`}
           style={{
-            width: `${data?.textSizeWidth}`,
-            height: `${data?.textSizeLength}`,
+            // width: `${data?.textSizeWidth}`,
+            // height: `${data?.textSizeLength}`,
             color: data?.textFontColor,
             fontSize: `${data?.textFontSize}em`,
             fontFamily: data?.textFontFamily || "Quicksand, sans-serif",
@@ -268,8 +268,8 @@ function PresentationText({
             cursor: isMoveActive ? "move" : "default",
             // position: "window",
             position: "absolute",
-            left: `${data?.position.x}px`,
-            top: `${data?.position.y}px`,
+            // left: `${data?.position.x}px`,
+            // top: `${data?.position.y}px`,
             // position: "relative",
           }}
           onClick={(e) => {
