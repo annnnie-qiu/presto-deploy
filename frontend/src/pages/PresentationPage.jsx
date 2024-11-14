@@ -1,4 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
 import { useNavigate } from "react-router-dom";
 import HeaherPresent from "../components/HeaherPresent";
 import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
@@ -9,6 +11,8 @@ import {
   MenuFoldOutlined,
   FileTextOutlined,
   FileImageOutlined,
+  FullscreenExitOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import { ConfigProvider, Segmented, Tooltip } from "antd";
@@ -271,12 +275,149 @@ const Tooltips = (
                 <FullscreenOutlined />
               </Button>
             </Tooltip>
+
+            <Tooltip
+              placement="right"
+              title={"Slide Re-arranging"}
+            >
+              <Button
+                onClick={() => {
+                  console.log("currentSlides", currentSlides);
+                  DescListPage(
+                    currentSlides,
+                    setCurrentSlides,
+                    selectedSlideId,
+                    setSelectedSlideId,
+                    presentationId,
+                    showTextModal,
+                    handleTextCancel,
+                    isTextModalOpen,
+                    showImageModal,
+                    isCodeModalOpen,
+                    showCodeModal,
+                    isFontModalOpen,
+                    showFontModal,
+                    handleFontCancel,
+                    isVideoModalOpen,
+                    showVideoModal,
+                    handleVideoCancel,
+                    setIsHidden,
+                    isBackgroundModalOpen,
+                    handleBackgroundCancel,
+                    showBackgroundModal,
+                    handleLeftRightKeyPress);
+                }}
+              >
+                <AppstoreOutlined />
+              </Button>
+            </Tooltip>
           </Flex>
         </Flex>
       </Flex>
     </ConfigProvider>
   );
 };
+
+const DescListPage = ({
+  currentSlides,
+  setCurrentSlides,
+  selectedSlideId,
+  setSelectedSlideId,
+  presentationId,
+  showTextModal,
+  handleTextCancel,
+  isTextModalOpen,
+  showImageModal,
+  isCodeModalOpen,
+  showCodeModal,
+  isFontModalOpen,
+  showFontModal,
+  handleFontCancel,
+  isVideoModalOpen,
+  showVideoModal,
+  handleVideoCancel,
+  setIsHidden,
+  isBackgroundModalOpen,
+  handleBackgroundCancel,
+  showBackgroundModal,
+  handleLeftRightKeyPress,
+}) => {
+
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const reorderedSlides = Array.from(currentSlides);
+    const [movedSlide] = reorderedSlides.splice(result.source.index, 1);
+    reorderedSlides.splice(result.destination.index, 0, movedSlide);
+
+    setCurrentSlides(reorderedSlides);
+  };
+
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="slides" direction="horizontal">
+        {(provided) => (
+          <div
+            className="flex h-full w-full px-2 overflow-x-auto"
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+          >
+            <div className="grow flex flex-row gap-2 items-center py-2">
+              {currentSlides.map((slide, index) => (
+                <Draggable key={slide.slideId} draggableId={slide.slideId} index={index}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className={`flex w-48 h-24 justify-center items-center gap-2 size-4 ${
+                        selectedSlideId === slide.slideId
+                          ? "border-blue-500"
+                          : "border-inherit"
+                      }`}
+                      onClick={() => setSelectedSlideId(slide.slideId)}
+                    >
+                      <div className="self-end pb-2">{index + 1}</div>
+                      <div className="bg-white h-24 w-full rounded-lg border-solid border-2"></div>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+            <div className="w-8 h-full">
+              {Tooltips(
+                currentSlides,
+                setCurrentSlides,
+                presentationId,
+                selectedSlideId,
+                setSelectedSlideId,
+                showTextModal,
+                showImageModal,
+                handleTextCancel,
+                isTextModalOpen,
+                showCodeModal,
+                isCodeModalOpen,
+                handleFontCancel,
+                isFontModalOpen,
+                showFontModal,
+                handleVideoCancel,
+                isVideoModalOpen,
+                showVideoModal,
+                setIsHidden,
+                isBackgroundModalOpen,
+                handleBackgroundCancel,
+                showBackgroundModal,
+                handleLeftRightKeyPress
+              )}
+            </div>
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
+  );
+};
+
 
 const DescList = ({
   currentSlides,
@@ -502,21 +643,6 @@ function PresentationPage() {
       } else {
         showErrorToast("This is the first slide now");
       }
-
-      // if (hasTwoSlashes) {
-      //   if (targetIndex >= 0) {
-      //     console.log("targetIndex", targetIndex);
-      //     console.log("has two slashes");
-      //     window.history.pushState(
-      //       {},
-      //       "",
-      //       `/presentation/${presentationId}/${newSlideId}`
-      //     );
-      //   } else {
-      //     console.log("targetIndex", targetIndex);
-      //     showErrorToast("This is the first slide now");
-      //   }
-      // }
     } else if (e.key === "ArrowRight") {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
@@ -555,34 +681,38 @@ function PresentationPage() {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
+
       if (targetIndex > 0) {
-        setSelectedSlideId(currentSlides[targetIndex - 1].slideId);
+        const newSlideId = currentSlides[targetIndex - 1].slideId;
+        setSelectedSlideId(newSlideId);
+        if (hasTwoSlashes) {
+          console.log("targetIndex", targetIndex);
+          console.log("has two slashes");
+          window.history.pushState(
+            {},
+            "",
+            `/presentation/${presentationId}/${newSlideId}`
+          );
+        }
       } else {
         showErrorToast("This is the first slide now");
-      }
-
-      if (hasTwoSlashes) {
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${selectedSlideId}`
-        );
       }
     } else if (key === "Right") {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
       if (targetIndex < currentSlides.length - 1) {
-        setSelectedSlideId(currentSlides[targetIndex + 1].slideId);
+        const newSlideId = currentSlides[targetIndex + 1].slideId;
+        setSelectedSlideId(newSlideId);
+        if (hasTwoSlashes) {
+          window.history.pushState(
+            {},
+            "",
+            `/presentation/${presentationId}/${newSlideId}`
+          );
+        }
       } else {
         showErrorToast("This is the last slide now");
-      }
-      if (hasTwoSlashes) {
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${selectedSlideId}`
-        );
       }
     }
     // }
@@ -614,14 +744,14 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              textInput: textInput,
-              textSizeLength: textSizeLength,
-              textSizeWidth: textSizeWidth,
-              textFontSize: textFontSize,
-              textFontColor: textFontColor,
-              zIndex: zIndex,
-            }
+            ...element,
+            textInput: textInput,
+            textSizeLength: textSizeLength,
+            textSizeWidth: textSizeWidth,
+            textFontSize: textFontSize,
+            textFontColor: textFontColor,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -740,13 +870,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              imageSizeLength: imageSizeLength,
-              imageSizeWidth: imageSizeWidth,
-              imageAlt: imageAlt,
-              uploadImage: uploadImage,
-              zIndex: zIndex,
-            }
+            ...element,
+            imageSizeLength: imageSizeLength,
+            imageSizeWidth: imageSizeWidth,
+            imageAlt: imageAlt,
+            uploadImage: uploadImage,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -859,13 +989,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              videoUrl: videoUrl,
-              videoSizeLength: videoSizeLength,
-              videoSizeWidth: videoSizeWidth,
-              videoAutoplay: videoAutoplay,
-              zIndex: zIndex,
-            }
+            ...element,
+            videoUrl: videoUrl,
+            videoSizeLength: videoSizeLength,
+            videoSizeWidth: videoSizeWidth,
+            videoAutoplay: videoAutoplay,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -949,9 +1079,9 @@ function PresentationPage() {
     const newSlides = currentSlides.map((slide, index) =>
       index === targetIndex
         ? {
-            ...slide,
-            background: newBackground,
-          }
+          ...slide,
+          background: newBackground,
+        }
         : slide
     );
 
@@ -1053,32 +1183,51 @@ function PresentationPage() {
       <Layout>
         {isHidden && (
           <div className="flex h-screen w-screen">
-            {/* <div className="w-8 h-full ">
-              {Tooltips(
-                currentSlides,
-                setCurrentSlides,
-                presentationId,
-                selectedSlideId,
-                setSelectedSlideId,
-                showTextModal,
-                showImageModal,
-                handleTextCancel,
-                isTextModalOpen,
-                showCodeModal,
-                isCodeModalOpen,
-                handleFontCancel,
-                isFontModalOpen,
-                showFontModal,
-                handleVideoCancel,
-                isVideoModalOpen,
-                showVideoModal,
-                setIsHidden,
-                isBackgroundModalOpen,
-                handleBackgroundCancel,
-                showBackgroundModal,
-                handleLeftRightKeyPress
-              )}
-            </div> */}
+            <div className="w-10 h-full">
+              <Tooltip
+                placement="right"
+                title={"Click for Preview viewing your current presentation"}
+              >
+                <Button
+                  onClick={() => {
+                    try {
+                      setIsHidden(false);
+                      window.history.pushState(
+                        {},
+                        "",
+                        `/presentation/${presentationId}`
+                      );
+                    } catch (error) {
+                      console.log(error);
+                      errorPopUp(
+                        "Error",
+                        "An error occurred while navigating to the preview page"
+                      );
+                    }
+                  }}
+                >
+                  <FullscreenExitOutlined />
+                </Button>
+              </Tooltip>
+
+              {/* change to the previous page */}
+              <Tooltip placement="right" title={"change to the previous page"}>
+                <Button
+                  onClick={() => {
+                    handleLeftRightKeyPress("Left");
+                  }}
+                >
+                  <ArrowLeftOutlined />
+                </Button>
+              </Tooltip>
+
+              {/* change to the next page */}
+              <Tooltip placement="right" title={"change to the next page"}>
+                <Button onClick={() => handleLeftRightKeyPress("Right")}>
+                  <ArrowRightOutlined />
+                </Button>
+              </Tooltip>
+            </div>
             <DescSlide
               currentSlides={currentSlides}
               presentationId={presentationId}
@@ -1500,11 +1649,6 @@ function PresentationPage() {
                 // value={codeBlockSize.width}
                 value={codeWidth}
                 onChange={(e) =>
-                  // setCodeBlockSize({
-                  //   ...codeBlockSize,
-
-                  //   width: e.target.value,
-                  // })
                   setCodeWidth(e.target.value)
                 }
               />

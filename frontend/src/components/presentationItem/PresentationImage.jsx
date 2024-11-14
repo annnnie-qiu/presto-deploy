@@ -32,9 +32,9 @@ function PresentationImage({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+        }
         : element
     );
 
@@ -77,11 +77,11 @@ function PresentationImage({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            imageSizeLength: height,
-            imageSizeWidth: width,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          imageSizeLength: height,
+          imageSizeWidth: width,
+        }
         : element
     );
 

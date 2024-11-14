@@ -37,9 +37,9 @@ function PresentationText({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+        }
         : element
     );
     console.log("newContent", newContent);
@@ -73,11 +73,11 @@ function PresentationText({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            textSizeLength: ref.style.height,
-            textSizeWidth: ref.style.width,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          textSizeLength: ref.style.height,
+          textSizeWidth: ref.style.width,
+        }
         : element
     );
 
