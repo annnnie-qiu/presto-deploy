@@ -46,4 +46,27 @@ describe('DashboardBanner Component', () => {
 
     expect(mockOnCreate).toHaveBeenCalled();
   });
+
+  // Test to check if responsive styles are applied correctly when window width changes
+  it('applies responsive styles based on window width', () => {
+    window.innerWidth = 500;
+    window.dispatchEvent(new Event('resize'));
+
+    render(<DashboardBanner darkMode={false} onCreate={mockOnCreate} />);
+
+    const bannerCard = screen.getByText('Create your new presentations').closest('.ant-card');
+    expect(bannerCard).toHaveStyle('height: auto');
+    expect(bannerCard).toHaveStyle('padding: 15px');
+  });
+
+  // Test to check if button alignment changes based on window width
+  it('aligns button to center when window width is less than or equal to 600', () => {
+    window.innerWidth = 500;
+    window.dispatchEvent(new Event('resize'));
+
+    render(<DashboardBanner darkMode={false} onCreate={mockOnCreate} />);
+
+    const createButton = screen.getByRole('button', { name: /new presentation/i });
+    expect(createButton).toHaveStyle('align-self: center');
+  });
 })

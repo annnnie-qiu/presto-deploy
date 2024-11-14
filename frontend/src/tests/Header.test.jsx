@@ -2,7 +2,6 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CustomHeader from '../components/Header';
-import { FaMoon, FaSun } from "react-icons/fa";
 
 describe('CustomHeader Component', () => {
   let mockToggleDarkMode;
