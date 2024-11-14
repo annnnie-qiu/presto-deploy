@@ -32,9 +32,9 @@ function PresentationImage({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-          ...element,
-          position: { x: position.x, y: position.y },
-        }
+            ...element,
+            position: { x: position.x, y: position.y },
+          }
         : element
     );
 
@@ -77,13 +77,14 @@ function PresentationImage({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-          ...element,
-          position: { x: position.x, y: position.y },
-          imageSizeLength: height,
-          imageSizeWidth: width,
-        }
+            ...element,
+            position: { x: position.x, y: position.y },
+            imageSizeLength: height,
+            imageSizeWidth: width,
+          }
         : element
     );
+    console.log("newContent", newContent);
 
     getUpdateDetail(
       presentationId,
@@ -151,6 +152,8 @@ function PresentationImage({
         position: "window",
         overflow: "show",
         cursor: isMoveActive ? "move" : "default",
+        width: `${data?.imageSizeWidth}px`,
+        height: `${data?.imageSizeLength}px`,
       }}
       position={{
         x: data?.position.x || 0,
@@ -159,16 +162,11 @@ function PresentationImage({
       default={{
         x: `${data?.position.x}`,
         y: `${data?.position.y}`,
-        width: data?.imageSizeLength,
-        height: data?.imageSizeWidth,
+        width: `${data?.imageSizeLength}`,
+        height: `${data?.imageSizeWidth}`,
       }}
       className="border border-gray-300"
       bounds={boundsRef.current}
-      // style={{
-      //   overflow: "hidden",
-      //   cursor: isMoveActive ? "move" : "default",
-      //   position: "window",
-      // }}
       onClick={() => {
         setIsMoveActive(!isMoveActive);
         handleClick();
@@ -178,9 +176,10 @@ function PresentationImage({
       onContextMenu={handleContextMenu}
     >
       <div
+        className="w-full h-full"
         size={{
-          width: data?.imageSizeLength,
-          height: data?.imageSizeWidth,
+          // width: `${data?.imageSizeLength}px`,
+          // height: `${data?.imageSizeWidth}px`,
           position: "relative",
           overflow: "hidden",
         }}
@@ -190,8 +189,7 @@ function PresentationImage({
             <img
               src={`${data.uploadImage}`}
               alt={`${data.imageAlt}`}
-              width="100%"
-              height="100%"
+              className="w-full h-full"
             />
           </span>
         ) : null}

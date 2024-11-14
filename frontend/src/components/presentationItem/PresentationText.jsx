@@ -178,6 +178,7 @@ function PresentationText({
         overflow: "show",
         cursor: isMoveActive ? "move" : "default",
         position: "window",
+        // position: "relative",
       }}
       onClick={(e) => {
         console.log("click event111", e);
