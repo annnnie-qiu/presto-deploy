@@ -66,7 +66,10 @@ const DashboardPresentationList = ({
 
   // Function to handle modal save
   const handleSave = async () => {
-
+    if (!presentationUpdates.name.trim()) {
+      showErrorToast("Presentation name cannot be empty.");
+      return;
+    }
 
     if (currentPresentation) {
       try {
