@@ -497,9 +497,6 @@ function PresentationPage() {
   };
 
   const handleArrowKeyPress = (e) => {
-    console.log("key pressed", e.key);
-    console.log("active element", document.activeElement);
-    console.log("body", document.body);
     const pathname = window.location.pathname;
     const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
     // if (document.activeElement === document.body) {

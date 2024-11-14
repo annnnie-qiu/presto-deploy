@@ -159,6 +159,7 @@ const DescSlide = ({
                           selectedSlideId={selectedSlideId}
                           setCurrentSlides={setCurrentSlides}
                           presentationId={presentationId}
+                          isHidden={isHidden}
                         />
                       );
                     } else if (element.type === "code") {

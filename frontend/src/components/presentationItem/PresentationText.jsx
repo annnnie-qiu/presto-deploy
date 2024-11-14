@@ -34,92 +34,6 @@ function PresentationText({
   // const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [position, setPosition] = useState(adjustedPosition);
-  console.log("position", position);
-  console.log("data.position.x", data.position.x);
-
-  const handleDragStop = async (e, position) => {
-    console.log("drag stopped", position);
-    setPosition({ x: position.x, y: position.y });
-    // save the text to the backend
-    const targetIndex = currentSlides.findIndex(
-      (slide) => slide.slideId === selectedSlideId
-    );
-    // Edit mode
-    // Update existing content
-    const newContent = currentSlides[targetIndex].content.map((element) =>
-      element.id === data.id
-        ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-          }
-        : element
-    );
-    console.log("newContent", newContent);
-    getUpdateDetail(
-      presentationId,
-      selectedSlideId,
-      newContent,
-      currentSlides,
-      setCurrentSlides
-    );
-    console.log("currentSlides drage", currentSlides);
-  };
-
-  const handleResizeStop = (e, direction, ref, delta, position) => {
-    console.log("resize stopped", ref.style.width, ref.style.height);
-    console.log("boundsRef", boundsRef);
-    // if (boundsRef.current) {
-    const containerWidth = boundsRef.current.clientWidth;
-    const containerHeight = boundsRef.current.clientHeight;
-
-    // Calculate new dimensions in percentage relative to container
-    // const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100 * 0.7;
-    const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
-    const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
-
-    console.log("newWidthPercentage", newWidthPercentage);
-    console.log("newHeightPercentage", newHeightPercentage);
-
-    setSize({
-      // width: ref.style.width,
-      // height: ref.style.height,
-      width: newWidthPercentage,
-      height: newHeightPercentage,
-    });
-    // setPosition({
-    //   x: position.x,
-    //   y: position.y,
-    // });
-    // save the text to the backend
-    const targetIndex = currentSlides.findIndex(
-      (slide) => slide.slideId === selectedSlideId
-    );
-
-    // Edit mode
-    // Update existing content
-    const newContent = currentSlides[targetIndex].content.map((element) =>
-      element.id === data.id
-        ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            // textSizeLength: ref.style.height,
-            // textSizeWidth: ref.style.width,
-            textSizeLength: newHeightPercentage,
-            textSizeWidth: newWidthPercentage,
-          }
-        : element
-    );
-
-    getUpdateDetail(
-      presentationId,
-      selectedSlideId,
-      newContent,
-      currentSlides,
-      setCurrentSlides
-    );
-    console.log("currentSlides resize", currentSlides);
-    // }
-  };
 
   const [lastClickTime, setLastClickTime] = useState(0);
   const handleClick = () => {
@@ -191,7 +105,93 @@ function PresentationText({
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  console.log("data", data);
+
+  const handleResizeStop = (e, direction, ref, delta, position) => {
+    if (!isMoveActive) return;
+    console.log("resize stopped", ref.style.width, ref.style.height);
+    console.log("boundsRef", boundsRef);
+    // if (boundsRef.current) {
+    const containerWidth = boundsRef.current.clientWidth;
+    const containerHeight = boundsRef.current.clientHeight;
+
+    // Calculate new dimensions in percentage relative to container
+    // const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100 * 0.7;
+    const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
+    const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
+
+    console.log("newWidthPercentage", newWidthPercentage);
+    console.log("newHeightPercentage", newHeightPercentage);
+
+    setSize({
+      // width: ref.style.width,
+      // height: ref.style.height,
+      width: newWidthPercentage,
+      height: newHeightPercentage,
+    });
+    // setPosition({
+    //   x: position.x,
+    //   y: position.y,
+    // });
+    // save the text to the backend
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+
+    // Edit mode
+    // Update existing content
+    const newContent = currentSlides[targetIndex].content.map((element) =>
+      element.id === data.id
+        ? {
+            ...element,
+            position: { x: position.x, y: position.y },
+            // textSizeLength: ref.style.height,
+            // textSizeWidth: ref.style.width,
+            textSizeLength: newHeightPercentage,
+            textSizeWidth: newWidthPercentage,
+          }
+        : element
+    );
+
+    getUpdateDetail(
+      presentationId,
+      selectedSlideId,
+      newContent,
+      currentSlides,
+      setCurrentSlides
+    );
+    console.log("currentSlides resize", currentSlides);
+    // }
+  };
+
+  const handleDragStop = async (e, newPos) => {
+    if (!isMoveActive) return;
+    console.log("drag stopped", newPos);
+    setPosition({ x: newPos.x, y: newPos.y });
+
+    // save the text to the backend
+    const targetIndex = currentSlides.findIndex(
+      (slide) => slide.slideId === selectedSlideId
+    );
+    // Edit mode
+    // Update existing content
+    const newContent = currentSlides[targetIndex].content.map((element) =>
+      element.id === data.id
+        ? {
+            ...element,
+            position: { x: newPos.x, y: newPos.y },
+          }
+        : element
+    );
+    console.log("newContent", newContent);
+    getUpdateDetail(
+      presentationId,
+      selectedSlideId,
+      newContent,
+      currentSlides,
+      setCurrentSlides
+    );
+    console.log("currentSlides drage", currentSlides);
+  };
 
   return (
     <>
@@ -202,12 +202,10 @@ function PresentationText({
           //   y: `${data?.position.y}%`,
           // }}
           size={{
-            // width: `${adjustedWidth}%`,
-            // height: `${adjustedHeight}%`,
             width: `${data?.textSizeWidth}%`,
             height: `${data?.textSizeLength}%`,
           }}
-          position={position}
+          position={data?.position}
           className={`${isHidden ? "" : "border border-gray-300"}`}
           bounds={boundsRef.current}
           style={{
@@ -221,9 +219,8 @@ function PresentationText({
             position: "window",
             // position: "relative",
           }}
-          onClick={(e) => {
-            console.log("click event111", e);
-            setIsMoveActive(!isMoveActive);
+          onClick={() => {
+            setIsMoveActive((current) => !current);
             handleClick();
           }}
           onDragStop={handleDragStop}

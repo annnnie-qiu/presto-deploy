@@ -17,6 +17,7 @@ function PresentationImage({
   selectedSlideId,
   setCurrentSlides,
   presentationId,
+  isHidden,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
