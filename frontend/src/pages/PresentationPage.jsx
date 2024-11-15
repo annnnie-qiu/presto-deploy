@@ -76,7 +76,7 @@ const Tooltips = (
   }, [arrow]);
 
   const audioRef = useRef(
-    new Audio("../music/Gracie Abrams - I miss you, Im sorry (Lyric Video).mp3")
+    new Audio("/music/Gracie Abrams - I miss you, Im sorry (Lyric Video).mp3")
   );
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -117,7 +117,6 @@ const Tooltips = (
       <Flex vertical justify="center" align="center" className="demo">
         <Flex justify="space-between" align="center">
           <Flex align="center" vertical>
-
             {/* add a new slide */}
             <Tooltip
               placement="rightTop"
@@ -327,7 +326,6 @@ const Tooltips = (
                 {isPlaying ? <SoundOutlined /> : <MutedOutlined />}
               </Button>
             </Tooltip>
-
           </Flex>
         </Flex>
       </Flex>
