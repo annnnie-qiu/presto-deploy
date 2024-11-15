@@ -3,6 +3,7 @@ import { Button, Layout, Checkbox, Form, Input, Typography } from "antd";
 const { Sider } = Layout;
 import Sidebar from "../components/Sidebar";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { showErrorToast } from "../../utils/toastUtils";
 
 function SettingPage() {
   const styles = {
@@ -40,6 +41,7 @@ function SettingPage() {
 
   const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
   const [showDetail, setShowDetail] = React.useState(false);
+  const [presentations, setPresentations] = React.useState([]);
 
   // Effect to track window resizing
   React.useEffect(() => {
@@ -47,6 +49,25 @@ function SettingPage() {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Function to fetch presentation details
+  const token = localStorage.getItem("token");
+  const refetchPresentations = async () => {
+    try {
+      const response = await getDetail(token);
+      console.log("Response from /store:", response);
+      const presentations = response.store?.presentations || [];
+      setPresentations(presentations);
+    } catch (error) {
+      console.error("Error fetching presentations:", error);
+      showErrorToast("Failed to load presentations");
+    }
+  };
+
+  // Fetch presentations when the component loads
+  useEffect(() => {
+    refetchPresentations();
   }, []);
 
   const handleClick = async () => {
@@ -63,7 +84,7 @@ function SettingPage() {
   return (
     <Layout style={styles.layout}>
       <Sider theme="light" trigger={null} style={styles.sider}>
-        <Sidebar />
+        <Sidebar presentations={presentations}/>
 
         <Button type="text" style={styles.trigerbtn} />
       </Sider>
