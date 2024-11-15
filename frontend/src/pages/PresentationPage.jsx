@@ -325,11 +325,6 @@ const Tooltips = (
             <Tooltip placement="right" title={"Add Music"}>
               <Button onClick={handleMusic}>
                 {isPlaying ? <SoundOutlined /> : <MutedOutlined />}
-                {/* <MutedOutlined
-                  onClick={() => {
-                    handleMusic();
-                  }}
-                /> */}
               </Button>
             </Tooltip>
 
