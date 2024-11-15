@@ -27,4 +27,5 @@ section,completed
 2.5.3,NO
 2.5.4,NO
 
-FE_DEPLOYED_URL: <Enter your deployed url here>
+FE_DEPLOYED_URL: https://presto-deploy-frontend-omega.vercel.app/
+BE_DEPLOYED_URL: https://z5348946-presto-be-deploy.vercel.app/docs (if needed)
