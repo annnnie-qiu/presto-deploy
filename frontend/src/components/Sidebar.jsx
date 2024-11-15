@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { showErrorToast } from "../../utils/toastUtils";
 import {
   UserOutlined,
-  ProfileOutlined,
   LogoutOutlined,
   OrderedListOutlined,
   SettingOutlined,
@@ -50,8 +49,6 @@ const Sidebar = ({ darkMode, presentations }) => {
     switch (location.pathname) {
     case '/dashboard':
       return '1';
-    case '/profile':
-      return '3';
     case '/setting':
       return '4';
     default:
@@ -104,11 +101,6 @@ const Sidebar = ({ darkMode, presentations }) => {
             icon: <OrderedListOutlined />,
             label: isPresentationPage ? 'My presentations' : 'My Recent One',
             onClick: handleMyPresentations
-          },
-          {
-            key: '3',
-            icon: <ProfileOutlined />,
-            label: 'Profile',
           },
           {
             key: '4',

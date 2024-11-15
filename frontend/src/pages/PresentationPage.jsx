@@ -82,7 +82,6 @@ const Tooltips = (
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    // 监听音频的加载状态
     audioRef.current.addEventListener("canplay", () => {
       console.log("Audio is ready to play");
     });
@@ -475,6 +474,22 @@ function PresentationPage() {
   const [isImageModalOpen, setisImageModalOpen] = useState(false);
   const [isCodeModalOpen, setisCodeModalOpen] = useState(false);
   const [triggerByDoubleClick, setTriggerByDoubleClick] = useState(false);
+
+  // Effect to handle sidebar collapse based on window width
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 900) {
+        setCollapsed(true);
+      } else {
+        setCollapsed(false);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const showTextModal = () => {
     setisTextModalOpen(true);
