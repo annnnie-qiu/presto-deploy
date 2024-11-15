@@ -186,7 +186,7 @@ describe('Admin Register, Create and Update Presentation Flow', () => {
 });
 
 // describe('Create and Update Presentation Flow', () => {
-//   it('Registers, creates a new presentation, updates it, and adds slides successfully', async () => {
+//   it('Registers, creates a new presentation, updates it, and deletes a slide successfully', async () => {
 //     // Mock the register API call to return a valid token
 //     api.register.mockResolvedValue({ token: 'mocked-token' });
 
@@ -261,7 +261,7 @@ describe('Admin Register, Create and Update Presentation Flow', () => {
 //       expect(screen.getByDisplayValue('Updated Description')).toBeInTheDocument();
 //     });
 
-//     // Render the presentation page to add slides to the presentation
+//     // Render the presentation page to delete a slide from the presentation
 //     render(
 //       <BrowserRouter>
 //         <PresentationPage presentationId={1} />
@@ -269,20 +269,19 @@ describe('Admin Register, Create and Update Presentation Flow', () => {
 //     );
 
 //     // Mock API response for getting updated presentation details
-//     presentationApi.getDetail.mockResolvedValue({ store: { presentations: [{ id: 1, name: 'Updated Presentation Name', slides: [] }] } });
+//     presentationApi.getDetail.mockResolvedValue({ store: { presentations: [{ id: 1, name: 'Updated Presentation Name', slides: [{ slideId: 1 }] }] } });
 
-//     // Simulate adding multiple new slides
-//     for (let i = 1; i <= 3; i++) {
-//       await act(async () => {
-//         fireEvent.click(screen.getByRole('button', { name: /plus-circle/i }));
-//       });
-//       await waitFor(async () => {
-//         // Mock API call to update the store after adding a slide
-//         await presentationApi.sendDetail.mockResolvedValue({ success: true });
-//         expect(screen.getByText((content, element) => {
-//           return element.tagName.toLowerCase() === 'div' && content.includes(i.toString());
-//         })).toBeInTheDocument();
-//       });
-//     }
+//     // Simulate deleting a slide
+//     await act(async () => {
+//       fireEvent.click(screen.getByRole('button', { name: /delete/i }));
+//     });
+
+//     // Mock API call to update the store after deleting a slide
+//     await presentationApi.sendDetail.mockResolvedValue({ success: true });
+
+//     // Verify redirection to the dashboard after deleting the slide
+//     await waitFor(() => {
+//       expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+//     });
 //   });
 // });
