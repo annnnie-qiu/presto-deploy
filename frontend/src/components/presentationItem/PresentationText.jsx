@@ -13,7 +13,6 @@ function PresentationText({
   setTextInput,
   setTextFontSize,
   setTextFontColor,
-  setTextFontFamily,
   setSelectedElementId,
   boundsRef,
   currentSlides,
@@ -116,10 +115,6 @@ function PresentationText({
       width: newWidthPercentage,
       height: newHeightPercentage,
     });
-    // setPosition({
-    //   x: position.x,
-    //   y: position.y,
-    // });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -130,13 +125,11 @@ function PresentationText({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            // textSizeLength: ref.style.height,
-            // textSizeWidth: ref.style.width,
-            textSizeLength: newHeightPercentage,
-            textSizeWidth: newWidthPercentage,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          textSizeLength: newHeightPercentage,
+          textSizeWidth: newWidthPercentage,
+        }
         : element
     );
 
@@ -165,9 +158,9 @@ function PresentationText({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: newPos.x, y: newPos.y },
-          }
+          ...element,
+          position: { x: newPos.x, y: newPos.y },
+        }
         : element
     );
     console.log("newContent", newContent);

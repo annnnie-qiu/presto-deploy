@@ -2,7 +2,6 @@ export async function apiCall(
   method,
   endpoint,
   body = {},
-  queryString = "",
   token = ""
 ) {
   // Use environment variables for the backend URL

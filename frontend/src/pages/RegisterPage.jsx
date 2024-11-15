@@ -1,6 +1,6 @@
 import React from "react";
 import PrestoLogo from "../assets/Presto.png";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Form, Input } from "antd";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
 import { register } from "../../utils/API/Login_Register/login_register";
 import { useNavigate } from "react-router-dom";

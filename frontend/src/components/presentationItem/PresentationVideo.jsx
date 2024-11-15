@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Rnd } from "react-rnd";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
 import PresentationSlideMove from "./PresentationSlideMove";
@@ -40,9 +40,9 @@ const PresentationVideo = ({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: newPos.x, y: newPos.y },
-          }
+          ...element,
+          position: { x: newPos.x, y: newPos.y },
+        }
         : element
     );
     console.log("newContent", newContent);
@@ -67,10 +67,6 @@ const PresentationVideo = ({
       width: newWidthPercentage,
       height: newHeightPercentage,
     });
-    // setPosition({
-    //   x: position.x,
-    //   y: position.y,
-    // });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -83,11 +79,11 @@ const PresentationVideo = ({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            videoSizeLength: newHeightPercentage,
-            videoSizeWidth: newWidthPercentage,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          videoSizeLength: newHeightPercentage,
+          videoSizeWidth: newWidthPercentage,
+        }
         : element
     );
     console.log("newContent", newContent);

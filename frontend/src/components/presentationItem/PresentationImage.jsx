@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Rnd } from "react-rnd";
 import PresentationSlideMove from "./PresentationSlideMove";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
@@ -35,9 +35,9 @@ function PresentationImage({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: newPos.x, y: newPos.y },
-          }
+          ...element,
+          position: { x: newPos.x, y: newPos.y },
+        }
         : element
     );
 
@@ -70,11 +70,6 @@ function PresentationImage({
     // Calculate new dimensions in percentage relative to container
     const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
     const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
-
-    // setPosition({
-    //   x: position.x,
-    //   y: position.y,
-    // });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -85,11 +80,11 @@ function PresentationImage({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            imageSizeLength: newHeightPercentage,
-            imageSizeWidth: newWidthPercentage,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          imageSizeLength: newHeightPercentage,
+          imageSizeWidth: newWidthPercentage,
+        }
         : element
     );
     console.log("newContent", newContent);
