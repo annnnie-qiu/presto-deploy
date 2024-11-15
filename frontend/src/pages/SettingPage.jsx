@@ -9,7 +9,7 @@ function SettingPage() {
   const styles = {
     sider: {
       height: "100vh",
-      position: "sticky !important",
+      position: "sticky",
       left: 0,
       bottom: 0,
       top: 0,

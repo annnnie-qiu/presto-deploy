@@ -53,7 +53,7 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       overflowX: "hidden", // Prevent horizontal scrolling
     },
     sider: {
-      position: "sticky !important",
+      position: "sticky",
       left: 0,
       bottom: 0,
       top: 0,
