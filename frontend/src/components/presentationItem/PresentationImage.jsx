@@ -24,7 +24,6 @@ function PresentationImage({
 
   const handleDragStop = async (e, newPos) => {
     if (!isMoveActive) return;
-    console.log("drag stopped", newPos);
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -39,7 +38,6 @@ function PresentationImage({
         : element
     );
 
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -85,7 +83,6 @@ function PresentationImage({
         }
         : element
     );
-    console.log("newContent", newContent);
 
     getUpdateDetail(
       presentationId,
@@ -97,7 +94,6 @@ function PresentationImage({
   };
 
   const onDoubleClick = async () => {
-    console.log("double clicked");
     setImageSizeLength(data.imageSizeLength);
     setImageSizeWidth(data.imageSizeWidth);
     setImageAlt(data.imageAlt);
@@ -119,21 +115,12 @@ function PresentationImage({
   const handleOk = () => {
     setIsModalOpen(false);
     // delete the presentation from the backend and navigate to the dashboard
-    console.log("delete the text");
-    console.log("currentSlides", currentSlides);
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
-    );
-    console.log("targetIndex", targetIndex);
-    console.log("data.id", data.id);
-    console.log(
-      "currentSlides[targetIndex].content",
-      currentSlides[targetIndex].content
     );
     const newContent = currentSlides[targetIndex].content.filter(
       (element) => element.id !== data.id // Exclude the element with the matching id
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,

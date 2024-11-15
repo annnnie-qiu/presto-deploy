@@ -94,8 +94,6 @@ const Tooltips = (
   }, []);
 
   const handleMusic = () => {
-    console.log("handleMusic");
-    console.log("audioRef", audioRef);
     if (isPlaying) {
       audioRef.current.pause();
     } else {
@@ -284,17 +282,10 @@ const Tooltips = (
                 onClick={() => {
                   try {
                     setIsHidden(true);
-                    console.log("presentationId", presentationId);
-                    console.log("selectedSlideId", selectedSlideId);
-                    // window.open(
-                    //   `/presentation/${presentationId}/${selectedSlideId}`,
-                    //   "_blank"
-                    // );
                   } catch (error) {
-                    console.log(error);
                     errorPopUp(
                       "Error",
-                      "An error occurred while navigating to the preview page"
+                      `An error occurred while navigating to the preview page ${error}`
                     );
                   }
                 }}
@@ -307,7 +298,6 @@ const Tooltips = (
             <Tooltip placement="right" title={"Slide Re-arranging"}>
               <Button
                 onClick={() => {
-                  console.log("currentSlides", currentSlides);
                   setIsListHidden(false);
                 }}
               >
@@ -478,9 +468,7 @@ function PresentationPage() {
   const disAbledRef = useRef(disAbled);
 
   useEffect(() => {
-    console.log("Change disabled to: ", disAbled);
     disAbledRef.current = disAbled;
-    console.log(disAbledRef.current);
   }, [disAbled]);
 
   // Effect to handle sidebar collapse based on window width
@@ -645,7 +633,6 @@ function PresentationPage() {
     );
     let newContent;
     if (existingElementIndex !== -1) {
-      console.log("existing", currentSlides);
       // Edit mode
       // Update existing content
       newContent = currentSlides[targetIndex].content.map((element, index) =>
@@ -662,7 +649,6 @@ function PresentationPage() {
           : element
       );
     } else {
-      console.log("new", currentSlides);
       // put them into content list and update the currentSlides
       newContent = [
         ...currentSlides[targetIndex].content,
@@ -936,7 +922,6 @@ function PresentationPage() {
     // Once the file is read, get the Base64 string
     reader.onload = (e) => {
       setUploadImage(e.target.result);
-      console.log("Base64 of uploaded image:", e.target.result);
     };
 
     // Read the file as a Data URL (Base64)
@@ -1002,7 +987,6 @@ function PresentationPage() {
 
       // Update the state to reflect the background image upload for the slide
       setBackgroundImage(base64String);
-      console.log("Base64 of uploaded background image:", base64String);
     };
 
     reader.readAsDataURL(file); // Convert the file to base64
@@ -1025,7 +1009,6 @@ function PresentationPage() {
         (presentation) => presentation.id == presentationId
       );
 
-      console.log("presentation", presentation);
       if (presentation === undefined) {
         errorPopUp("Error", "This presentation does not exist");
         navigate("/dashboard");
@@ -1097,10 +1080,9 @@ function PresentationPage() {
                         `/presentation/${presentationId}/${selectedSlideId}`
                       );
                     } catch (error) {
-                      console.log(error);
                       errorPopUp(
                         "Error",
-                        "An error occurred while navigating to the preview page"
+                        `An error occurred while navigating to the preview page ${error}`
                       );
                     }
                   }}

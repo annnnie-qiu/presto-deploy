@@ -31,12 +31,10 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
   const refetchPresentations = React.useCallback(async () => {
     try {
       const response = await getDetail(token);
-      console.log("Response from /store:", response);
       const presentations = response.store?.presentations || [];
       setPresentations(presentations);
     } catch (error) {
-      console.error("Error fetching presentations:", error);
-      showErrorToast("Failed to load presentations");
+      showErrorToast("Failed to load presentations", error.message);
     }
   }, [token, setPresentations]);
 

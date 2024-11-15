@@ -36,7 +36,6 @@ function PresentationText({
   };
 
   const onDoubleClick = async () => {
-    console.log("double clicked");
 
     setTextSizeLength(data.textSizeLength);
     setTextSizeWidth(data.textSizeWidth);
@@ -61,21 +60,12 @@ function PresentationText({
   const handleOk = () => {
     setIsModalOpen(false);
     // delete the presentation from the backend and navigate to the dashboard
-    console.log("delete the text");
-    console.log("currentSlides", currentSlides);
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
-    );
-    console.log("targetIndex", targetIndex);
-    console.log("data.id", data.id);
-    console.log(
-      "currentSlides[targetIndex].content",
-      currentSlides[targetIndex].content
     );
     const newContent = currentSlides[targetIndex].content.filter(
       (element) => element.id !== data.id // Exclude the element with the matching id
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -236,8 +226,7 @@ function PresentationText({
             // top: `${data?.position.y}px`,
             // position: "relative",
           }}
-          onClick={(e) => {
-            console.log("click event111", e);
+          onClick={() => {
             setIsMoveActive(!isMoveActive);
             handleClick();
           }}

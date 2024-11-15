@@ -16,13 +16,6 @@ function LoginPage() {
   const [password, setPassword] = React.useState("");
   const navigate = useNavigate();
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
 
   const handleEnterKeyPress = (e) => {
     if (e.key === "Enter") {
@@ -49,18 +42,14 @@ function LoginPage() {
       localStorage.setItem("token", response.token);
       navigate("/dashboard");
     } catch (error) {
-      console.log(error);
-      errorPopUp("There was an error logging in", "invalid email or password");
+      errorPopUp("There was an error logging in", `invalid email or password ${error.message || error}`);
     }
   };
 
   const handleSuccess = async (credentialResponse) => {
-    console.log(credentialResponse);
     const decoded = jwt_decode(credentialResponse.credential);
     const userEmail = decoded.email;
     const userName = decoded.name; // Access the user's name
-
-    console.log("User Email:", userEmail);
     setEmail(userEmail);
     const encoder = new TextEncoder();
     const data = encoder.encode(userEmail);
@@ -141,8 +130,6 @@ function LoginPage() {
             initialValues={{
               remember: true,
             }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
             <Form.Item

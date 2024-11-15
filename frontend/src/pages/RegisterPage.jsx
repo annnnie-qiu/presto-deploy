@@ -12,12 +12,6 @@ function RegisterPage() {
   const [name, setName] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const navigate = useNavigate();
-  const onFinish = (values) => {
-    console.log("Success:", values);
-  };
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
 
   // press enter key to register and login
   const handleEnterKeyPress = (e) => {
@@ -110,8 +104,6 @@ function RegisterPage() {
             initialValues={{
               remember: true,
             }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
             {/* email input */}
