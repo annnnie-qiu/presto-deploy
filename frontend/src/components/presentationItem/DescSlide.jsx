@@ -1,5 +1,4 @@
-import React, { useRef, useEffect } from "react";
-// import html2canvas from "html2canvas"; // Import html2canvas for snapshot capturing
+import { useRef } from "react";
 import PresentationText from "./PresentationText";
 import PresentationImage from "./PresentationImage";
 import PresentationCode from "./PresentationCode";
@@ -79,8 +78,6 @@ const DescSlide = ({
                 isHidden ? "w-full h-full  bg-white" : "w-11/12 h-5/6 bg-white"
               }`}
               style={{
-                //   position: "relative",
-                //   overflow: "hidden",
                 ...backgroundStyle,
               }}
               ref={boundsRef} // Assign the ref to this container for snapshot capturing
@@ -179,19 +176,12 @@ const DescSlide = ({
       )}
       {!isHidden && (
         <div className="flex h-full w-full justify-center  items-center">
-          {/* <AnimatePresence mode="popLayout"> */}
           <div
             key={selectedSlideId}
-            // initial={{ x: isHidden ? "100vw" : 0 }}
-            // animate={{ x: 0 }}
-            // exit={{ x: isHidden ? "-100vw" : 0 }}
-            // transition={{ duration: 0.1, ease: "linear" }}
             className={`rounded-lg border-solid border-2 border-inherit ${
               isHidden ? "w-full h-full" : "w-11/12 h-5/6 bg-white"
             }`}
             style={{
-              //   position: "relative",
-              //   overflow: "hidden",
               ...backgroundStyle,
             }}
             ref={boundsRef} // Assign the ref to this container for snapshot capturing
@@ -287,9 +277,7 @@ const DescSlide = ({
               }
               return null;
             })}
-            {/* </motion.div> */}
           </div>
-          {/* </AnimatePresence> */}
         </div>
       )}
     </>

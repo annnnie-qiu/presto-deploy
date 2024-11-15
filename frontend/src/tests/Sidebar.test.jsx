@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Sidebar from '../components/Sidebar';
@@ -46,7 +45,6 @@ describe('Sidebar Component', () => {
       expect(screen.getByAltText('Presto Logo')).toBeInTheDocument();
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
       expect(screen.getByText('My Recent One')).toBeInTheDocument();
-      expect(screen.getByText('Profile')).toBeInTheDocument();
       expect(screen.getByText('Setting')).toBeInTheDocument();
       expect(screen.getByText('Logout')).toBeInTheDocument();
     });

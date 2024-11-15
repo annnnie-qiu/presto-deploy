@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Rnd } from "react-rnd";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
 import PresentationSlideMove from "./PresentationSlideMove";
@@ -21,31 +21,23 @@ const PresentationVideo = ({
   setTriggerByDoubleClick,
 }) => {
   const [isMoveActive, setIsMoveActive] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [size, setSize] = useState({ width: 0, height: 0 });
 
   const handleDragStop = async (e, newPos) => {
     if (!isMoveActive) return;
-    console.log("drag stopped", newPos);
-    setPosition({ x: newPos.x, y: newPos.y });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-    console.log("targetIndex", targetIndex);
-    console.log("currentSlides", currentSlides);
-    console.log("data", data);
     // Edit mode
     // Update existing content
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: newPos.x, y: newPos.y },
-          }
+          ...element,
+          position: { x: newPos.x, y: newPos.y },
+        }
         : element
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -63,34 +55,22 @@ const PresentationVideo = ({
     // const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100 * 0.7;
     const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
     const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
-    setSize({
-      width: newWidthPercentage,
-      height: newHeightPercentage,
-    });
-    // setPosition({
-    //   x: position.x,
-    //   y: position.y,
-    // });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-    console.log("targetIndex", targetIndex);
-    console.log("currentSlides", currentSlides);
-    console.log("data", data);
     // Edit mode
     // Update existing content
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            videoSizeLength: newHeightPercentage,
-            videoSizeWidth: newWidthPercentage,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          videoSizeLength: newHeightPercentage,
+          videoSizeWidth: newWidthPercentage,
+        }
         : element
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -133,21 +113,12 @@ const PresentationVideo = ({
   const handleOk = () => {
     setIsModalOpen(false);
     // delete the presentation from the backend and navigate to the dashboard
-    console.log("delete the text");
-    console.log("currentSlides", currentSlides);
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
-    );
-    console.log("targetIndex", targetIndex);
-    console.log("data.id", data.id);
-    console.log(
-      "currentSlides[targetIndex].content",
-      currentSlides[targetIndex].content
     );
     const newContent = currentSlides[targetIndex].content.filter(
       (element) => element.id !== data.id // Exclude the element with the matching id
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -165,12 +136,6 @@ const PresentationVideo = ({
     <>
       {!isHidden && (
         <Rnd
-          // default={{
-          //   x: `${data?.position.x}`,
-          //   y: `${data?.position.y}`,
-          //   width: `${data?.videoSizeWidth}`,
-          //   height: `${data?.videoSizeLength}`,
-          // }}
           size={{
             width: `${data?.videoSizeWidth}%`,
             height: `${data?.videoSizeLength}%`,
@@ -184,8 +149,7 @@ const PresentationVideo = ({
             border: "2px dashed #000",
             zIndex: data.zIndex,
           }}
-          onClick={(e) => {
-            console.log("click event111", e);
+          onClick={() => {
             setIsMoveActive(!isMoveActive);
             handleClick();
           }}
@@ -194,7 +158,6 @@ const PresentationVideo = ({
           onContextMenu={handleContextMenu}
         >
           <div
-            // className="w-full h-full"
             style={{
               width: "100%",
               height: "100%",
@@ -204,8 +167,6 @@ const PresentationVideo = ({
           >
             <iframe
               className="w-full h-full"
-              // width="100%"
-              // height="100%"
               src={`${data.videoUrl}${data.videoAutoplay ? "&autoplay=1" : ""}`}
               title="Embedded Video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

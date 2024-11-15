@@ -4,7 +4,6 @@ import { Avatar, Card } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
-// import { apiCall } from "../../utils/API/apiCall";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 
@@ -23,8 +22,8 @@ const DashboardPresentationList = ({
   React.useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // State for modal visibiliy and currently selected presentation
@@ -37,7 +36,7 @@ const DashboardPresentationList = ({
 
   // Function to naviagte to the specific presentation page
   const handleCardClick = (id) => {
-    navigate(`/presentation/${id}`);
+    navigate(`/presentation/${id}/1`);
   };
 
   // Function to handle the edit button click
@@ -144,7 +143,6 @@ const DashboardPresentationList = ({
       width: "100%",
       height: "100%",
       position: "relative",
-      // overflow: "hidden",
       flex: "1 1 auto",
     },
     thumbnail: {
