@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { MyDroppable } from "./MyDroppable";
-
 import { useNavigate } from "react-router-dom";
 import HeaherPresent from "../components/HeaherPresent";
 import { Button, Flex, Layout, Modal, Upload, Select } from "antd";
@@ -14,6 +13,8 @@ import {
   FileImageOutlined,
   FullscreenExitOutlined,
   AppstoreOutlined,
+  MutedOutlined,
+  SoundOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import { ConfigProvider, Segmented, Tooltip } from "antd";
@@ -74,6 +75,35 @@ const Tooltips = (
     };
   }, [arrow]);
 
+  const audioRef = useRef(
+    new Audio("../music/Gracie Abrams - I miss you, Im sorry (Lyric Video).mp3")
+  );
+
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    // 监听音频的加载状态
+    audioRef.current.addEventListener("canplay", () => {
+      console.log("Audio is ready to play");
+    });
+    return () => {
+      audioRef.current.removeEventListener("canplay", () => {
+        console.log("Audio listener removed");
+      });
+    };
+  }, []);
+
+  const handleMusic = () => {
+    console.log("handleMusic");
+    console.log("audioRef", audioRef);
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   return (
     <ConfigProvider
       button={{
@@ -87,6 +117,7 @@ const Tooltips = (
       <Flex vertical justify="center" align="center" className="demo">
         <Flex justify="space-between" align="center">
           <Flex align="center" vertical>
+
             {/* add a new slide */}
             <Tooltip
               placement="rightTop"
@@ -289,6 +320,19 @@ const Tooltips = (
                 <AppstoreOutlined />
               </Button>
             </Tooltip>
+
+            {/* music */}
+            <Tooltip placement="right" title={"Add Music"}>
+              <Button onClick={handleMusic}>
+                {isPlaying ? <SoundOutlined /> : <MutedOutlined />}
+                {/* <MutedOutlined
+                  onClick={() => {
+                    handleMusic();
+                  }}
+                /> */}
+              </Button>
+            </Tooltip>
+
           </Flex>
         </Flex>
       </Flex>
@@ -435,22 +479,11 @@ function PresentationPage() {
   const [isTextModalOpen, setisTextModalOpen] = useState(false);
   const [isImageModalOpen, setisImageModalOpen] = useState(false);
   const [isCodeModalOpen, setisCodeModalOpen] = useState(false);
+  const [triggerByDoubleClick, setTriggerByDoubleClick] = useState(false);
+
   const showTextModal = () => {
     setisTextModalOpen(true);
   };
-
-  // const takeSnapshot = async (element, slideId) => {
-  //   if (!element) return;
-
-  //   try {
-  //     const canvas = await html2canvas(element);
-  //     const snapshotUrl = canvas.toDataURL("image/png");
-
-  //     return { slideId, snapshotUrl };
-  //   } catch (error) {
-  //     console.error("Error taking snapshot:", error);
-  //   }
-  // };
 
   const showImageModal = () => {
     setisImageModalOpen(true);
@@ -458,10 +491,12 @@ function PresentationPage() {
 
   const handleTextCancel = () => {
     setisTextModalOpen(false);
+    setTriggerByDoubleClick(false);
   };
 
   const handleImageCancel = () => {
     setisImageModalOpen(false);
+    setTriggerByDoubleClick(false);
   };
 
   const showCodeModal = () => {
@@ -470,6 +505,7 @@ function PresentationPage() {
 
   const handleCodeCancel = () => {
     setisCodeModalOpen(false);
+    setTriggerByDoubleClick(false);
   };
 
   const showFontModal = () => {
@@ -486,6 +522,7 @@ function PresentationPage() {
 
   const handleVideoCancel = () => {
     setisVideoModalOpen(false);
+    setTriggerByDoubleClick(false);
   };
 
   const showBackgroundModal = () => {
@@ -577,15 +614,6 @@ function PresentationPage() {
           "",
           `/presentation/${presentationId}/${newSlideId}`
         );
-        // if (hasTwoSlashes) {
-        //   console.log("targetIndex", targetIndex);
-        //   console.log("has two slashes");
-        //   window.history.pushState(
-        //     {},
-        //     "",
-        //     `/presentation/${presentationId}/${newSlideId}`
-        //   );
-        // }
       } else {
         showErrorToast("This is the first slide now");
       }
@@ -601,13 +629,6 @@ function PresentationPage() {
           "",
           `/presentation/${presentationId}/${newSlideId}`
         );
-        // if (hasTwoSlashes) {
-        //   window.history.pushState(
-        //     {},
-        //     "",
-        //     `/presentation/${presentationId}/${newSlideId}`
-        //   );
-        // }
       } else {
         showErrorToast("This is the last slide now");
       }
@@ -688,20 +709,8 @@ function PresentationPage() {
         break;
       }
     }
+    setTriggerByDoubleClick(false);
     await sendDetail(token, store);
-
-    // Take snapshot after updating slide content
-    //   const slideElement = document.getElementById(`slide-${selectedSlideId}`);
-    //   const snapshot = await takeSnapshot(slideElement, selectedSlideId);
-    //   if (snapshot) {
-    //     setCurrentSlides((slides) =>
-    //       slides.map((slide) =>
-    //         slide.slideId === snapshot.slideId
-    //           ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
-    //           : slide
-    //       )
-    //     );
-    //   }
   };
 
   const handleFontOk = async () => {
@@ -803,8 +812,6 @@ function PresentationPage() {
       return slide;
     });
 
-    console.log("newSlideList", newSlideList);
-
     setCurrentSlides(newSlideList);
 
     for (let i = 0; i < store.presentations.length; i++) {
@@ -814,7 +821,7 @@ function PresentationPage() {
       }
     }
 
-    console.log("store", store);
+    setTriggerByDoubleClick(false);
     await sendDetail(token, store);
   };
 
@@ -859,6 +866,7 @@ function PresentationPage() {
         break;
       }
     }
+    setTriggerByDoubleClick(false);
     await sendDetail(token, store);
   };
 
@@ -931,6 +939,7 @@ function PresentationPage() {
         break;
       }
     }
+    setTriggerByDoubleClick(false);
     await sendDetail(token, store);
   };
 
@@ -996,19 +1005,6 @@ function PresentationPage() {
       }
     }
     await sendDetail(token, store);
-
-    // Take snapshot after changing background
-    //   const slideElement = document.getElementById(`slide-${selectedSlideId}`);
-    //   const snapshot = await takeSnapshot(slideElement, selectedSlideId);
-    //   if (snapshot) {
-    //     setCurrentSlides((slides) =>
-    //       slides.map((slide) =>
-    //         slide.slideId === snapshot.slideId
-    //           ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
-    //           : slide
-    //       )
-    //     );
-    //   }
   };
 
   const handleBackgroundImageUpload = (file) => {
@@ -1034,12 +1030,20 @@ function PresentationPage() {
     };
   }, [currentSlides, selectedSlideId]);
 
+  const navigate = useNavigate();
   React.useEffect(() => {
     const getPresentationDetail = async () => {
       const response = await getDetail(localStorage.getItem("token"));
       const presentation = response.store.presentations.find(
         (presentation) => presentation.id == presentationId
       );
+      console.log("presentation", presentation);
+      if (presentation === undefined) {
+        errorPopUp("Error", "This presentation does not exist");
+        navigate("/dashboard");
+        // navigator.history.push("/dashboard");
+        return;
+      }
       setCurrentPresentation(presentation);
       setCurrentSlides(presentation.slides);
     };
@@ -1090,6 +1094,7 @@ function PresentationPage() {
 
   return (
     <>
+      {/* for the preview page */}
       <Layout>
         {isHidden && isListHidden && (
           <div className="flex h-screen w-screen">
@@ -1176,6 +1181,7 @@ function PresentationPage() {
         )}
       </Layout>
 
+      {/* for the Re-arranging page */}
       <Layout>
         {!isHidden && !isListHidden && (
           <div className="flex h-screen w-screen">
@@ -1234,6 +1240,7 @@ function PresentationPage() {
         )}
       </Layout>
 
+      {/* for the presentation list page */}
       <Layout>
         {!isHidden && isListHidden && (
           <Sider
@@ -1329,40 +1336,10 @@ function PresentationPage() {
                     setBackgroundImage={setBackgroundImage}
                     setBackgroundType={setBackgroundType}
                     text="Second"
+                    setTriggerByDoubleClick={setTriggerByDoubleClick}
                   />
                 </Splitter.Panel>
               </Splitter>
-
-              {/* <DescSlide
-                currentSlides={currentSlides}
-                presentationId={presentationId}
-                selectedSlideId={selectedSlideId}
-                showTextModal={showTextModal}
-                setTextSizeLength={setTextSizeLength}
-                setTextSizeWidth={setTextSizeWidth}
-                setTextInput={setTextInput}
-                setTextFontSize={setTextFontSize}
-                setTextFontColor={setTextFontColor}
-                setSelectedElementId={setSelectedElementId}
-                showImageModal={showImageModal}
-                setImageSizeLength={setImageSizeLength}
-                setImageSizeWidth={setImageSizeWidth}
-                setImageAlt={setImageAlt}
-                setUploadImage={setUploadImage}
-                showCodeModal={showCodeModal}
-                setCurrentSlides={setCurrentSlides}
-                showVideoModal={showVideoModal}
-                setVideoUrl={setVideoUrl}
-                setVideoSizeLength={setVideoSizeLength}
-                setVideoSizeWidth={setVideoSizeWidth}
-                setVideoAutoplay={setVideoAutoplay}
-                showBackgroundModal={showBackgroundModal}
-                setBackgroundColor={setBackgroundColor}
-                setBackgroundGradient={setBackgroundGradient}
-                setBackgroundImage={setBackgroundImage}
-                setBackgroundType={setBackgroundType}
-                text="Second"
-              /> */}
             </Content>
           </Layout>
         )}
@@ -1385,49 +1362,37 @@ function PresentationPage() {
               maxWidth: formLayout === "inline" ? "none" : 600,
             }}
           >
-            <Form.Item label="Size length">
-              {/* <Input
-              value={textSizeLength}
-              placeholder="input placeholder"
-              addonAfter="px"
-              onChange={(e) => {
-                setTextSizeLength(e.target.value);
-              }}
-            /> */}
-              <Input
-                value={textSizeLength}
-                placeholder="Please enter the length (0-100)"
-                addonAfter="%"
-                type="number"
-                min={0}
-                max={100}
-                onChange={(e) => {
-                  setTextSizeLength(e.target.value);
-                }}
-              />
-            </Form.Item>
+            {!triggerByDoubleClick && (
+              <>
+                <Form.Item label="Size length">
+                  <Input
+                    value={textSizeLength}
+                    placeholder="Please enter the length (0-100)"
+                    addonAfter="%"
+                    type="number"
+                    min={0}
+                    max={100}
+                    onChange={(e) => {
+                      setTextSizeLength(e.target.value);
+                    }}
+                  />
+                </Form.Item>
 
-            <Form.Item label="Size width">
-              {/* <Input
-              value={textSizeWidth}
-              placeholder="input placeholder"
-              addonAfter="px"
-              onChange={(e) => {
-                setTextSizeWidth(e.target.value);
-              }}
-            /> */}
-              <Input
-                value={textSizeWidth}
-                placeholder="Please enter the width (0-100)"
-                addonAfter="%"
-                type="number"
-                min={0}
-                max={100}
-                onChange={(e) => {
-                  setTextSizeWidth(e.target.value);
-                }}
-              />
-            </Form.Item>
+                <Form.Item label="Size width">
+                  <Input
+                    value={textSizeWidth}
+                    placeholder="Please enter the width (0-100)"
+                    addonAfter="%"
+                    type="number"
+                    min={0}
+                    max={100}
+                    onChange={(e) => {
+                      setTextSizeWidth(e.target.value);
+                    }}
+                  />
+                </Form.Item>
+              </>
+            )}
 
             <Form.Item label="Text in the textarea">
               <TextArea
@@ -1484,33 +1449,37 @@ function PresentationPage() {
               maxWidth: formLayout === "inline" ? "none" : 600,
             }}
           >
-            {/* for image length */}
-            <Form.Item label="Size length">
-              <Input
-                value={imageSizeLength}
-                type="number"
-                placeholder="Please enter the length (0-100)"
-                // addonAfter="px"
-                addonAfter="%"
-                onChange={(e) => {
-                  setImageSizeLength(e.target.value);
-                }}
-              />
-            </Form.Item>
+            {!triggerByDoubleClick && (
+              <>
+                {/* for image length */}
+                <Form.Item label="Size length">
+                  <Input
+                    value={imageSizeLength}
+                    type="number"
+                    placeholder="Please enter the length (0-100)"
+                    // addonAfter="px"
+                    addonAfter="%"
+                    onChange={(e) => {
+                      setImageSizeLength(e.target.value);
+                    }}
+                  />
+                </Form.Item>
 
-            {/* for image width */}
-            <Form.Item label="Size width">
-              <Input
-                value={imageSizeWidth}
-                type="number"
-                placeholder="Please enter the width (0-100)"
-                // addonAfter="px"
-                addonAfter="%"
-                onChange={(e) => {
-                  setImageSizeWidth(e.target.value);
-                }}
-              />
-            </Form.Item>
+                {/* for image width */}
+                <Form.Item label="Size width">
+                  <Input
+                    value={imageSizeWidth}
+                    type="number"
+                    placeholder="Please enter the width (0-100)"
+                    // addonAfter="px"
+                    addonAfter="%"
+                    onChange={(e) => {
+                      setImageSizeWidth(e.target.value);
+                    }}
+                  />
+                </Form.Item>
+              </>
+            )}
 
             {/* for image alt text */}
             <Form.Item label="alt">
@@ -1548,26 +1517,30 @@ function PresentationPage() {
           onCancel={handleVideoCancel}
         >
           <Form layout="vertical">
-            <Form.Item label="Size Length (%)">
-              <Input
-                placeholder="Please enter the length (0-100)"
-                type="number"
-                min={0}
-                max={100}
-                value={videoSizeLength}
-                onChange={(e) => setVideoSizeLength(e.target.value)}
-              />
-            </Form.Item>
-            <Form.Item label="Size Width (%)">
-              <Input
-                placeholder="Please enter the width (0-100)"
-                type="number"
-                min={0}
-                max={100}
-                value={videoSizeWidth}
-                onChange={(e) => setVideoSizeWidth(e.target.value)}
-              />
-            </Form.Item>
+            {!triggerByDoubleClick && (
+              <>
+                <Form.Item label="Size Length (%)">
+                  <Input
+                    placeholder="Please enter the length (0-100)"
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={videoSizeLength}
+                    onChange={(e) => setVideoSizeLength(e.target.value)}
+                  />
+                </Form.Item>
+                <Form.Item label="Size Width (%)">
+                  <Input
+                    placeholder="Please enter the width (0-100)"
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={videoSizeWidth}
+                    onChange={(e) => setVideoSizeWidth(e.target.value)}
+                  />
+                </Form.Item>
+              </>
+            )}
             <Form.Item label="Video URL (YouTube Embed)">
               <Input
                 placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ?si=ZVLBiX_k2dqcfdBt"
@@ -1595,31 +1568,35 @@ function PresentationPage() {
           onCancel={handleCodeCancel}
         >
           <Form layout="vertical">
-            <Form.Item label="Block Size Length (%)">
-              <Input
-                placeholder="Please enter the length (0-100)"
-                type="number"
-                min={0}
-                max={100}
-                value={codeLeight}
-                // value={codeBlockSize.length}
-                onChange={(e) =>
-                  // setCodeBlockSize({ ...codeBlockSize, length: e.target.value })
-                  setCodeLeight(e.target.value)
-                }
-              />
-            </Form.Item>
-            <Form.Item label="Block Size Width (%)">
-              <Input
-                placeholder="Please enter the width (0-100)"
-                type="number"
-                min={0}
-                max={100}
-                // value={codeBlockSize.width}
-                value={codeWidth}
-                onChange={(e) => setCodeWidth(e.target.value)}
-              />
-            </Form.Item>
+            {!triggerByDoubleClick && (
+              <>
+                <Form.Item label="Block Size Length (%)">
+                  <Input
+                    placeholder="Please enter the length (0-100)"
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={codeLeight}
+                    // value={codeBlockSize.length}
+                    onChange={(e) =>
+                      // setCodeBlockSize({ ...codeBlockSize, length: e.target.value })
+                      setCodeLeight(e.target.value)
+                    }
+                  />
+                </Form.Item>
+                <Form.Item label="Block Size Width (%)">
+                  <Input
+                    placeholder="Please enter the width (0-100)"
+                    type="number"
+                    min={0}
+                    max={100}
+                    // value={codeBlockSize.width}
+                    value={codeWidth}
+                    onChange={(e) => setCodeWidth(e.target.value)}
+                  />
+                </Form.Item>
+              </>
+            )}
             <Form.Item label="Code Content">
               <TextArea
                 value={codeContent}
