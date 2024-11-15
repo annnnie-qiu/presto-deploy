@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import PresentationPage from "./pages/PresentationPage";
+import SettingPage from "./pages/SettingPage";
 
 function App() {
   const [darkMode, setDarkMode] = React.useState(false);
@@ -31,6 +32,7 @@ function App() {
         <Route path="/" element={<WelcomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/setting" element={<SettingPage />} />
         <Route
           path="/dashboard"
           element={
