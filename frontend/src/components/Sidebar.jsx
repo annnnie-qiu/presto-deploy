@@ -114,6 +114,7 @@ const Sidebar = ({ darkMode, presentations }) => {
             key: '4',
             icon: <SettingOutlined />,
             label: 'Setting',
+            onClick: () => navigate('/setting'),
           },
           {
             key: '5',
