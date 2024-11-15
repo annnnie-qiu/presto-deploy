@@ -45,12 +45,12 @@ const Sidebar = ({ darkMode, presentations }) => {
       return "2";
     }
     switch (location.pathname) {
-      case "/dashboard":
-        return "1";
-      case "/setting":
-        return "4";
-      default:
-        return "";
+    case "/dashboard":
+      return "1";
+    case "/setting":
+      return "4";
+    default:
+      return "";
     }
   };
 
