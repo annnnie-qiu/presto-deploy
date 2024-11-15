@@ -128,12 +128,6 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       return;
     }
 
-    // let newThumbnailReference = "";
-    // if (newPresentationThumbnail) {
-    //   newThumbnailReference = `thumbnail-${presentations.length + 1}`;
-    //   localStorage.setItem(newThumbnailReference, newPresentationThumbnail);
-    // }
-
     const newPresentation = {
       id: presentations.length + 1,
       name: newPresentationName,
@@ -151,10 +145,6 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       ],
     };
 
-    // Conditionally add the thumbnail property if there's a valid thumbnail
-    // if (newThumbnailReference) {
-    //   newPresentation.thumbnail = newThumbnailReference;
-    // }
 
     try {
       // Get the current store details

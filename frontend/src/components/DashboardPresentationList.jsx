@@ -22,8 +22,8 @@ const DashboardPresentationList = ({
   React.useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // State for modal visibiliy and currently selected presentation
@@ -36,7 +36,7 @@ const DashboardPresentationList = ({
 
   // Function to naviagte to the specific presentation page
   const handleCardClick = (id) => {
-    navigate(`/presentation/${id}`);
+    navigate(`/presentation/${id}/1`);
   };
 
   // Function to handle the edit button click
