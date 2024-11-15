@@ -68,7 +68,7 @@ const Sidebar = ({ darkMode, presentations }) => {
   const handleMyPresentations = () => {
     if (presentations.length > 0) {
       const latestPresentation = presentations[presentations.length - 1];
-      navigate(`/presentation/${latestPresentation.id}`);
+      navigate(`/presentation/${latestPresentation.id}/1`);
     } else {
       showErrorToast("No presentations available.");
     }
