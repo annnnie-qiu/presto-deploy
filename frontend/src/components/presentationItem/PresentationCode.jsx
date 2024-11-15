@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
 import Handlebars from "handlebars";
@@ -24,7 +24,6 @@ function PresentationCode({
   setTriggerByDoubleClick,
 }) {
   const codeRef = useRef(null);
-  console.log("data", data);
 
   // escape HTML using Handlebars
   const escapeHtml = (unsafeHtml) => {
@@ -49,30 +48,23 @@ function PresentationCode({
   }, [data.codeContent]);
 
   const [isMoveActive, setIsMoveActive] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [size, setSize] = useState({ width: 0, height: 0 });
 
   const handleDragStop = async (e, newPos) => {
     if (!isMoveActive) return;
-    setPosition({ x: newPos.x, y: newPos.y });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-    console.log("targetIndex", targetIndex);
-    console.log("currentSlides", currentSlides);
-    console.log("data", data);
     // Edit mode
     // Update existing content
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: newPos.x, y: newPos.y },
-          }
+          ...element,
+          position: { x: newPos.x, y: newPos.y },
+        }
         : element
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -90,34 +82,22 @@ function PresentationCode({
     // Calculate new dimensions in percentage relative to container
     const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
     const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
-    setSize({
-      width: newWidthPercentage,
-      height: newHeightPercentage,
-    });
-    // setPosition({
-    //   x: position.x,
-    //   y: position.y,
-    // });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
     );
-    console.log("targetIndex", targetIndex);
-    console.log("currentSlides", currentSlides);
-    console.log("data", data);
     // Edit mode
     // Update existing content
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            codeWidth: newWidthPercentage,
-            codeLeight: newHeightPercentage,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          codeWidth: newWidthPercentage,
+          codeLeight: newHeightPercentage,
+        }
         : element
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -130,7 +110,6 @@ function PresentationCode({
   const onDoubleClick = async () => {
 
     setSelectedElementId(data.id);
-    // setCodeBlockSize(data.codeBlockSize);
     setCodeLeight(data.codeLeight);
     setCodeWidth(data.codeWidth);
     setCodeContent(data.codeContent);
@@ -162,21 +141,12 @@ function PresentationCode({
   const handleOk = () => {
     setIsModalOpen(false);
     // delete the presentation from the backend and navigate to the dashboard
-    console.log("delete the text");
-    console.log("currentSlides", currentSlides);
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
-    );
-    console.log("targetIndex", targetIndex);
-    console.log("data.id", data.id);
-    console.log(
-      "currentSlides[targetIndex].content",
-      currentSlides[targetIndex].content
     );
     const newContent = currentSlides[targetIndex].content.filter(
       (element) => element.id !== data.id // Exclude the element with the matching id
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -202,8 +172,6 @@ function PresentationCode({
             height: `${data?.codeLeight}%`,
           }}
           style={{
-            // width: `${data?.codeBlockSize?.width}%`,
-            // height: `${data?.codeBlockSize?.length}%`,
             fontSize: `${data?.codeFontSize}em`,
             position: "window",
             overflow: "show",

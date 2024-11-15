@@ -46,3 +46,14 @@ This document outlines the strengths and unique features of our frontend design,
 
 15. **Background Music on Presentation Page**  
     - Users have the option to add background music to their presentations, enhancing engagement and allowing for a more immersive experience.
+
+16. **Comprehensive Deployment to Vercel with Adjusted Authentication Features**
+    - We deployed both the frontend and backend of our web application to Vercel, even though backend deployment was not required. Additionally, we updated the Google Login and CAPTCHA settings to ensure full functionality after deployment, addressing potential issues that could arise from platform restrictions.
+
+17. **Dynamic URL Updates for Slide Navigation**
+    - When users add, delete, or switch between different slides on the presentation page, the URL dynamically updates to reflect the current slide. This ensures consistency between user actions and browser navigation, improving usability and enabling deep linking to specific slides.
+
+
+
+
+

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Rnd } from "react-rnd";
 import PresentationSlideMove from "./PresentationSlideMove";
 import { getUpdateDetail } from "../../../utils/API/Send_ReceiveDetail/get_updateDetail";
@@ -21,12 +21,9 @@ function PresentationImage({
   setTriggerByDoubleClick,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const handleDragStop = async (e, newPos) => {
     if (!isMoveActive) return;
-    console.log("drag stopped", newPos);
-    setPosition({ x: newPos.x, y: newPos.y });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -35,13 +32,12 @@ function PresentationImage({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: newPos.x, y: newPos.y },
-          }
+          ...element,
+          position: { x: newPos.x, y: newPos.y },
+        }
         : element
     );
 
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -70,11 +66,6 @@ function PresentationImage({
     // Calculate new dimensions in percentage relative to container
     const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
     const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
-
-    // setPosition({
-    //   x: position.x,
-    //   y: position.y,
-    // });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -85,14 +76,13 @@ function PresentationImage({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            imageSizeLength: newHeightPercentage,
-            imageSizeWidth: newWidthPercentage,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          imageSizeLength: newHeightPercentage,
+          imageSizeWidth: newWidthPercentage,
+        }
         : element
     );
-    console.log("newContent", newContent);
 
     getUpdateDetail(
       presentationId,
@@ -104,7 +94,6 @@ function PresentationImage({
   };
 
   const onDoubleClick = async () => {
-    console.log("double clicked");
     setImageSizeLength(data.imageSizeLength);
     setImageSizeWidth(data.imageSizeWidth);
     setImageAlt(data.imageAlt);
@@ -126,21 +115,12 @@ function PresentationImage({
   const handleOk = () => {
     setIsModalOpen(false);
     // delete the presentation from the backend and navigate to the dashboard
-    console.log("delete the text");
-    console.log("currentSlides", currentSlides);
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
-    );
-    console.log("targetIndex", targetIndex);
-    console.log("data.id", data.id);
-    console.log(
-      "currentSlides[targetIndex].content",
-      currentSlides[targetIndex].content
     );
     const newContent = currentSlides[targetIndex].content.filter(
       (element) => element.id !== data.id // Exclude the element with the matching id
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -194,7 +174,6 @@ function PresentationImage({
                 <img
                   src={`${data.uploadImage}`}
                   alt={`${data.imageAlt}`}
-                  // className="w-full h-full"
                 />
               </span>
             ) : null}
@@ -240,7 +219,6 @@ function PresentationImage({
                 <img
                   src={`${data.uploadImage}`}
                   alt={`${data.imageAlt}`}
-                  // className="w-full h-full"
                 />
               </span>
             ) : null}

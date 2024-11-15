@@ -2,7 +2,14 @@ import { apiCall } from '../apiCall';
 
 export default async function sendDetail(token, updatedStore) {
   try {
-    const updateResponse = await apiCall('PUT', 'store', { store: updatedStore }, '', token);
+
+    const updateResponse = await apiCall(
+      "PUT",
+      "store",
+      { store: updatedStore },
+      token
+    );
+
     return updateResponse;
   } catch (error) {
     console.error('Failed to update the store:', error.message);
@@ -12,7 +19,9 @@ export default async function sendDetail(token, updatedStore) {
 
 export async function getDetail(token) {
   try {
-    const response = await apiCall('GET', 'store', {}, '', token);
+
+    const response = await apiCall("GET", "store", {}, token);
+
     if (!response.store) {
       throw new Error('Failed to retrieve the current store data');
     }

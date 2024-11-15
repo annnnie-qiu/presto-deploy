@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
-import { Button, Layout, Checkbox, Form, Input, Typography } from "antd";
+import { Button, Layout, Form, Input, Typography } from "antd";
 const { Sider } = Layout;
 import Sidebar from "../components/Sidebar";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
+import { showErrorToast } from "../../utils/toastUtils";
 
 function SettingPage() {
   const styles = {
     sider: {
       height: "100vh",
-      position: "sticky !important",
+      position: "sticky",
       left: 0,
       bottom: 0,
       top: 0,
@@ -31,15 +32,10 @@ function SettingPage() {
     },
   };
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
-  };
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
 
   const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
   const [showDetail, setShowDetail] = React.useState(false);
+  const [presentations, setPresentations] = React.useState([]);
 
   // Effect to track window resizing
   React.useEffect(() => {
@@ -49,21 +45,32 @@ function SettingPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Function to fetch presentation details
+  const token = localStorage.getItem("token");
+  const refetchPresentations = async () => {
+    try {
+      const response = await getDetail(token);
+      const presentations = response.store?.presentations || [];
+      setPresentations(presentations);
+    } catch (error) {
+      showErrorToast("Failed to load presentations", error.message);
+    }
+  };
+
+  // Fetch presentations when the component loads
+  useEffect(() => {
+    refetchPresentations();
+  }, []);
+
   const handleClick = async () => {
-    console.log("clicked");
     // get token from local storage
-    const token = localStorage.getItem("token");
-    const detail = await getDetail(token);
-    console.log(detail);
     setShowDetail(!showDetail);
-    const { username, password } = detail.store;
-    console.log(username, password);
   };
 
   return (
     <Layout style={styles.layout}>
       <Sider theme="light" trigger={null} style={styles.sider}>
-        <Sidebar />
+        <Sidebar presentations={presentations}/>
 
         <Button type="text" style={styles.trigerbtn} />
       </Sider>
@@ -92,7 +99,6 @@ function SettingPage() {
             fontSize: windowWidth <= 600 ? "14px" : "16px",
             marginTop: windowWidth <= 600 ? "10px" : "0",
             marginBottom: "20px",
-            alignSelf: "center",
             justifySelf: "center",
           }}
           onClick={() => handleClick()}
@@ -115,8 +121,6 @@ function SettingPage() {
             initialValues={{
               remember: true,
             }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
             <Form.Item

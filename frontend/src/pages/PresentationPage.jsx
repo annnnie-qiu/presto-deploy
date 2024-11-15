@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { MyDroppable } from "./MyDroppable";
 import { useNavigate } from "react-router-dom";
 import HeaherPresent from "../components/HeaherPresent";
@@ -63,6 +63,7 @@ const Tooltips = (
   setIsListHidden
 ) => {
   const [arrow, setArrow] = useState("Show");
+  const navigate = useNavigate();
   const mergedArrow = useMemo(() => {
     if (arrow === "Hide") {
       return false;
@@ -82,7 +83,6 @@ const Tooltips = (
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    // 监听音频的加载状态
     audioRef.current.addEventListener("canplay", () => {
       console.log("Audio is ready to play");
     });
@@ -94,8 +94,6 @@ const Tooltips = (
   }, []);
 
   const handleMusic = () => {
-    console.log("handleMusic");
-    console.log("audioRef", audioRef);
     if (isPlaying) {
       audioRef.current.pause();
     } else {
@@ -149,18 +147,10 @@ const Tooltips = (
                     break;
                   }
                 }
+                navigate(
+                  `/presentation/${presentationId}/${newSlideList.length}`
+                );
                 await sendDetail(token, store);
-                // const slideElement = document.getElementById(`slide-${nextAvailableSlideId}`);
-                // const snapshot = await takeSnapshot(slideElement, nextAvailableSlideId);
-                // if (snapshot) {
-                //   setCurrentSlides((slides) =>
-                //     slides.map((slide) =>
-                //       slide.slideId === snapshot.slideId
-                //         ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
-                //         : slide
-                //     )
-                //   );
-                // }
               }}
               arrow={mergedArrow}
             >
@@ -189,8 +179,12 @@ const Tooltips = (
                   return;
                 } else if (targetIndex === currentSlides.length - 1) {
                   nextSlideId = currentSlides[targetIndex - 1].slideId;
+                  navigate(`/presentation/${presentationId}/${targetIndex}`);
                 } else {
                   nextSlideId = currentSlides[targetIndex + 1].slideId;
+                  navigate(
+                    `/presentation/${presentationId}/${targetIndex + 1}`
+                  );
                 }
 
                 for (let i = 0; i < store.presentations.length; i++) {
@@ -258,7 +252,6 @@ const Tooltips = (
             <Tooltip
               placement="right"
               title={"put CODE on the slide"}
-              // arrow={mergedArrow}
             >
               <Button onClick={showCodeModal}>
                 <CodeOutlined />
@@ -288,18 +281,10 @@ const Tooltips = (
                 onClick={() => {
                   try {
                     setIsHidden(true);
-                    console.log("presentationId", presentationId);
-                    console.log("selectedSlideId", selectedSlideId);
-                    window.history.pushState(
-                      {},
-                      "",
-                      `/presentation/${presentationId}/${selectedSlideId}`
-                    );
                   } catch (error) {
-                    console.log(error);
                     errorPopUp(
                       "Error",
-                      "An error occurred while navigating to the preview page"
+                      `An error occurred while navigating to the preview page ${error}`
                     );
                   }
                 }}
@@ -312,7 +297,6 @@ const Tooltips = (
             <Tooltip placement="right" title={"Slide Re-arranging"}>
               <Button
                 onClick={() => {
-                  console.log("currentSlides", currentSlides);
                   setIsListHidden(false);
                 }}
               >
@@ -357,60 +341,65 @@ const DescList = ({
   showBackgroundModal,
   handleLeftRightKeyPress,
   setIsListHidden,
-}) => (
-  <div className="flex h-full w-full px-2">
-    <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
-      {currentSlides.map((slide, index) => (
-        <div
-          key={slide.slideId}
-          className="flex w-full h-24 justify-center items-center gap-2 size-4"
-        >
-          <div className="self-end pb-2">{index + 1}</div>
+}) => {
+  const navigate = useNavigate();
+  return (
+    <div className="flex h-full w-full px-2">
+      <div className="grow flex flex-col gap-2 items-center max-h-[80vh] overflow-y-auto py-2">
+        {currentSlides.map((slide, index) => (
           <div
-            onClick={() => {
-              setSelectedSlideId(slide.slideId);
-            }}
-            className={`bg-white h-24 w-3/4 rounded-lg border-solid border-2 ${
-              selectedSlideId === slide.slideId
-                ? "border-blue-500"
-                : "border-inherit"
-            }`}
-          ></div>
-        </div>
-      ))}
+            key={slide.slideId}
+            className="flex w-full h-24 justify-center items-center gap-2 size-4"
+          >
+            <div className="self-end pb-2">{index + 1}</div>
+            <div
+              onClick={() => {
+                setSelectedSlideId(slide.slideId);
+                navigate(`/presentation/${presentationId}/${index + 1}`);
+              }}
+              className={`bg-white h-24 w-3/4 rounded-lg border-solid border-2 ${
+                selectedSlideId === slide.slideId
+                  ? "border-blue-500"
+                  : "border-inherit"
+              }`}
+            ></div>
+          </div>
+        ))}
+      </div>
+      <div className="w-8 h-full">
+        {Tooltips(
+          currentSlides,
+          setCurrentSlides,
+          presentationId,
+          selectedSlideId,
+          setSelectedSlideId,
+          showTextModal,
+          showImageModal,
+          handleTextCancel,
+          isTextModalOpen,
+          showCodeModal,
+          isCodeModalOpen,
+          handleFontCancel,
+          isFontModalOpen,
+          showFontModal,
+          handleVideoCancel,
+          isVideoModalOpen,
+          showVideoModal,
+          setIsHidden,
+          isBackgroundModalOpen,
+          handleBackgroundCancel,
+          showBackgroundModal,
+          handleLeftRightKeyPress,
+          setIsListHidden
+        )}
+      </div>
     </div>
-    <div className="w-8 h-full">
-      {Tooltips(
-        currentSlides,
-        setCurrentSlides,
-        presentationId,
-        selectedSlideId,
-        setSelectedSlideId,
-        showTextModal,
-        showImageModal,
-        handleTextCancel,
-        isTextModalOpen,
-        showCodeModal,
-        isCodeModalOpen,
-        handleFontCancel,
-        isFontModalOpen,
-        showFontModal,
-        handleVideoCancel,
-        isVideoModalOpen,
-        showVideoModal,
-        setIsHidden,
-        isBackgroundModalOpen,
-        handleBackgroundCancel,
-        showBackgroundModal,
-        handleLeftRightKeyPress,
-        setIsListHidden
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 function PresentationPage() {
   const [collapsed, setCollapsed] = useState(false);
+
   const [selectedSlideId, setSelectedSlideId] = useState(1);
   const { presentationId } = useParams();
   const [currentSlides, setCurrentSlides] = React.useState([]);
@@ -473,16 +462,42 @@ function PresentationPage() {
   const [isImageModalOpen, setisImageModalOpen] = useState(false);
   const [isCodeModalOpen, setisCodeModalOpen] = useState(false);
   const [triggerByDoubleClick, setTriggerByDoubleClick] = useState(false);
+  const [disAbled, setDisAbled] = useState(false);
+
+  const disAbledRef = useRef(disAbled);
+
+  useEffect(() => {
+    disAbledRef.current = disAbled;
+  }, [disAbled]);
+
+  // Effect to handle sidebar collapse based on window width
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 900) {
+        setCollapsed(true);
+      } else {
+        setCollapsed(false);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const showTextModal = () => {
+    setDisAbled((current) => !current);
     setisTextModalOpen(true);
   };
 
   const showImageModal = () => {
     setisImageModalOpen(true);
+    setDisAbled((current) => !current);
   };
 
   const handleTextCancel = () => {
+    setDisAbled((current) => !current);
     setisTextModalOpen(false);
     setTriggerByDoubleClick(false);
   };
@@ -490,47 +505,53 @@ function PresentationPage() {
   const handleImageCancel = () => {
     setisImageModalOpen(false);
     setTriggerByDoubleClick(false);
+    setDisAbled((current) => !current);
   };
 
   const showCodeModal = () => {
     setisCodeModalOpen(true);
+    setDisAbled((current) => !current);
   };
 
   const handleCodeCancel = () => {
     setisCodeModalOpen(false);
     setTriggerByDoubleClick(false);
+    setDisAbled((current) => !current);
   };
 
   const showFontModal = () => {
     setIsFontModalOpen(true);
+    setDisAbled((current) => !current);
   };
 
   const handleFontCancel = () => {
     setIsFontModalOpen(false);
+    setDisAbled((current) => !current);
   };
 
   const showVideoModal = () => {
     setisVideoModalOpen(true);
+    setDisAbled((current) => !current);
   };
 
   const handleVideoCancel = () => {
     setisVideoModalOpen(false);
     setTriggerByDoubleClick(false);
+    setDisAbled((current) => !current);
   };
 
   const showBackgroundModal = () => {
     setIsBackgroundModalOpen(true);
+    setDisAbled((current) => !current);
   };
 
   const handleBackgroundCancel = () => {
     setIsBackgroundModalOpen(false);
+    setDisAbled((current) => !current);
   };
 
-  const handleArrowKeyPress = (e) => {
-    const pathname = window.location.pathname;
-    const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
-    // if (document.activeElement === document.body) {
-    if (e.key === "ArrowLeft") {
+  let handleArrowKeyPress = (e) => {
+    if (e.key === "ArrowLeft" && !disAbledRef.current) {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
@@ -538,24 +559,11 @@ function PresentationPage() {
       if (targetIndex > 0) {
         const newSlideId = currentSlides[targetIndex - 1].slideId;
         setSelectedSlideId(newSlideId);
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${newSlideId}`
-        );
-        // if (hasTwoSlashes) {
-        //   console.log("targetIndex", targetIndex);
-        //   console.log("has two slashes");
-        //   window.history.pushState(
-        //     {},
-        //     "",
-        //     `/presentation/${presentationId}/${newSlideId}`
-        //   );
-        // }
+        navigate(`/presentation/${presentationId}/${targetIndex}`);
       } else {
         showErrorToast("This is the first slide now");
       }
-    } else if (e.key === "ArrowRight") {
+    } else if (e.key === "ArrowRight" && !disAbledRef.current) {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
@@ -563,23 +571,11 @@ function PresentationPage() {
       if (targetIndex < currentSlides.length - 1) {
         const newSlideId = currentSlides[targetIndex + 1].slideId;
         setSelectedSlideId(newSlideId);
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${newSlideId}`
-        );
-        // if (hasTwoSlashes) {
-        //   window.history.pushState(
-        //     {},
-        //     "",
-        //     `/presentation/${presentationId}/${newSlideId}`
-        //   );
-        // }
+        navigate(`/presentation/${presentationId}/${targetIndex + 2}`);
       } else {
         showErrorToast("This is the last slide now");
       }
     }
-    // }
 
     if (e.key === "Escape") {
       setIsHidden(false);
@@ -588,13 +584,7 @@ function PresentationPage() {
   };
 
   const handleLeftRightKeyPress = (key) => {
-    console.log("key pressed", key);
-    console.log("active element", document.activeElement);
-    console.log("body", document.body);
-    const pathname = window.location.pathname;
-    const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
-    // if (document.activeElement === document.body) {
-    if (key === "Left") {
+    if (key === "Left" && !disAbled) {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
@@ -602,26 +592,19 @@ function PresentationPage() {
       if (targetIndex > 0) {
         const newSlideId = currentSlides[targetIndex - 1].slideId;
         setSelectedSlideId(newSlideId);
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${newSlideId}`
-        );
+        navigate(`/presentation/${presentationId}/${targetIndex}`);
       } else {
         showErrorToast("This is the first slide now");
       }
-    } else if (key === "Right") {
+    } else if (key === "Right" && !disAbled) {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
       if (targetIndex < currentSlides.length - 1) {
         const newSlideId = currentSlides[targetIndex + 1].slideId;
         setSelectedSlideId(newSlideId);
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${newSlideId}`
-        );
+
+        navigate(`/presentation/${presentationId}/${targetIndex + 2}`);
       } else {
         showErrorToast("This is the last slide now");
       }
@@ -649,24 +632,22 @@ function PresentationPage() {
     );
     let newContent;
     if (existingElementIndex !== -1) {
-      console.log("existing", currentSlides);
       // Edit mode
       // Update existing content
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              textInput: textInput,
-              textSizeLength: textSizeLength,
-              textSizeWidth: textSizeWidth,
-              textFontSize: textFontSize,
-              textFontColor: textFontColor,
-              zIndex: zIndex,
-            }
+            ...element,
+            textInput: textInput,
+            textSizeLength: textSizeLength,
+            textSizeWidth: textSizeWidth,
+            textFontSize: textFontSize,
+            textFontColor: textFontColor,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
-      console.log("new", currentSlides);
       // put them into content list and update the currentSlides
       newContent = [
         ...currentSlides[targetIndex].content,
@@ -769,13 +750,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              imageSizeLength: imageSizeLength,
-              imageSizeWidth: imageSizeWidth,
-              imageAlt: imageAlt,
-              uploadImage: uploadImage,
-              zIndex: zIndex,
-            }
+            ...element,
+            imageSizeLength: imageSizeLength,
+            imageSizeWidth: imageSizeWidth,
+            imageAlt: imageAlt,
+            uploadImage: uploadImage,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -833,15 +814,12 @@ function PresentationPage() {
         type: "code",
         codeLeight,
         codeWidth,
-        // codeBlockSize,
         codeContent,
         codeFontSize,
-        // codeLanguage,
         id: currentSlides[targetIndex].nextElementId,
         position: { x: 0, y: 0 },
       },
     ];
-    console.log("newContent", newContent);
 
     const newSlideList = currentSlides.map((slide) => {
       if (slide.slideId === selectedSlideId) {
@@ -887,13 +865,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              videoUrl: videoUrl,
-              videoSizeLength: videoSizeLength,
-              videoSizeWidth: videoSizeWidth,
-              videoAutoplay: videoAutoplay,
-              zIndex: zIndex,
-            }
+            ...element,
+            videoUrl: videoUrl,
+            videoSizeLength: videoSizeLength,
+            videoSizeWidth: videoSizeWidth,
+            videoAutoplay: videoAutoplay,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -943,7 +921,6 @@ function PresentationPage() {
     // Once the file is read, get the Base64 string
     reader.onload = (e) => {
       setUploadImage(e.target.result);
-      console.log("Base64 of uploaded image:", e.target.result);
     };
 
     // Read the file as a Data URL (Base64)
@@ -978,13 +955,14 @@ function PresentationPage() {
     const newSlides = currentSlides.map((slide, index) =>
       index === targetIndex
         ? {
-            ...slide,
-            background: newBackground,
-          }
+          ...slide,
+          background: newBackground,
+        }
         : slide
     );
 
     setCurrentSlides(newSlides);
+    setDisAbled((current) => !current);
 
     // Save the background change to the backend
     const token = localStorage.getItem("token");
@@ -1008,7 +986,6 @@ function PresentationPage() {
 
       // Update the state to reflect the background image upload for the slide
       setBackgroundImage(base64String);
-      console.log("Base64 of uploaded background image:", base64String);
     };
 
     reader.readAsDataURL(file); // Convert the file to base64
@@ -1030,30 +1007,25 @@ function PresentationPage() {
       const presentation = response.store.presentations.find(
         (presentation) => presentation.id == presentationId
       );
-      console.log("presentation", presentation);
+
       if (presentation === undefined) {
         errorPopUp("Error", "This presentation does not exist");
         navigate("/dashboard");
-        // navigator.history.push("/dashboard");
         return;
       }
-      setCurrentPresentation(presentation);
       setCurrentSlides(presentation.slides);
+
+      setSelectedSlideId(presentation.slides[0].slideId);
     };
     getPresentationDetail();
   }, []);
 
-  const [currentPresentation, setCurrentPresentation] =
-    React.useState(undefined);
 
   const handleDragEnd = (result) => {
-    console.log("result", result);
     if (!result.destination) return;
 
     const reorderedSlides = Array.from(currentSlides);
-    console.log("reorderedSlides", reorderedSlides);
     const [movedSlide] = reorderedSlides.splice(result.source.index, 1);
-    console.log("movedSlide", movedSlide);
     reorderedSlides.splice(result.destination.index, 0, movedSlide);
 
     setCurrentSlides(reorderedSlides);
@@ -1062,7 +1034,7 @@ function PresentationPage() {
   const styles = {
     sider: {
       height: "100vh",
-      position: "sticky !important",
+      position: "sticky",
       left: 0,
       bottom: 0,
       top: 0,
@@ -1106,10 +1078,9 @@ function PresentationPage() {
                         `/presentation/${presentationId}/${selectedSlideId}`
                       );
                     } catch (error) {
-                      console.log(error);
                       errorPopUp(
                         "Error",
-                        "An error occurred while navigating to the preview page"
+                        `An error occurred while navigating to the preview page ${error}`
                       );
                     }
                   }}
@@ -1153,7 +1124,6 @@ function PresentationPage() {
               setImageAlt={setImageAlt}
               setUploadImage={setUploadImage}
               showCodeModal={showCodeModal}
-              // setCodeBlockSize={setCodeBlockSize}
               setCodeLeight={setCodeLeight}
               setCodeWidth={setCodeWidth}
               setCurrentSlides={setCurrentSlides}
@@ -1317,6 +1287,10 @@ function PresentationPage() {
                     setImageAlt={setImageAlt}
                     setUploadImage={setUploadImage}
                     showCodeModal={showCodeModal}
+                    setCodeLeight={setCodeLeight}
+                    setCodeWidth={setCodeWidth}
+                    setCodeContent={setCodeContent}
+                    setCodeFontSize={setCodeFontSize}
                     setCurrentSlides={setCurrentSlides}
                     showVideoModal={showVideoModal}
                     setVideoUrl={setVideoUrl}
@@ -1450,7 +1424,6 @@ function PresentationPage() {
                     value={imageSizeLength}
                     type="number"
                     placeholder="Please enter the length (0-100)"
-                    // addonAfter="px"
                     addonAfter="%"
                     onChange={(e) => {
                       setImageSizeLength(e.target.value);
@@ -1464,7 +1437,6 @@ function PresentationPage() {
                     value={imageSizeWidth}
                     type="number"
                     placeholder="Please enter the width (0-100)"
-                    // addonAfter="px"
                     addonAfter="%"
                     onChange={(e) => {
                       setImageSizeWidth(e.target.value);
