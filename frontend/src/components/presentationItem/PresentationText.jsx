@@ -23,7 +23,7 @@ function PresentationText({
   setTriggerByDoubleClick,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  // const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: 0, height: 0 });
   // const [position, setPosition] = useState(adjustedPosition);
 
@@ -147,7 +147,7 @@ function PresentationText({
   const handleDragStop = async (e, newPos) => {
     if (!isMoveActive) return;
     console.log("drag stopped", newPos);
-    setPosition({ x: newPos.x, y: newPos.y });
+    // setPosition({ x: newPos.x, y: newPos.y });
 
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
