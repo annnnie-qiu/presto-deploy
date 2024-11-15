@@ -107,8 +107,6 @@ function HeaherPresent() {
     reader.readAsDataURL(file);
   };
 
-  const [newPresentationName, setNewPresentationName] = useState("");
-
   // get the current slides from the backend
   React.useEffect(() => {
     const getPresentationDetail = async () => {

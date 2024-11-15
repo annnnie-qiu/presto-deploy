@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
 import Handlebars from "handlebars";
@@ -67,9 +67,9 @@ function PresentationCode({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: newPos.x, y: newPos.y },
-          }
+          ...element,
+          position: { x: newPos.x, y: newPos.y },
+        }
         : element
     );
     console.log("newContent", newContent);
@@ -110,11 +110,11 @@ function PresentationCode({
     const newContent = currentSlides[targetIndex].content.map((element) =>
       element.id === data.id
         ? {
-            ...element,
-            position: { x: position.x, y: position.y },
-            codeWidth: newWidthPercentage,
-            codeLeight: newHeightPercentage,
-          }
+          ...element,
+          position: { x: position.x, y: position.y },
+          codeWidth: newWidthPercentage,
+          codeLeight: newHeightPercentage,
+        }
         : element
     );
     console.log("newContent", newContent);

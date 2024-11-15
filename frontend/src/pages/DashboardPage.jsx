@@ -214,7 +214,6 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
             <DashboardMainContent
               presentations={presentations}
               onCreate={showModal}
-              setPresentations={setPresentations}
               refetchPresentations={refetchPresentations}
             />
             {/* <DashboardSideContent /> */}

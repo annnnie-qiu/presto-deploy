@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { MyDroppable } from "./MyDroppable";
 import { useNavigate } from "react-router-dom";
 import HeaherPresent from "../components/HeaherPresent";
@@ -529,9 +529,6 @@ function PresentationPage() {
   };
 
   const handleArrowKeyPress = (e) => {
-    const pathname = window.location.pathname;
-    const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
-    // if (document.activeElement === document.body) {
     if (e.key === "ArrowLeft") {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
@@ -545,15 +542,6 @@ function PresentationPage() {
           "",
           `/presentation/${presentationId}/${newSlideId}`
         );
-        // if (hasTwoSlashes) {
-        //   console.log("targetIndex", targetIndex);
-        //   console.log("has two slashes");
-        //   window.history.pushState(
-        //     {},
-        //     "",
-        //     `/presentation/${presentationId}/${newSlideId}`
-        //   );
-        // }
       } else {
         showErrorToast("This is the first slide now");
       }
@@ -570,18 +558,10 @@ function PresentationPage() {
           "",
           `/presentation/${presentationId}/${newSlideId}`
         );
-        // if (hasTwoSlashes) {
-        //   window.history.pushState(
-        //     {},
-        //     "",
-        //     `/presentation/${presentationId}/${newSlideId}`
-        //   );
-        // }
       } else {
         showErrorToast("This is the last slide now");
       }
     }
-    // }
 
     if (e.key === "Escape") {
       setIsHidden(false);
@@ -590,12 +570,6 @@ function PresentationPage() {
   };
 
   const handleLeftRightKeyPress = (key) => {
-    console.log("key pressed", key);
-    console.log("active element", document.activeElement);
-    console.log("body", document.body);
-    const pathname = window.location.pathname;
-    const hasTwoSlashes = pathname.match(/\/presentation\/\d+\/\d+/);
-    // if (document.activeElement === document.body) {
     if (key === "Left") {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
@@ -657,14 +631,14 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              textInput: textInput,
-              textSizeLength: textSizeLength,
-              textSizeWidth: textSizeWidth,
-              textFontSize: textFontSize,
-              textFontColor: textFontColor,
-              zIndex: zIndex,
-            }
+            ...element,
+            textInput: textInput,
+            textSizeLength: textSizeLength,
+            textSizeWidth: textSizeWidth,
+            textFontSize: textFontSize,
+            textFontColor: textFontColor,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -771,13 +745,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              imageSizeLength: imageSizeLength,
-              imageSizeWidth: imageSizeWidth,
-              imageAlt: imageAlt,
-              uploadImage: uploadImage,
-              zIndex: zIndex,
-            }
+            ...element,
+            imageSizeLength: imageSizeLength,
+            imageSizeWidth: imageSizeWidth,
+            imageAlt: imageAlt,
+            uploadImage: uploadImage,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -889,13 +863,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              videoUrl: videoUrl,
-              videoSizeLength: videoSizeLength,
-              videoSizeWidth: videoSizeWidth,
-              videoAutoplay: videoAutoplay,
-              zIndex: zIndex,
-            }
+            ...element,
+            videoUrl: videoUrl,
+            videoSizeLength: videoSizeLength,
+            videoSizeWidth: videoSizeWidth,
+            videoAutoplay: videoAutoplay,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -980,9 +954,9 @@ function PresentationPage() {
     const newSlides = currentSlides.map((slide, index) =>
       index === targetIndex
         ? {
-            ...slide,
-            background: newBackground,
-          }
+          ...slide,
+          background: newBackground,
+        }
         : slide
     );
 

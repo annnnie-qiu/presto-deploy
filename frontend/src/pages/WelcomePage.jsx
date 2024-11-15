@@ -1,4 +1,4 @@
-import React, { StrictMode, useEffect } from "react";
+import { StrictMode, useEffect } from "react";
 import CustomizedBtn from "../components/login/share/CustomizedBtn";
 import { motion, useAnimation } from "framer-motion";
 import PrestoLogo from "../assets/Presto.png";

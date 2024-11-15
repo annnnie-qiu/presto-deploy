@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef } from "react";
 // import html2canvas from "html2canvas"; // Import html2canvas for snapshot capturing
 import PresentationText from "./PresentationText";
 import PresentationImage from "./PresentationImage";

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons'

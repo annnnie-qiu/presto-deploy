@@ -4,7 +4,6 @@ import { Avatar, Card } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
-// import { apiCall } from "../../utils/API/apiCall";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 

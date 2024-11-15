@@ -6,7 +6,6 @@ export default async function sendDetail(token, updatedStore) {
       "PUT",
       "store",
       { store: updatedStore },
-      "",
       token
     );
     return updateResponse;
@@ -18,7 +17,7 @@ export default async function sendDetail(token, updatedStore) {
 
 export async function getDetail(token) {
   try {
-    const response = await apiCall("GET", "store", {}, "", token);
+    const response = await apiCall("GET", "store", {}, token);
     if (!response.store) {
       throw new Error("Failed to retrieve the current store data");
     }
