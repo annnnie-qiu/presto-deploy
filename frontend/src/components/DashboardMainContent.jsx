@@ -1,5 +1,4 @@
 import { Flex } from 'antd';
-// import React from 'react';
 import DashboardBanner from './DashboardBanner';
 import DashboardPresentationList from './DashboardPresentationList';
 
@@ -10,7 +9,6 @@ const DashboardMainContent = ({ presentations, refetchPresentations, onCreate })
         <DashboardBanner onCreate={onCreate} />
         <DashboardPresentationList 
           presentations={presentations} 
-          // setPresentations={setPresentations}
           refetchPresentations={refetchPresentations}
         />
       </Flex>

@@ -132,11 +132,8 @@ function HeaherPresent() {
           <Input
             value={currentPresentation?.name}
             onChange={(text) => {
-              console.log("text", text.target.value);
-              console.log("currentPresentation", currentPresentation);
               // update the name in the backend
               const { store } = updateDetails;
-              console.log("store", store);
               // update the name of the presentation with the given ID
               store.presentations = store.presentations.map((presentation) =>{
                 if (presentation.id == presentationId) {
@@ -148,7 +145,6 @@ function HeaherPresent() {
                 }
                 return presentation;
               });
-              console.log("store", store);
               // update the current presentation name
               setCurrentPresentation({
                 ...currentPresentation,

@@ -7,11 +7,9 @@ import CustomHeader from "../components/Header";
 import DashboardMainContent from "../components/DashboardMainContent";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
-// import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import ToastNotification from "../components/ToastNotification";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
-// import DashboardSideContent from '../components/DashboardSideContent';
 
 const { Sider, Content } = Layout;
 
@@ -31,12 +29,10 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
   const refetchPresentations = React.useCallback(async () => {
     try {
       const response = await getDetail(token);
-      console.log("Response from /store:", response);
       const presentations = response.store?.presentations || [];
       setPresentations(presentations);
     } catch (error) {
-      console.error("Error fetching presentations:", error);
-      showErrorToast("Failed to load presentations");
+      showErrorToast("Failed to load presentations", error.message);
     }
   }, [token, setPresentations]);
 
@@ -57,7 +53,7 @@ function DashboardPage({ darkMode, toggleDarkMode }) {
       overflowX: "hidden", // Prevent horizontal scrolling
     },
     sider: {
-      position: "sticky !important",
+      position: "sticky",
       left: 0,
       bottom: 0,
       top: 0,

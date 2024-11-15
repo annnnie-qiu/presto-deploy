@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Layout, Checkbox, Form, Input, Typography } from "antd";
+import { Button, Layout, Form, Input, Typography } from "antd";
 const { Sider } = Layout;
 import Sidebar from "../components/Sidebar";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -9,7 +9,7 @@ function SettingPage() {
   const styles = {
     sider: {
       height: "100vh",
-      position: "sticky !important",
+      position: "sticky",
       left: 0,
       bottom: 0,
       top: 0,
@@ -32,12 +32,6 @@ function SettingPage() {
     },
   };
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
-  };
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
 
   const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
   const [showDetail, setShowDetail] = React.useState(false);
@@ -56,12 +50,10 @@ function SettingPage() {
   const refetchPresentations = async () => {
     try {
       const response = await getDetail(token);
-      console.log("Response from /store:", response);
       const presentations = response.store?.presentations || [];
       setPresentations(presentations);
     } catch (error) {
-      console.error("Error fetching presentations:", error);
-      showErrorToast("Failed to load presentations");
+      showErrorToast("Failed to load presentations", error.message);
     }
   };
 
@@ -71,14 +63,8 @@ function SettingPage() {
   }, []);
 
   const handleClick = async () => {
-    console.log("clicked");
     // get token from local storage
-    const token = localStorage.getItem("token");
-    const detail = await getDetail(token);
-    console.log(detail);
     setShowDetail(!showDetail);
-    const { username, password } = detail.store;
-    console.log(username, password);
   };
 
   return (
@@ -113,7 +99,6 @@ function SettingPage() {
             fontSize: windowWidth <= 600 ? "14px" : "16px",
             marginTop: windowWidth <= 600 ? "10px" : "0",
             marginBottom: "20px",
-            alignSelf: "center",
             justifySelf: "center",
           }}
           onClick={() => handleClick()}
@@ -136,8 +121,6 @@ function SettingPage() {
             initialValues={{
               remember: true,
             }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
             <Form.Item
