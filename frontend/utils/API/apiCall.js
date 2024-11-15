@@ -1,6 +1,8 @@
 export async function apiCall(method, endpoint, body = {}, token = "") {
   // Use environment variables for the backend URL
-  const BASE_URL = "http://localhost:5005";
+  // const BASE_URL = "http://localhost:5005";
+
+  const BASE_URL = "https://z5348946-presto-be-deploy.vercel.app";
 
   // Set the target address with query string for GET and DELETE
   const targetAddress = `${BASE_URL}/${endpoint}`;
