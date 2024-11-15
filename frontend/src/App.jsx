@@ -43,11 +43,10 @@ function App() {
           }
         />
         <Route
-          path="/presentation/:presentationId"
+          path="/presentation/:presentationId/:slideId"
           element={<PresentationPage />}
         />
       </Routes>
-
     </Router>
   );
 }

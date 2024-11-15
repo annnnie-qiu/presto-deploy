@@ -116,7 +116,6 @@ const Tooltips = (
       <Flex vertical justify="center" align="center" className="demo">
         <Flex justify="space-between" align="center">
           <Flex align="center" vertical>
-
             {/* add a new slide */}
             <Tooltip
               placement="rightTop"
@@ -150,17 +149,6 @@ const Tooltips = (
                   }
                 }
                 await sendDetail(token, store);
-                // const slideElement = document.getElementById(`slide-${nextAvailableSlideId}`);
-                // const snapshot = await takeSnapshot(slideElement, nextAvailableSlideId);
-                // if (snapshot) {
-                //   setCurrentSlides((slides) =>
-                //     slides.map((slide) =>
-                //       slide.slideId === snapshot.slideId
-                //         ? { ...slide, snapshotUrl: snapshot.snapshotUrl }
-                //         : slide
-                //     )
-                //   );
-                // }
               }}
               arrow={mergedArrow}
             >
@@ -290,10 +278,9 @@ const Tooltips = (
                     setIsHidden(true);
                     console.log("presentationId", presentationId);
                     console.log("selectedSlideId", selectedSlideId);
-                    window.history.pushState(
-                      {},
-                      "",
-                      `/presentation/${presentationId}/${selectedSlideId}`
+                    window.open(
+                      `/presentation/${presentationId}/${selectedSlideId}`,
+                      "_blank"
                     );
                   } catch (error) {
                     console.log(error);
@@ -326,7 +313,6 @@ const Tooltips = (
                 {isPlaying ? <SoundOutlined /> : <MutedOutlined />}
               </Button>
             </Tooltip>
-
           </Flex>
         </Flex>
       </Flex>
@@ -474,6 +460,13 @@ function PresentationPage() {
   const [isImageModalOpen, setisImageModalOpen] = useState(false);
   const [isCodeModalOpen, setisCodeModalOpen] = useState(false);
   const [triggerByDoubleClick, setTriggerByDoubleClick] = useState(false);
+  const [disAbled, setDisAbled] = useState(false);
+
+  const disAbledRef = useRef(disAbled);
+
+  useEffect(() => {
+    disAbledRef.current = disAbled; // 同步 ref
+  }, [disAbled]);
 
   // Effect to handle sidebar collapse based on window width
   React.useEffect(() => {
@@ -492,14 +485,18 @@ function PresentationPage() {
   }, []);
 
   const showTextModal = () => {
+    setDisAbled((current) => !current);
     setisTextModalOpen(true);
   };
 
   const showImageModal = () => {
     setisImageModalOpen(true);
+    setDisAbled(true);
   };
 
   const handleTextCancel = () => {
+    setDisAbled((current) => !current);
+
     setisTextModalOpen(false);
     setTriggerByDoubleClick(false);
   };
@@ -507,44 +504,54 @@ function PresentationPage() {
   const handleImageCancel = () => {
     setisImageModalOpen(false);
     setTriggerByDoubleClick(false);
+    setDisAbled(false);
   };
 
   const showCodeModal = () => {
     setisCodeModalOpen(true);
+    setDisAbled(true);
   };
 
   const handleCodeCancel = () => {
     setisCodeModalOpen(false);
     setTriggerByDoubleClick(false);
+    setDisAbled(false);
   };
 
   const showFontModal = () => {
     setIsFontModalOpen(true);
+    setDisAbled(true);
   };
 
   const handleFontCancel = () => {
     setIsFontModalOpen(false);
+    setDisAbled(false);
   };
 
   const showVideoModal = () => {
     setisVideoModalOpen(true);
+    setDisAbled(true);
   };
 
   const handleVideoCancel = () => {
     setisVideoModalOpen(false);
     setTriggerByDoubleClick(false);
+    setDisAbled(false);
   };
 
   const showBackgroundModal = () => {
     setIsBackgroundModalOpen(true);
+    setDisAbled(true);
   };
 
   const handleBackgroundCancel = () => {
     setIsBackgroundModalOpen(false);
+    setDisAbled(false);
   };
 
-  const handleArrowKeyPress = (e) => {
-    if (e.key === "ArrowLeft") {
+  let handleArrowKeyPress = (e) => {
+    console.log(disAbled);
+    if (e.key === "ArrowLeft" && !disAbledRef.current) {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
@@ -552,15 +559,17 @@ function PresentationPage() {
       if (targetIndex > 0) {
         const newSlideId = currentSlides[targetIndex - 1].slideId;
         setSelectedSlideId(newSlideId);
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${newSlideId}`
-        );
+
+        // window.history.pushState(
+        //   {},
+        //   "",
+        //   `/presentation/${presentationId}/${newSlideId}`
+        // );
+        navigate(`/presentation/${presentationId}/${newSlideId}`);
       } else {
         showErrorToast("This is the first slide now");
       }
-    } else if (e.key === "ArrowRight") {
+    } else if (e.key === "ArrowRight" && !disAbledRef.current) {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
@@ -568,11 +577,12 @@ function PresentationPage() {
       if (targetIndex < currentSlides.length - 1) {
         const newSlideId = currentSlides[targetIndex + 1].slideId;
         setSelectedSlideId(newSlideId);
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${newSlideId}`
-        );
+        // window.history.pushState(
+        //   {},
+        //   "",
+        //   `/presentation/${presentationId}/${newSlideId}`
+        // );
+        navigate(`/presentation/${presentationId}/${newSlideId}`);
       } else {
         showErrorToast("This is the last slide now");
       }
@@ -585,7 +595,7 @@ function PresentationPage() {
   };
 
   const handleLeftRightKeyPress = (key) => {
-    if (key === "Left") {
+    if (key === "Left" && !disAbled) {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
@@ -593,26 +603,28 @@ function PresentationPage() {
       if (targetIndex > 0) {
         const newSlideId = currentSlides[targetIndex - 1].slideId;
         setSelectedSlideId(newSlideId);
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${newSlideId}`
-        );
+        // window.history.pushState(
+        //   {},
+        //   "",
+        //   `/presentation/${presentationId}/${newSlideId}`
+        // );
+        navigate(`/presentation/${presentationId}/${newSlideId}`);
       } else {
         showErrorToast("This is the first slide now");
       }
-    } else if (key === "Right") {
+    } else if (key === "Right" && !disAbled) {
       const targetIndex = currentSlides.findIndex(
         (slide) => slide.slideId === selectedSlideId
       );
       if (targetIndex < currentSlides.length - 1) {
         const newSlideId = currentSlides[targetIndex + 1].slideId;
         setSelectedSlideId(newSlideId);
-        window.history.pushState(
-          {},
-          "",
-          `/presentation/${presentationId}/${newSlideId}`
-        );
+        // window.history.pushState(
+        //   {},
+        //   "",
+        //   `/presentation/${presentationId}/${newSlideId}`
+        // );
+        navigate(`/presentation/${presentationId}/${newSlideId}`);
       } else {
         showErrorToast("This is the last slide now");
       }
@@ -646,14 +658,14 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-            ...element,
-            textInput: textInput,
-            textSizeLength: textSizeLength,
-            textSizeWidth: textSizeWidth,
-            textFontSize: textFontSize,
-            textFontColor: textFontColor,
-            zIndex: zIndex,
-          }
+              ...element,
+              textInput: textInput,
+              textSizeLength: textSizeLength,
+              textSizeWidth: textSizeWidth,
+              textFontSize: textFontSize,
+              textFontColor: textFontColor,
+              zIndex: zIndex,
+            }
           : element
       );
     } else {
@@ -760,13 +772,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-            ...element,
-            imageSizeLength: imageSizeLength,
-            imageSizeWidth: imageSizeWidth,
-            imageAlt: imageAlt,
-            uploadImage: uploadImage,
-            zIndex: zIndex,
-          }
+              ...element,
+              imageSizeLength: imageSizeLength,
+              imageSizeWidth: imageSizeWidth,
+              imageAlt: imageAlt,
+              uploadImage: uploadImage,
+              zIndex: zIndex,
+            }
           : element
       );
     } else {
@@ -878,13 +890,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-            ...element,
-            videoUrl: videoUrl,
-            videoSizeLength: videoSizeLength,
-            videoSizeWidth: videoSizeWidth,
-            videoAutoplay: videoAutoplay,
-            zIndex: zIndex,
-          }
+              ...element,
+              videoUrl: videoUrl,
+              videoSizeLength: videoSizeLength,
+              videoSizeWidth: videoSizeWidth,
+              videoAutoplay: videoAutoplay,
+              zIndex: zIndex,
+            }
           : element
       );
     } else {
@@ -969,9 +981,9 @@ function PresentationPage() {
     const newSlides = currentSlides.map((slide, index) =>
       index === targetIndex
         ? {
-          ...slide,
-          background: newBackground,
-        }
+            ...slide,
+            background: newBackground,
+          }
         : slide
     );
 
@@ -1308,6 +1320,10 @@ function PresentationPage() {
                     setImageAlt={setImageAlt}
                     setUploadImage={setUploadImage}
                     showCodeModal={showCodeModal}
+                    setCodeLeight={setCodeLeight}
+                    setCodeWidth={setCodeWidth}
+                    setCodeContent={setCodeContent}
+                    setCodeFontSize={setCodeFontSize}
                     setCurrentSlides={setCurrentSlides}
                     showVideoModal={showVideoModal}
                     setVideoUrl={setVideoUrl}
