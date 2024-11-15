@@ -77,7 +77,7 @@ const Tooltips = (
   }, [arrow]);
 
   const audioRef = useRef(
-    new Audio("../music/Gracie Abrams - I miss you, Im sorry (Lyric Video).mp3")
+    new Audio("/music/Gracie Abrams - I miss you, Im sorry (Lyric Video).mp3")
   );
 
   const [isPlaying, setIsPlaying] = useState(false);
