@@ -80,6 +80,12 @@ const Tooltips = (
     new Audio("/music/Gracie Abrams - I miss you, Im sorry (Lyric Video).mp3")
   );
 
+  useEffect(() => {
+    return () => {
+      audioRef.current.pause();
+    };
+  }, []);
+
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
@@ -249,10 +255,7 @@ const Tooltips = (
             </Tooltip>
 
             {/* put code */}
-            <Tooltip
-              placement="right"
-              title={"put CODE on the slide"}
-            >
+            <Tooltip placement="right" title={"put CODE on the slide"}>
               <Button onClick={showCodeModal}>
                 <CodeOutlined />
               </Button>
@@ -1019,7 +1022,6 @@ function PresentationPage() {
     };
     getPresentationDetail();
   }, []);
-
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
