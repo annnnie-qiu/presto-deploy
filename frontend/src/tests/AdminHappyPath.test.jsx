@@ -1,12 +1,10 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import RegisterPage from '../pages/RegisterPage';
 import Sidebar from '../components/Sidebar';
 import DashboardBanner from '../components/DashboardBanner';
 import DashboardPresentationList from '../components/DashboardPresentationList';
-import PresentationPage from '../pages/PresentationPage'
 import * as api from '../../utils/API/Login_Register/login_register';
 import * as presentationApi from '../../utils/API/Send_ReceiveDetail/send_receiveDetail';
 import { useNavigate } from 'react-router-dom';
