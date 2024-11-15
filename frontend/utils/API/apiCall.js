@@ -1,12 +1,7 @@
-export async function apiCall(
-  method,
-  endpoint,
-  body = {},
-  queryString = "",
-  token = ""
-) {
+export async function apiCall(method, endpoint, body = {}, queryString = '', token = '') {
   // Use environment variables for the backend URL
-  const BASE_URL = "http://localhost:5005";
+  // const BASE_URL = "http://localhost:5005";
+  const BASE_URL = 'https://z5348946-presto-be-deploy.vercel.app';
 
   // Set the target address with query string for GET and DELETE
   const targetAddress = `${BASE_URL}/${endpoint}`;
@@ -18,12 +13,12 @@ export async function apiCall(
   const fetchOptions = {
     method,
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
   };
 
-  if (method !== "GET") {
+  if (method !== 'GET') {
     fetchOptions.body = JSON.stringify(body);
   }
 
@@ -36,7 +31,7 @@ export async function apiCall(
     // Parse and return JSON response
     return await response.json();
   } catch (error) {
-    console.error("API call failed:", error);
+    console.error('API call failed:', error);
     throw error; // Rethrow error for further handling in React components
   }
 }
