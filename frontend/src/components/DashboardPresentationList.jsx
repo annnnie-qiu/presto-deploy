@@ -66,6 +66,11 @@ const DashboardPresentationList = ({
 
   // Function to handle modal save
   const handleSave = async () => {
+    if (!presentationUpdates.name.trim()) {
+      showErrorToast("Presentation name cannot be empty.");
+      return;
+    }
+
     if (currentPresentation) {
       try {
         const updatedPresentation = {
@@ -91,10 +96,8 @@ const DashboardPresentationList = ({
           await sendDetail(token, store);
 
           await refetchPresentations(); // Refetch to update the local state
-          // showSuccessToast("Presentation updated successfully!");
         } catch (error) {
           console.error("Error updating presentation:", error);
-          // showErrorToast("Failed to update the presentation.");
         }
 
         await refetchPresentations(); // Refetch to update the local state
@@ -106,15 +109,6 @@ const DashboardPresentationList = ({
     }
     setIsModalVisible(false);
   };
-
-  // Function to get the thumbnail from localStorage when displaying the presentation
-  // const getThumbnail = (thumbnailReference) => {
-  //   if (thumbnailReference && localStorage.getItem(thumbnailReference)) {
-  //     return localStorage.getItem(thumbnailReference);
-  //   }
-  //   return null;
-  // };
-
 
   const styles = {
     headerFlex: {
@@ -205,12 +199,6 @@ const DashboardPresentationList = ({
                   <Meta
                     avatar={
                       presentation.thumbnail ? (
-                        // <Avatar
-                        //   shape="square"
-                        //   src={getThumbnail(presentation.thumbnail)}
-                        //   alt={presentation.name}
-                        //   style={styles.thumbnail}
-                        // />
                         <Avatar
                           shape="square"
                           src={presentation.thumbnail} // Directly use base64 data
