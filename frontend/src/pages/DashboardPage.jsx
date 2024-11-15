@@ -7,11 +7,9 @@ import CustomHeader from "../components/Header";
 import DashboardMainContent from "../components/DashboardMainContent";
 import sendDetail from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
-// import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import ToastNotification from "../components/ToastNotification";
 import { showErrorToast, showSuccessToast } from "../../utils/toastUtils";
-// import DashboardSideContent from '../components/DashboardSideContent';
 
 const { Sider, Content } = Layout;
 

@@ -174,7 +174,6 @@ function PresentationImage({
                 <img
                   src={`${data.uploadImage}`}
                   alt={`${data.imageAlt}`}
-                  // className="w-full h-full"
                 />
               </span>
             ) : null}
@@ -220,7 +219,6 @@ function PresentationImage({
                 <img
                   src={`${data.uploadImage}`}
                   alt={`${data.imageAlt}`}
-                  // className="w-full h-full"
                 />
               </span>
             ) : null}

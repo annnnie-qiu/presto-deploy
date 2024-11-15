@@ -4,10 +4,6 @@ export async function apiCall(method, endpoint, body = {}, token = "") {
 
   // Set the target address with query string for GET and DELETE
   const targetAddress = `${BASE_URL}/${endpoint}`;
-  // method === "GET"
-  //   ? `${BASE_URL}/${endpoint}?${queryString}`
-  //   : `${BASE_URL}/${endpoint}`;
-
   // Set the headers and method for the request
   const fetchOptions = {
     method,

@@ -158,7 +158,6 @@ const PresentationVideo = ({
           onContextMenu={handleContextMenu}
         >
           <div
-            // className="w-full h-full"
             style={{
               width: "100%",
               height: "100%",
@@ -168,8 +167,6 @@ const PresentationVideo = ({
           >
             <iframe
               className="w-full h-full"
-              // width="100%"
-              // height="100%"
               src={`${data.videoUrl}${data.videoAutoplay ? "&autoplay=1" : ""}`}
               title="Embedded Video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

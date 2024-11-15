@@ -172,8 +172,6 @@ function PresentationCode({
             height: `${data?.codeLeight}%`,
           }}
           style={{
-            // width: `${data?.codeBlockSize?.width}%`,
-            // height: `${data?.codeBlockSize?.length}%`,
             fontSize: `${data?.codeFontSize}em`,
             position: "window",
             overflow: "show",

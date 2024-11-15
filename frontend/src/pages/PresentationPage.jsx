@@ -252,7 +252,6 @@ const Tooltips = (
             <Tooltip
               placement="right"
               title={"put CODE on the slide"}
-              // arrow={mergedArrow}
             >
               <Button onClick={showCodeModal}>
                 <CodeOutlined />
@@ -1012,7 +1011,6 @@ function PresentationPage() {
       if (presentation === undefined) {
         errorPopUp("Error", "This presentation does not exist");
         navigate("/dashboard");
-        // navigator.history.push("/dashboard");
         return;
       }
       setCurrentSlides(presentation.slides);
@@ -1126,7 +1124,6 @@ function PresentationPage() {
               setImageAlt={setImageAlt}
               setUploadImage={setUploadImage}
               showCodeModal={showCodeModal}
-              // setCodeBlockSize={setCodeBlockSize}
               setCodeLeight={setCodeLeight}
               setCodeWidth={setCodeWidth}
               setCurrentSlides={setCurrentSlides}
@@ -1427,7 +1424,6 @@ function PresentationPage() {
                     value={imageSizeLength}
                     type="number"
                     placeholder="Please enter the length (0-100)"
-                    // addonAfter="px"
                     addonAfter="%"
                     onChange={(e) => {
                       setImageSizeLength(e.target.value);
@@ -1441,7 +1437,6 @@ function PresentationPage() {
                     value={imageSizeWidth}
                     type="number"
                     placeholder="Please enter the width (0-100)"
-                    // addonAfter="px"
                     addonAfter="%"
                     onChange={(e) => {
                       setImageSizeWidth(e.target.value);
