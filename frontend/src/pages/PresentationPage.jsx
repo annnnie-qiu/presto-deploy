@@ -13,6 +13,8 @@ import {
   FileImageOutlined,
   FullscreenExitOutlined,
   AppstoreOutlined,
+  MutedOutlined,
+  SoundOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
 import { ConfigProvider, Segmented, Tooltip } from "antd";
@@ -73,6 +75,35 @@ const Tooltips = (
     };
   }, [arrow]);
 
+  const audioRef = useRef(
+    new Audio("../music/Gracie Abrams - I miss you, Im sorry (Lyric Video).mp3")
+  );
+
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    // 监听音频的加载状态
+    audioRef.current.addEventListener("canplay", () => {
+      console.log("Audio is ready to play");
+    });
+    return () => {
+      audioRef.current.removeEventListener("canplay", () => {
+        console.log("Audio listener removed");
+      });
+    };
+  }, []);
+
+  const handleMusic = () => {
+    console.log("handleMusic");
+    console.log("audioRef", audioRef);
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   return (
     <ConfigProvider
       button={{
@@ -86,6 +117,7 @@ const Tooltips = (
       <Flex vertical justify="center" align="center" className="demo">
         <Flex justify="space-between" align="center">
           <Flex align="center" vertical>
+
             {/* add a new slide */}
             <Tooltip
               placement="rightTop"
@@ -288,6 +320,19 @@ const Tooltips = (
                 <AppstoreOutlined />
               </Button>
             </Tooltip>
+
+            {/* music */}
+            <Tooltip placement="right" title={"Add Music"}>
+              <Button onClick={handleMusic}>
+                {isPlaying ? <SoundOutlined /> : <MutedOutlined />}
+                {/* <MutedOutlined
+                  onClick={() => {
+                    handleMusic();
+                  }}
+                /> */}
+              </Button>
+            </Tooltip>
+
           </Flex>
         </Flex>
       </Flex>

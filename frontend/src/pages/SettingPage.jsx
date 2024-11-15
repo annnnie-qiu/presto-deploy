@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Button, Layout, Checkbox, Form, Input, Typography } from "antd";
 const { Sider } = Layout;
 import Sidebar from "../components/Sidebar";
+import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
 
 function SettingPage() {
   const styles = {
@@ -47,14 +48,17 @@ function SettingPage() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  // get token from local storage
-  //   const token = localStorage.getItem("token");
-  //   useEffect(() => {
 
-  //     const detail = await getDetail(token);
-  //     console.log(detail);
-  //     }
-  //     };
+  const handleClick = async () => {
+    console.log("clicked");
+    // get token from local storage
+    const token = localStorage.getItem("token");
+    const detail = await getDetail(token);
+    console.log(detail);
+    setShowDetail(!showDetail);
+    const { username, password } = detail.store;
+    console.log(username, password);
+  };
 
   return (
     <Layout style={styles.layout}>
@@ -91,6 +95,7 @@ function SettingPage() {
             alignSelf: "center",
             justifySelf: "center",
           }}
+          onClick={() => handleClick()}
         >
           check here to motifiy your setting
         </Button>
