@@ -1,9 +1,4 @@
-export async function apiCall(
-  method,
-  endpoint,
-  body = {},
-  token = ""
-) {
+export async function apiCall(method, endpoint, body = {}, token = "") {
   // Use environment variables for the backend URL
   const BASE_URL = "http://localhost:5005";
 
@@ -26,6 +21,7 @@ export async function apiCall(
     fetchOptions.body = JSON.stringify(body);
   }
 
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await fetch(targetAddress, fetchOptions);
     if (!response.ok) {
@@ -35,7 +31,6 @@ export async function apiCall(
     // Parse and return JSON response
     return await response.json();
   } catch (error) {
-    console.error("API call failed:", error);
     throw error; // Rethrow error for further handling in React components
   }
 }

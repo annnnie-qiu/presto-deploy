@@ -23,9 +23,6 @@ function PresentationText({
   setTriggerByDoubleClick,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
-  // const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [size, setSize] = useState({ width: 0, height: 0 });
-  // const [position, setPosition] = useState(adjustedPosition);
 
   const [lastClickTime, setLastClickTime] = useState(0);
   const handleClick = () => {
@@ -46,7 +43,6 @@ function PresentationText({
     setTextInput(data.textInput);
     setTextFontSize(data.textFontSize);
     setTextFontColor(data.textFontColor);
-    // setTextFontFamily(data.textFontFamily);
     setSelectedElementId(data.id);
     setTriggerByDoubleClick(true);
     showTextModal();
@@ -95,26 +91,12 @@ function PresentationText({
 
   const handleResizeStop = (e, direction, ref, delta, position) => {
     if (!isMoveActive) return;
-    console.log("resize stopped", ref.style.width, ref.style.height);
-    console.log("boundsRef", boundsRef);
-    // if (boundsRef.current) {
     const containerWidth = boundsRef.current.clientWidth;
     const containerHeight = boundsRef.current.clientHeight;
 
     // Calculate new dimensions in percentage relative to container
-    // const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100 * 0.7;
     const newWidthPercentage = (ref.offsetWidth / containerWidth) * 100;
     const newHeightPercentage = (ref.offsetHeight / containerHeight) * 100;
-
-    console.log("newWidthPercentage", newWidthPercentage);
-    console.log("newHeightPercentage", newHeightPercentage);
-
-    setSize({
-      // width: ref.style.width,
-      // height: ref.style.height,
-      width: newWidthPercentage,
-      height: newHeightPercentage,
-    });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId
@@ -140,14 +122,10 @@ function PresentationText({
       currentSlides,
       setCurrentSlides
     );
-    console.log("currentSlides resize", currentSlides);
-    // }
   };
 
   const handleDragStop = async (e, newPos) => {
     if (!isMoveActive) return;
-    console.log("drag stopped", newPos);
-    // setPosition({ x: newPos.x, y: newPos.y });
 
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
@@ -163,7 +141,6 @@ function PresentationText({
         }
         : element
     );
-    console.log("newContent", newContent);
     getUpdateDetail(
       presentationId,
       selectedSlideId,
@@ -171,7 +148,6 @@ function PresentationText({
       currentSlides,
       setCurrentSlides
     );
-    console.log("currentSlides drage", currentSlides);
   };
 
   return (
@@ -206,8 +182,6 @@ function PresentationText({
         >
           <div
             style={{
-              // width: `${data?.textSizeWidth}`,
-              // height: `${data?.textSizeLength}`,
               width: "100%",
               height: "100%",
               position: "relative",

@@ -21,12 +21,10 @@ function PresentationImage({
   setTriggerByDoubleClick,
 }) {
   const [isMoveActive, setIsMoveActive] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const handleDragStop = async (e, newPos) => {
     if (!isMoveActive) return;
     console.log("drag stopped", newPos);
-    setPosition({ x: newPos.x, y: newPos.y });
     // save the text to the backend
     const targetIndex = currentSlides.findIndex(
       (slide) => slide.slideId === selectedSlideId

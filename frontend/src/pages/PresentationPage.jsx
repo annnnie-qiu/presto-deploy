@@ -651,14 +651,14 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              textInput: textInput,
-              textSizeLength: textSizeLength,
-              textSizeWidth: textSizeWidth,
-              textFontSize: textFontSize,
-              textFontColor: textFontColor,
-              zIndex: zIndex,
-            }
+            ...element,
+            textInput: textInput,
+            textSizeLength: textSizeLength,
+            textSizeWidth: textSizeWidth,
+            textFontSize: textFontSize,
+            textFontColor: textFontColor,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -765,13 +765,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              imageSizeLength: imageSizeLength,
-              imageSizeWidth: imageSizeWidth,
-              imageAlt: imageAlt,
-              uploadImage: uploadImage,
-              zIndex: zIndex,
-            }
+            ...element,
+            imageSizeLength: imageSizeLength,
+            imageSizeWidth: imageSizeWidth,
+            imageAlt: imageAlt,
+            uploadImage: uploadImage,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -829,15 +829,12 @@ function PresentationPage() {
         type: "code",
         codeLeight,
         codeWidth,
-        // codeBlockSize,
         codeContent,
         codeFontSize,
-        // codeLanguage,
         id: currentSlides[targetIndex].nextElementId,
         position: { x: 0, y: 0 },
       },
     ];
-    console.log("newContent", newContent);
 
     const newSlideList = currentSlides.map((slide) => {
       if (slide.slideId === selectedSlideId) {
@@ -883,13 +880,13 @@ function PresentationPage() {
       newContent = currentSlides[targetIndex].content.map((element, index) =>
         index === existingElementIndex
           ? {
-              ...element,
-              videoUrl: videoUrl,
-              videoSizeLength: videoSizeLength,
-              videoSizeWidth: videoSizeWidth,
-              videoAutoplay: videoAutoplay,
-              zIndex: zIndex,
-            }
+            ...element,
+            videoUrl: videoUrl,
+            videoSizeLength: videoSizeLength,
+            videoSizeWidth: videoSizeWidth,
+            videoAutoplay: videoAutoplay,
+            zIndex: zIndex,
+          }
           : element
       );
     } else {
@@ -974,9 +971,9 @@ function PresentationPage() {
     const newSlides = currentSlides.map((slide, index) =>
       index === targetIndex
         ? {
-            ...slide,
-            background: newBackground,
-          }
+          ...slide,
+          background: newBackground,
+        }
         : slide
     );
 
@@ -1035,8 +1032,6 @@ function PresentationPage() {
         // navigator.history.push("/dashboard");
         return;
       }
-
-      setCurrentPresentation(presentation);
       setCurrentSlides(presentation.slides);
 
       setSelectedSlideId(presentation.slides[0].slideId);
@@ -1044,17 +1039,12 @@ function PresentationPage() {
     getPresentationDetail();
   }, []);
 
-  const [currentPresentation, setCurrentPresentation] =
-    React.useState(undefined);
 
   const handleDragEnd = (result) => {
-    console.log("result", result);
     if (!result.destination) return;
 
     const reorderedSlides = Array.from(currentSlides);
-    console.log("reorderedSlides", reorderedSlides);
     const [movedSlide] = reorderedSlides.splice(result.source.index, 1);
-    console.log("movedSlide", movedSlide);
     reorderedSlides.splice(result.destination.index, 0, movedSlide);
 
     setCurrentSlides(reorderedSlides);

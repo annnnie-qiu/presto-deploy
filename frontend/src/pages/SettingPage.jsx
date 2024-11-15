@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Layout, Checkbox, Form, Input, Typography } from "antd";
+import { Button, Layout, Form, Input, Typography } from "antd";
 const { Sider } = Layout;
 import Sidebar from "../components/Sidebar";
 import { getDetail } from "../../utils/API/Send_ReceiveDetail/send_receiveDetail";
@@ -113,7 +113,6 @@ function SettingPage() {
             fontSize: windowWidth <= 600 ? "14px" : "16px",
             marginTop: windowWidth <= 600 ? "10px" : "0",
             marginBottom: "20px",
-            alignSelf: "center",
             justifySelf: "center",
           }}
           onClick={() => handleClick()}

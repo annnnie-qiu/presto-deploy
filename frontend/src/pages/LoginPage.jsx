@@ -38,7 +38,10 @@ function LoginPage() {
 
     // check if the user has verified the reCAPTCHA
     if (!captchaValue) {
-      errorPopUp("There was an error logging in", "Please do the human-machine verification!");
+      errorPopUp(
+        "There was an error logging in",
+        "Please do the human-machine verification!"
+      );
       return;
     }
     try {
@@ -74,7 +77,7 @@ function LoginPage() {
       const response = await login(userEmail, password);
       localStorage.setItem("token", response.token);
       navigate("/dashboard");
-    } catch (error) {
+    } catch (_) {
       // if login failed, try to register
       try {
         const response = await register(userEmail, password, userName);
@@ -82,16 +85,12 @@ function LoginPage() {
         localStorage.setItem("token", response.token);
         navigate("/dashboard");
       } catch (error) {
-        console.log(error);
         errorPopUp(
           "There was an error logging in",
-          "invalid email or password"
+          `invalid email or password ${error.message || error}`
         );
       }
     }
-  };
-  const handleError = () => {
-    console.log("Login Failed");
   };
 
   const recaptcha = useRef();
@@ -193,13 +192,13 @@ function LoginPage() {
                 navigate("/register");
               }}
             >
-              Don't have an account? Register here
+              Don&apos;t have an account? Register here
             </a>
           </div>
 
           <GoogleOAuthProvider clientId="398166640926-mt5lmsm2bqp87ek57lp5er93etmlh41l.apps.googleusercontent.com">
             {/* Your app components go here */}
-            <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
+            <GoogleLogin onSuccess={handleSuccess} />
           </GoogleOAuthProvider>
 
           <ReCAPTCHA
