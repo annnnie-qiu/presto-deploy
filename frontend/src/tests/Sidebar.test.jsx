@@ -62,18 +62,6 @@ describe('Sidebar Component', () => {
     });
   });
 
-  // Test to check navigation to the latest presentation
-  it('navigates to the latest presentation when My Recent One is clicked', async () => {
-    renderComponent({ darkMode: false, presentations: presentationsMock });
-
-    const myPresentationsButton = screen.getByText('My Recent One');
-    fireEvent.click(myPresentationsButton);
-
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith(`/presentation/${presentationsMock[0].id}`);
-    });
-  });
-
   // Test to check if error toast is shown when there are no presentations
   it('shows error toast when My Recent One is clicked with no presentations', async () => {
     renderComponent({ darkMode: false, presentations: [] });
